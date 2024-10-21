@@ -5,7 +5,7 @@ OBJS_DIR = src/.objs
 OBJS = $(SRCS:src/%.cpp=$(OBJS_DIR)/%.o)
 
 CXX = c++
-CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -I include
+CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -I inc
 
 all: $(OBJS) $(NAME)
 

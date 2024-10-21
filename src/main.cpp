@@ -1,5 +1,4 @@
 #include "Server.hpp"
-#include <cstdlib>
 
 int main(int argc, char **argv)
 {
@@ -7,7 +6,8 @@ int main(int argc, char **argv)
 		return (EXIT_FAILURE);
    
 	Server irc_server(atoi(argv[1]));
-    irc_server.run();
+	irc_server.init();
+	irc_server.run();
     
 	return (EXIT_SUCCESS);
 }
