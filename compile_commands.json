@@ -1,0 +1,70 @@
+[
+ {
+  "directory": "/nfs/homes/bgoron/IRC",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Werror",
+   "-Wextra",
+   "-std=c++98",
+   "-I",
+   "include",
+   "-c",
+   "src/Channel.cpp",
+   "-o",
+   "src/.objs/Channel.o"
+  ],
+  "file": "src/Channel.cpp"
+ },
+ {
+  "directory": "/nfs/homes/bgoron/IRC",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Werror",
+   "-Wextra",
+   "-std=c++98",
+   "-I",
+   "include",
+   "-c",
+   "src/Client.cpp",
+   "-o",
+   "src/.objs/Client.o"
+  ],
+  "file": "src/Client.cpp"
+ },
+ {
+  "directory": "/nfs/homes/bgoron/IRC",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Werror",
+   "-Wextra",
+   "-std=c++98",
+   "-I",
+   "include",
+   "-c",
+   "src/main.cpp",
+   "-o",
+   "src/.objs/main.o"
+  ],
+  "file": "src/main.cpp"
+ },
+ {
+  "directory": "/nfs/homes/bgoron/IRC",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Werror",
+   "-Wextra",
+   "-std=c++98",
+   "-I",
+   "include",
+   "-c",
+   "src/Server.cpp",
+   "-o",
+   "src/.objs/Server.o"
+  ],
+  "file": "src/Server.cpp"
+ }
+]

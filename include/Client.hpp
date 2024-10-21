@@ -6,18 +6,16 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:53:30 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/16 01:26:44 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/21 14:08:54 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-class Client {
-public:
-    int socket_fd; 
-
-    Client();
-    Client(int fd);
+class Client
+{
+	public:
+		Client();
 };
 
 
