@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/21 22:35:44 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 12:26:07 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,10 @@
 int main(int argc, char **argv)
 {
 	if (argc < 2)
+	{
 		return (EXIT_FAILURE);
-   
+	}
+
 	Server irc_server(atoi(argv[1]));
 	irc_server.init();
 	irc_server.run();
