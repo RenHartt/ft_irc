@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 12:26:07 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 17:21:26 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 {
 	if (argc < 2)
 	{
+		std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
 		return (EXIT_FAILURE);
 	}
 
