@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:57:47 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 20:03:24 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 22:23:33 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,10 @@ class Server
 		std::string			_server_name;
 		std::vector<pollfd>	_poll_fds;
 
-		std::map<int, Client *>				_clients_list;
+		std::map<std::string, Client *>		_clients_list;
 		std::map<std::string, Channel *>	_channels_list;
 
 		std::map<std::string, void (Server::*)(Client *, std::vector<std::string>)>	_commands;
 };
+
+std::string itoa(int value);

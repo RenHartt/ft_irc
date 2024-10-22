@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 20:24:50 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 22:24:36 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ void Server::acceptNewClient()
 	std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr) << std::endl;
 
 	Client *new_client = new Client(client_fd);
-	_clients_list[client_fd] = new_client;
+	_clients_list[itoa(client_fd)] = new_client;
 
 	pollfd client_pollfd;
 	client_pollfd.fd = client_fd;
@@ -115,7 +115,7 @@ void Server::acceptNewClient()
 
 void Server::handleCommand(int client_fd)
 {
-	Client *client = _clients_list[client_fd];
+	Client *client = _clients_list[itoa(client_fd)];
 	char buffer[1024] = {0};
 	int valread = read(client_fd, buffer, 1024);
 	std::vector<std::string> command = splitCommand(buffer);

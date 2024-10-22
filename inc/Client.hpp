@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:53:30 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 20:12:06 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 22:32:49 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,17 @@ class Client
 	public:
 		Client(int fd);
 		
-		int getFd() const;
+		int getFd();
+		std::string &getNickname();
+		std::string &getUsername();
+		std::string &getRealname();
+
+		void setNickname(std::string &nickname);
+		void setUsername(std::string &username);
+		void setRealname(std::string &realname);
+
 	private:
 		int	_client_fd; 
-
 		std::string	_nickname; 
 		std::string	_username; 
 		std::string	_realname; 

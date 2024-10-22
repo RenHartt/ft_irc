@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 12:17:48 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 17:46:28 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 22:50:46 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ std::vector<std::string> Server::splitCommand(const char *buffer)
 
     if (colonPos != std::string::npos)
     {
-        trailing = command.substr(colonPos);
+        trailing = command.substr(colonPos + 1);
         command = command.substr(0, colonPos);
     }
 
@@ -48,3 +48,9 @@ std::vector<std::string> Server::splitCommand(const char *buffer)
 	return (splited);
 }
 
+std::string itoa(int value)
+{
+    std::stringstream ss;
+	ss << value;
+	return (ss.str());
+}
