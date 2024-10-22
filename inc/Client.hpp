@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:53:30 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 13:54:44 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 17:13:37 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,10 @@
 class Client
 {
 	public:
-		Client(int fd);
+		Client();
 		
-		int getFd() const;
 	private:
-		int						_fd; 
+		/* int						_fd;  */
 		/* int						_port; */
 		std::string				_IP; 
 

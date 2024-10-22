@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:43:08 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 17:10:13 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 17:16:03 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void Server::acceptNewClient()
 
 	std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr) << std::endl;
 
-	Client new_client(client_fd);
+	Client new_client;
 	_clients[client_fd] = new_client;
 
 	pollfd client_pollfd;
@@ -115,14 +115,13 @@ void Server::acceptNewClient()
 
 void Server::handleCommand(int client_fd)
 {
-	Client &client = _clients[client_fd];
 	char buffer[1024] = {0};
 	int valread = read(client_fd, buffer, 1024);
 	std::vector<std::string> command = splitCommand(buffer);
 	if (valread > 1 && isCommand(command[0]))
 	{
-		std::map<std::string, void (Server::*)(Client &)>::iterator it = _commands.find(command[0]);
-		(this->*it->second)(client);
+		std::map<std::string, void (Server::*)(int)>::iterator it = _commands.find(command[0]);
+		(this->*it->second)(client_fd);
 	}
 	else if (valread > 1)
 	{

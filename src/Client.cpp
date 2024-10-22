@@ -6,12 +6,11 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 01:04:37 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 13:55:03 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 17:13:24 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(int fd): _fd(fd) {}
+Client::Client() {}
 
-int Client::getFd() const { return (this->_fd); }

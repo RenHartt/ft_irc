@@ -6,35 +6,35 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 12:16:51 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 13:57:32 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/22 17:14:35 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-void Server::executeUser(Client &client)
+void Server::executeUser(int client_fd)
 {
-	std::cout << "USER : " << client.getFd() << std::endl;
+	std::cout << "USER : " << client_fd << std::endl;
 }
 
-void Server::executeNick(Client &client)
+void Server::executeNick(int client_fd)
 {
-	std::cout << "NICK : " << client.getFd() << std::endl;
+	std::cout << "NICK : " << client_fd << std::endl;
 }
 
-void Server::executePrivmsg(Client &client)
+void Server::executePrivmsg(int client_fd)
 {
-	std::cout << "PRIVMSG : " << client.getFd() << std::endl;
+	std::cout << "PRIVMSG : " << client_fd << std::endl;
 }
 
-void Server::executeQuit(Client &client)
+void Server::executeQuit(int client_fd)
 {
-	close(client.getFd());
+	close(client_fd);
 	for (std::vector<pollfd>::iterator it = _poll_fds.begin(); it != _poll_fds.end();)
 	{
-		it->fd == client.getFd() ? it = _poll_fds.erase(it) : it++;
+		it->fd == client_fd ? it = _poll_fds.erase(it) : it++;
 	}
-	_clients.erase(client.getFd());
+	_clients.erase(client_fd);
 
 	std::cout << "Client deconnecte" << std::endl;
 }
