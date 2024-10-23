@@ -1,5 +1,5 @@
 BasedOnStyle: LLVM
-IndentWidth: 4
+IndentWidth: 8
 ColumnLimit: 80
 AlignConsecutiveDeclarations: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
