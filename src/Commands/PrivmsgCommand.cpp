@@ -1,30 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Command.cpp                                        :+:      :+:    :+:   */
+/*   PrivmsgCommand.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 12:16:51 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 23:09:24 by bgoron           ###   ########.fr       */
+/*   Created: 2024/10/23 13:12:49 by bgoron            #+#    #+#             */
+/*   Updated: 2024/10/23 13:12:56 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include <sys/socket.h>
-
-void Server::executeUser(Client *sender, std::vector<std::string>)
-{
-	std::string message = "NickName -> " + sender->getNickname() + "\n";
-	send(sender->getFd(), message.c_str(), message.size(), 0);
-	message = "fd -> " + itoa(sender->getFd()) + "\n";
-	send(sender->getFd(), message.c_str(), message.size(), 0);
-}
-
-void Server::executeNick(Client *client, std::vector<std::string>)
-{
-	std::cout << "NICK : " << client->getFd() << std::endl;
-}
 
 void Server::executePrivmsg(Client *sender, std::vector<std::string> command)
 {
@@ -50,17 +36,4 @@ void Server::executePrivmsg(Client *sender, std::vector<std::string> command)
 		send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
 		return ;
 	}
-}
-
-void Server::executeQuit(Client *client, std::vector<std::string>)
-{
-	close(client->getFd());
-	for (std::vector<pollfd>::iterator it = _poll_fds.begin(); it != _poll_fds.end();)
-	{
-		it->fd == client->getFd() ? it = _poll_fds.erase(it) : it++;
-	}
-	_clients_list.erase(itoa(client->getFd()));
-	delete client;
-
-	std::cout << "Client deconnecte" << std::endl;
 }

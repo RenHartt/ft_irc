@@ -1,7 +1,7 @@
 NAME = ft_irc
 
-SRCS = $(wildcard src/*.cpp)
-OBJS_DIR = src/.objs
+SRCS = $(wildcard src/Classes/*.cpp src/Commands/*.cpp src/*.cpp)
+OBJS_DIR = .objs
 OBJS = $(SRCS:src/%.cpp=$(OBJS_DIR)/%.o)
 
 CXX = c++
@@ -12,11 +12,17 @@ all: $(OBJS) $(NAME)
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
-$(OBJS_DIR)/%.o: src/%.cpp | $(OBJS_DIR)
+$(OBJS_DIR)/%.o: src/%.cpp | $(OBJS_DIR)/Classes $(OBJS_DIR)/Commands
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJS_DIR):
 	mkdir -p $(OBJS_DIR)
+
+$(OBJS_DIR)/Classes:
+	mkdir -p $(OBJS_DIR)/Classes
+
+$(OBJS_DIR)/Commands:
+	mkdir -p $(OBJS_DIR)/Commands
 
 clean:
 	rm -rf $(OBJS_DIR)
@@ -27,4 +33,4 @@ fclean: clean
 re: fclean all
 
 .SILENT:
-.PHONY: all clean fclean re bonus
+.PHONY: all clean fclean re
