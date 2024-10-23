@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/23 15:41:25 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/23 20:24:50 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ int main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	}
 
-	Server irc_server(argv[1], argv[2]);
-	irc_server.init();
-	irc_server.run();
-    
-	return (EXIT_SUCCESS);
+    Server irc_server(argv[1], argv[2]);
+    irc_server.init();
+    irc_server.run();
+
+    return (EXIT_SUCCESS);
 }
