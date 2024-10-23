@@ -1,28 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   PartCommand.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 19:34:48 by bgoron           ###   ########.fr       */
+/*   Created: 2024/10/23 14:57:15 by bgoron            #+#    #+#             */
+/*   Updated: 2024/10/23 14:59:57 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-int main(int argc, char **argv)
+void Server::executePart(Client *client, std::vector<std::string>)
 {
-	if (argc != 3)
-	{
-		std::cout << "Usage : ./<IRC> <port> <password>" << std::endl;
-		return (EXIT_FAILURE);
-	}
-
-	Server irc_server(argv[1], argv[2]);
-	irc_server.init();
-	irc_server.run();
-    
-	return (EXIT_SUCCESS);
+	std::cout << "PART : " << client->getFd() << std::endl;
 }
+

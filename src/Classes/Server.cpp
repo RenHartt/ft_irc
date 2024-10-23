@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 22:24:36 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/23 14:59:53 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ void Server::init()
 	_commands["USER"]    = &Server::executeUser;
 	_commands["NICK"]    = &Server::executeNick;
 	_commands["PRIVMSG"] = &Server::executePrivmsg;
+	_commands["JOIN"]    = &Server::executeJoin;
+	_commands["PART"]    = &Server::executePart;
 	_commands["QUIT"]    = &Server::executeQuit;
 }
 

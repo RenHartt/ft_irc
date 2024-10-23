@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:57:47 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 22:23:33 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/23 14:59:12 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ class Server
 
 		void executeUser(Client *client, std::vector<std::string>);
 		void executeNick(Client *client, std::vector<std::string>);
+		void executeJoin(Client *client, std::vector<std::string>);
+		void executePart(Client *client, std::vector<std::string>);
 		void executePrivmsg(Client *client, std::vector<std::string>);
 		void executeQuit(Client *client, std::vector<std::string>);
 
