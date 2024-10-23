@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:09:27 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/22 17:28:41 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/23 20:38:13 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@ class Client;
 
 class Channel
 {
-	public:
-		Channel();
-	private:
-		std::map<int, Client *>	_clients_list;
+  public:
+    Channel();
+
+  private:
+    std::map<int, Client *> _clients_list;
 };

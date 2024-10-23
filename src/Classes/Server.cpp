@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/23 20:28:15 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/23 20:38:06 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ Server::Server(std::string port, std::string password)
 
 void Server::init()
 {
-	_commands["NICK"]    = &Server::executeNick;
-	_commands["PRIVMSG"] = &Server::executePrivmsg;
-	_commands["JOIN"]    = &Server::executeJoin;
-	_commands["PART"]    = &Server::executePart;
-	_commands["QUIT"]    = &Server::executeQuit;
+    _commands["NICK"] = &Server::executeNick;
+    _commands["PRIVMSG"] = &Server::executePrivmsg;
+    _commands["JOIN"] = &Server::executeJoin;
+    _commands["PART"] = &Server::executePart;
+    _commands["QUIT"] = &Server::executeQuit;
 }
 
 void Server::run()
@@ -108,8 +108,8 @@ void Server::acceptNewClient()
         return;
     }
 
-	Client *new_client = new Client(client_fd);
-	_clients_list[itoa(client_fd)] = new_client;
+    Client *new_client = new Client(client_fd);
+    _clients_list[itoa(client_fd)] = new_client;
     std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr)
               << std::endl;
 
@@ -122,17 +122,18 @@ void Server::acceptNewClient()
 
 void Server::handleCommand(int client_fd)
 {
-	Client *client = _clients_list[itoa(client_fd)];
-	char buffer[1024] = {0};
-	int valread = read(client_fd, buffer, 1024);
-	std::vector<std::string> command = splitCommand(buffer);
-	if (valread > 1 && isCommand(command[0]))
-	{
-		std::map<std::string, void (Server::*)(Client *, std::vector<std::string>)>::iterator it = _commands.find(command[0]);
-		(this->*it->second)(client, command);
-	}
-	else if (valread > 1)
-	{
-		std::cout << "Wrong command" << std::endl;
-	}
+    Client                  *client = _clients_list[itoa(client_fd)];
+    char                     buffer[1024] = {0};
+    int                      valread = read(client_fd, buffer, 1024);
+    std::vector<std::string> command = splitCommand(buffer);
+    if (valread > 1 && isCommand(command[0]))
+    {
+        std::map<std::string,
+                 void (Server::*)(Client *, std::vector<std::string>)>::iterator
+            it = _commands.find(command[0]);
+        (this->*it->second)(client, command);
+    } else if (valread > 1)
+    {
+        std::cout << "Wrong command" << std::endl;
+    }
 }
