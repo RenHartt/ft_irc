@@ -3,7 +3,7 @@
 
 CommandMap Command::_commands = Command::_initCommands();
 
-Command::Command(const Server *server) { _server = server; }
+Command::Command(Server *server) { _server = server; }
 
 CommandMap Command::_initCommands()
 {
@@ -14,6 +14,8 @@ CommandMap Command::_initCommands()
     commands["JOIN"] = &Command::_executeJoin;
     commands["PART"] = &Command::_executePart;
     commands["QUIT"] = &Command::_executeQuit;
+	commands["HELP"] = &Command::_executeHelp;
+	commands["WHOAMI"] = &Command::_executeWhoami;
     return commands;
 }
 

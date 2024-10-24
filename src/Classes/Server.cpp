@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 17:07:02 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 18:31:00 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ void Server::handleEvents()
     }
 }
 
+
+
 void Server::acceptNewClient()
 {
     sockaddr_in client_address;
@@ -104,7 +106,7 @@ void Server::acceptNewClient()
     _clients_list[itoa(client_fd)] = new_client;
     std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr)
               << std::endl;
-
+	
     pollfd client_pollfd;
     client_pollfd.fd = client_fd;
     client_pollfd.events = POLLIN;

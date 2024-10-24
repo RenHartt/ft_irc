@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 14:54:33 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/24 17:25:10 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 18:41:50 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ typedef std::map<std::string, CmdAddr> CommandMap;
 class Command
 {
   public:
-    Command(const Server *server);
+    Command(Server *server);
     void exec(const std::string &cmd, Client *client, std::vector<std::string>);
 
   private:
     static CommandMap _commands;
-    const Server     *_server;
+    Server		     *_server;
 
     static CommandMap _initCommands();
     CmdAddr    _find(const std::string &cmd);
@@ -42,4 +42,6 @@ class Command
     void _executePart(Client *client, std::vector<std::string>);
     void _executePrivmsg(Client *client, std::vector<std::string>);
     void _executeQuit(Client *client, std::vector<std::string>);
+	void _executeHelp(Client *client, std::vector<std::string>);
+	void _executeWhoami(Client *client, std::vector<std::string> args);
 };

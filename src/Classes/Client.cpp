@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 01:04:37 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/23 20:37:58 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/24 18:33:26 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,6 @@ std::string &Client::getNickname() { return _nickname; }
 std::string &Client::getUsername() { return _username; }
 std::string &Client::getRealname() { return _realname; }
 
-void Client::setNickname(std::string &nickname) { _nickname = nickname; }
+void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
 void Client::setUsername(std::string &username) { _username = username; }
 void Client::setRealname(std::string &realname) { _realname = realname; }

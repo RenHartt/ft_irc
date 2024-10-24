@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:57:47 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 17:17:01 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 18:30:43 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Server
     void handleEvents();
     void acceptNewClient();
     void handleCommand(int client_fd);
+	void updateNickname(int client_fd, const std::string &new_nickname);
 
     std::map<std::string, Client *> getClientsList(void) const;
     std::vector<pollfd>             getPollFds(void) const;
