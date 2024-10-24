@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 18:04:49 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 19:33:01 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,6 @@ Server::Server(std::string port, std::string password)
       _password(password),
       _command(this)
 {
-    this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->_server_fd == -1)
-    {
-        std::cerr << "Erreur: impossible de creer le socket serveur"
-                  << std::endl;
-        exit(EXIT_FAILURE);
-    }
 
     sockaddr_in address;
     memset(&address, 0, sizeof(address));
@@ -33,20 +26,9 @@ Server::Server(std::string port, std::string password)
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(_port);
 
-    if (bind(this->_server_fd, (sockaddr *)&address, sizeof(address)) < 0)
-    {
-        std::cerr << "Erreur: impossible de lier le socket" << std::endl;
-        close(this->_server_fd);
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(this->_server_fd, 5) < 0)
-    {
-        std::cerr << "Erreur: impossible de mettre le socket en ecoute"
-                  << std::endl;
-        close(this->_server_fd);
-        exit(EXIT_FAILURE);
-    }
+    _createSocket();
+    _bindSocket(address);
+    _listenSocket();
 
     pollfd server_pollfd;
     server_pollfd.fd = this->_server_fd;
@@ -54,6 +36,10 @@ Server::Server(std::string port, std::string password)
     server_pollfd.revents = 0;
     this->_poll_fds.push_back(server_pollfd);
 }
+
+/* destructor */
+
+Server::~Server(void) { close(_server_fd); }
 
 /* getter */
 
@@ -68,7 +54,7 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 void Server::run()
 {
-    std::cout << "Le serveur IRC est pret et écoute sur le port " << _port
+    std::cout << "The IRC server is listening on port :" << _port
               << std::endl;
     while (true)
     {
@@ -134,4 +120,31 @@ void Server::handleCommand(int client_fd)
 
     if (valread >= 1)
         _command.exec(command[0], client, command);
+}
+
+/* private function */
+
+void Server::_createSocket(void)
+{
+    this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (this->_server_fd != -1)
+    {
+        throw IrcError("Impossible to create the server socket", SERVER);
+    }
+}
+
+void Server::_bindSocket(sockaddr_in &address)
+{
+    if (bind(this->_server_fd, (sockaddr *)&address, sizeof(address)) < 0)
+    {
+        throw IrcError("Impossible to link socket", SERVER);
+    }
+}
+
+void Server::_listenSocket()
+{
+    if (listen(this->_server_fd, 5) < 0)
+    {
+        throw IrcError("Impossible to listen on the socket", SERVER);
+    }
 }
