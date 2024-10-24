@@ -5,12 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 18:31:00 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 18:04:49 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+
+/* constructor  */
 
 Server::Server(std::string port, std::string password)
     : _port(atoi(port.c_str())),
@@ -52,6 +53,17 @@ Server::Server(std::string port, std::string password)
     server_pollfd.revents = 0;
     this->_poll_fds.push_back(server_pollfd);
 }
+
+/* getter */
+
+std::map<std::string, Client *> Server::getClientsList(void) const
+{
+    return (_clients_list);
+}
+
+std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
+
+/* function */
 
 void Server::run()
 {
@@ -120,13 +132,7 @@ void Server::handleCommand(int client_fd)
     char                     buffer[1024] = {0};
     int                      valread = read(client_fd, buffer, 1024);
     std::vector<std::string> command = splitCommand(buffer);
-    if (valread > 1)
+
+    if (valread >= 1)
         _command.exec(command[0], client, command);
 }
-
-std::map<std::string, Client *> Server::getClientsList(void) const
-{
-    return (_clients_list);
-}
-
-std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
