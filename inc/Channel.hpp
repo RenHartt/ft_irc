@@ -18,6 +18,7 @@ struct Rights {
         uint8_t setPassWord : 1;
         uint8_t changeChannelVisibility : 1;
         uint8_t changeChannelName : 1;
+        uint8_t changeGrantable : 1;
     } admin;
 };
 
@@ -34,7 +35,17 @@ void err_message(const char *str) { std::cerr << str << std::endl; }
         if (grantor_rights.grantable.permission)                               \
             target_user.rights.permission = state;                             \
         else                                                                   \
-            err_message(#permission);                                          \
+            err_message("rights." #permission);                                \
+    }
+
+#define SET_PERMISSION_GRANTABLE(grantor_rights, target_user, permission,      \
+                                 state)                                        \
+    {                                                                          \
+        if (grantor_rights.grantable.admin.changeGrantable &&                  \
+            grantor_rights.grantable.permission)                               \
+            target_user.grantable.permission = state;                          \
+        else                                                                   \
+            err_message("grantable." #permission);                             \
     }
 
 class Client;
@@ -47,3 +58,11 @@ class Channel
   private:
     std::map<int, ClientRight> _clients_rights;
 };
+
+int foo()
+{
+    ClientRight test1;
+    ClientRight test2;
+
+    SET_PERMISSION_GRANTABLE(test1, test2, admin.invite, 1)
+}
