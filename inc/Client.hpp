@@ -1,22 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/16 00:53:30 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/23 20:38:17 by bgoron           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
+
+#include <Channel.hpp>
 
 #include <map>
 #include <queue>
 #include <string>
-
-#include "Channel.hpp"
 
 class Channel;
 
@@ -30,7 +18,7 @@ class Client
     std::string &getUsername();
     std::string &getRealname();
 
-    void setNickname(std::string &nickname);
+    void setNickname(const std::string &nickname);
     void setUsername(std::string &username);
     void setRealname(std::string &realname);
 

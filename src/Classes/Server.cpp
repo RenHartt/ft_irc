@@ -6,11 +6,12 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 19:33:01 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 19:38:24 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <iostream>
 
 /* constructor  */
 
@@ -43,19 +44,16 @@ Server::~Server(void) { close(_server_fd); }
 
 /* getter */
 
-std::map<std::string, Client *> Server::getClientsList(void) const
+std::map<int, Client *>         Server::getClientsList(void) const
 {
     return (_clients_list);
 }
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
-/* function */
-
 void Server::run()
 {
-    std::cout << "The IRC server is listening on port :" << _port
-              << std::endl;
+    std::cout << "The IRC server is listening on port :" << _port << std::endl;
     while (true)
     {
         int poll_count = poll(_poll_fds.data(), _poll_fds.size(), -1);
@@ -100,7 +98,7 @@ void Server::acceptNewClient()
     }
 
     Client *new_client = new Client(client_fd);
-    _clients_list[itoa(client_fd)] = new_client;
+    _clients_list[client_fd] = new_client;
     std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr)
               << std::endl;
 
@@ -113,7 +111,7 @@ void Server::acceptNewClient()
 
 void Server::handleCommand(int client_fd)
 {
-    Client                  *client = _clients_list[itoa(client_fd)];
+    Client                  *client = _clients_list[client_fd];
     char                     buffer[1024] = {0};
     int                      valread = read(client_fd, buffer, 1024);
     std::vector<std::string> command = splitCommand(buffer);
@@ -127,7 +125,7 @@ void Server::handleCommand(int client_fd)
 void Server::_createSocket(void)
 {
     this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->_server_fd != -1)
+    if (this->_server_fd == -1)
     {
         throw IrcError("Impossible to create the server socket", SERVER);
     }

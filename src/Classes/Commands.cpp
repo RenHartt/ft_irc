@@ -1,15 +1,10 @@
 #include <Command.hpp>
-#include <iostream>
 
-/* init static  */
+#include <iostream>
 
 CommandMap Command::_commands = Command::_initCommands();
 
-/* constructor */
-
-Command::Command(const Server *server) { _server = server; }
-
-/* static function */
+Command::Command(Server *server) { _server = server; }
 
 CommandMap Command::_initCommands()
 {
@@ -20,10 +15,10 @@ CommandMap Command::_initCommands()
     commands["JOIN"] = &Command::_executeJoin;
     commands["PART"] = &Command::_executePart;
     commands["QUIT"] = &Command::_executeQuit;
+	commands["HELP"] = &Command::_executeHelp;
+	commands["WHOAMI"] = &Command::_executeWhoami;
     return commands;
 }
-
-/* function */
 
 void Command::exec(const std::string &cmd, Client *client,
                    std::vector<std::string> args)
@@ -35,8 +30,6 @@ void Command::exec(const std::string &cmd, Client *client,
     else
         std::cerr << "Wrong function" << std::endl;
 }
-
-/* internal function */
 
 CmdAddr Command::_find(const std::string &cmd)
 {

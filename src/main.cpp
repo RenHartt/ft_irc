@@ -6,11 +6,12 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 19:19:16 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 19:36:51 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include <Server.hpp>
+#include <iostream>
 
 int main(int argc, char **argv)
 {

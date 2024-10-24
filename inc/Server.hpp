@@ -1,37 +1,23 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/16 00:57:47 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 19:30:53 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
+
+#include <Channel.hpp>
+#include <Client.hpp>
+#include <Command.hpp>
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <map>
-#include <sstream>
 #include <vector>
 
 #include "Channel.hpp"
 #include "Client.hpp"
 #include "Command.hpp"
 #include "IrcError.hpp"
-
-class Client;
-class Channel;
 
 class Server
 {
@@ -45,8 +31,9 @@ class Server
     void handleEvents();
     void acceptNewClient();
     void handleCommand(int client_fd);
+	void updateNickname(int client_fd, const std::string &new_nickname);
 
-    std::map<std::string, Client *> getClientsList(void) const;
+    std::map<int, Client *> getClientsList(void) const;
     std::vector<pollfd>             getPollFds(void) const;
 
   private:
@@ -56,7 +43,7 @@ class Server
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
 
-    std::map<std::string, Client *>  _clients_list;
+    std::map<int, Client *>  _clients_list;
     std::map<std::string, Channel *> _channels_list;
 
 
