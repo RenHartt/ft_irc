@@ -5,9 +5,9 @@
 
 void Server::updateNickname(int client_fd, const std::string &new_nickname)
 {
-    Client *client = _clients_list[itoa(client_fd)];
+    Client *client = _clients_list[client_fd];
 
-    for (std::map<std::string, Client *>::iterator it = _clients_list.begin(); it != _clients_list.end(); ++it)
+    for (std::map<int, Client *>::iterator it = _clients_list.begin(); it != _clients_list.end(); ++it)
     {
         if (it->second == client)
         {
@@ -17,7 +17,7 @@ void Server::updateNickname(int client_fd, const std::string &new_nickname)
     }
 
     client->setNickname(new_nickname);
-    _clients_list[new_nickname] = client;
+    _clients_list[client_fd] = client;
     std::cout << "Client with FD " << client_fd << " has taken nickname: " << new_nickname << std::endl;
 }
 

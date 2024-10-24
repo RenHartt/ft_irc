@@ -30,7 +30,7 @@ class Server
     void handleCommand(int client_fd);
 	void updateNickname(int client_fd, const std::string &new_nickname);
 
-    std::map<std::string, Client *> getClientsList(void) const;
+    std::map<int, Client *> getClientsList(void) const;
     std::vector<pollfd>             getPollFds(void) const;
 
   private:
@@ -40,7 +40,7 @@ class Server
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
 
-    std::map<std::string, Client *>  _clients_list;
+    std::map<int, Client *>  _clients_list;
     std::map<std::string, Channel *> _channels_list;
 
     Command _command;

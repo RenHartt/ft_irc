@@ -12,7 +12,7 @@ void Command::_executeQuit(Client *client, std::vector<std::string>)
     {
         it->fd == client->getFd() ? it = fds.erase(it) : it++;
     }
-    _server->getClientsList().erase(itoa(client->getFd()));
+    _server->getClientsList().erase(client->getFd());
     delete client;
 
     std::cout << "Client deconnecte" << std::endl;

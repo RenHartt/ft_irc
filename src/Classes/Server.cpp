@@ -42,7 +42,7 @@ Server::Server(std::string port, std::string password)
     this->_poll_fds.push_back(server_pollfd);
 }
 
-std::map<std::string, Client *> Server::getClientsList(void) const
+std::map<int, Client *> Server::getClientsList(void) const
 {
     return (_clients_list);
 }
@@ -99,7 +99,7 @@ void Server::acceptNewClient()
     }
 
     Client *new_client = new Client(client_fd);
-    _clients_list[itoa(client_fd)] = new_client;
+    _clients_list[client_fd] = new_client;
     std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr)
               << std::endl;
 	
@@ -112,7 +112,7 @@ void Server::acceptNewClient()
 
 void Server::handleCommand(int client_fd)
 {
-    Client                  *client = _clients_list[itoa(client_fd)];
+    Client                  *client = _clients_list[client_fd];
     char                     buffer[1024] = {0};
     int                      valread = read(client_fd, buffer, 1024);
     std::vector<std::string> command = splitCommand(buffer);

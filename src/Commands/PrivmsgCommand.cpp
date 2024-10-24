@@ -26,7 +26,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
         }
     }
 
-    std::map<std::string, Client *> clients_list = _server->getClientsList();
+    std::map<int, Client *> clients_list = _server->getClientsList();
 
     if (is_fd)
     {
@@ -34,7 +34,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
         int recipient_fd;
         ss >> recipient_fd;
 
-        for (std::map<std::string, Client *>::iterator it = clients_list.begin(); it != clients_list.end(); ++it)
+        for (std::map<int, Client *>::iterator it = clients_list.begin(); it != clients_list.end(); ++it)
         {
             if (it->second->getFd() == recipient_fd)
             {
@@ -47,18 +47,18 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
         send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
         return;
     }
-    else
-    {
-        if (clients_list.find(recipient) != clients_list.end())
-        {
-            Client *recipient_client = clients_list[recipient];
-            std::string full_message = sender->getNickname() + " : " + message;
-            send(recipient_client->getFd(), full_message.c_str(), full_message.size(), 0);
-        }
-        else
-        {
-            std::string error_message = "Client not found\n";
-            send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
-        }
-    }
+    /* else */
+    /* { */
+    /*     if (clients_list.find(recipient) != clients_list.end()) */
+    /*     { */
+    /*         Client *recipient_client = clients_list[recipient]; */
+    /*         std::string full_message = sender->getNickname() + " : " + message; */
+    /*         send(recipient_client->getFd(), full_message.c_str(), full_message.size(), 0); */
+    /*     } */
+    /*     else */
+    /*     { */
+    /*         std::string error_message = "Client not found\n"; */
+    /*         send(sender->getFd(), error_message.c_str(), error_message.size(), 0); */
+    /*     } */
+    /* } */
 }
