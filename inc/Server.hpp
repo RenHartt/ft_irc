@@ -1,33 +1,20 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/16 00:57:47 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 18:30:43 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
+
+#include <Channel.hpp>
+#include <Client.hpp>
+#include <Command.hpp>
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
 #include <sstream>
 #include <vector>
-
-#include "Channel.hpp"
-#include "Client.hpp"
-#include "Command.hpp"
 
 class Client;
 class Channel;

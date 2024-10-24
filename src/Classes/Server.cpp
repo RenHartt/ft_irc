@@ -1,17 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Updated: 2024/10/24 18:04:49 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "Server.hpp"
-
-/* constructor  */
+#include <Server.hpp>
 
 Server::Server(std::string port, std::string password)
     : _port(atoi(port.c_str())),
@@ -54,16 +41,12 @@ Server::Server(std::string port, std::string password)
     this->_poll_fds.push_back(server_pollfd);
 }
 
-/* getter */
-
 std::map<std::string, Client *> Server::getClientsList(void) const
 {
     return (_clients_list);
 }
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
-
-/* function */
 
 void Server::run()
 {

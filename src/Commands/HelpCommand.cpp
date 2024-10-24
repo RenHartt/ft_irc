@@ -1,9 +1,8 @@
-#include "Command.hpp"
-#include "Server.hpp"
+#include <Command.hpp>
+#include <Server.hpp>
 
 void Command::_executeHelp(Client *client, std::vector<std::string>)
 {
-	(void)client;
 	std::string help = "\nAvailable commands:\n";
 	help += "NICK <nickname>			: Set your nickname\n";
 	help += "JOIN <#channel>			: Join a channel\n";

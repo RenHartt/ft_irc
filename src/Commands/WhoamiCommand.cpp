@@ -1,5 +1,5 @@
-#include "Command.hpp"
-#include "Server.hpp"
+#include <Command.hpp>
+#include <Server.hpp>
 
 void Command::_executeWhoami(Client *client, std::vector<std::string> args)
 {

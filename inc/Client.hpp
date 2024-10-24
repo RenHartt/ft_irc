@@ -1,22 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/16 00:53:30 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 18:33:14 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
+
+#include <Channel.hpp>
 
 #include <map>
 #include <queue>
 #include <string>
-
-#include "Channel.hpp"
 
 class Channel;
 

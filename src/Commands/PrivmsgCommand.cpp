@@ -1,18 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   PrivmsgCommand.cpp                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/23 13:12:49 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 18:28:36 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "Command.hpp"
-#include "Server.hpp"
-#include <cctype>  
+#include <Command.hpp>
+#include <Server.hpp>
 
 #include <cctype>  // Pour ::isdigit
 #include <sstream> // Pour std::stringstream

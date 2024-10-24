@@ -1,15 +1,10 @@
 #include <Command.hpp>
-#include <iostream>
 
-/* init static  */
+#include <iostream>
 
 CommandMap Command::_commands = Command::_initCommands();
 
 Command::Command(Server *server) { _server = server; }
-/* constructor */
-
-
-/* static function */
 
 CommandMap Command::_initCommands()
 {
@@ -25,8 +20,6 @@ CommandMap Command::_initCommands()
     return commands;
 }
 
-/* function */
-
 void Command::exec(const std::string &cmd, Client *client,
                    std::vector<std::string> args)
 {
@@ -37,8 +30,6 @@ void Command::exec(const std::string &cmd, Client *client,
     else
         std::cerr << "Wrong function" << std::endl;
 }
-
-/* internal function */
 
 CmdAddr Command::_find(const std::string &cmd)
 {
