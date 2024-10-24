@@ -1,4 +1,5 @@
 #include <Server.hpp>
+#include <iostream>
 
 Server::Server(std::string port, std::string password)
     : _port(atoi(port.c_str())),

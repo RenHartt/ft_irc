@@ -1,4 +1,5 @@
 #include <Server.hpp>
+#include <sstream>
 
 std::vector<std::string> Server::splitCommand(const char *buffer)
 {

@@ -1,6 +1,7 @@
 #include <Command.hpp>
 #include <Client.hpp>
 #include <Server.hpp>
+#include <iostream>
 
 void Server::updateNickname(int client_fd, const std::string &new_nickname)
 {

@@ -1,5 +1,6 @@
 #include <Command.hpp>
 #include <Server.hpp>
+#include <iostream>
 
 void Command::_executeQuit(Client *client, std::vector<std::string>)
 {
