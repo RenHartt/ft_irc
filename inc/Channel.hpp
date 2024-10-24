@@ -58,11 +58,3 @@ class Channel
   private:
     std::map<int, ClientRight> _clients_rights;
 };
-
-int foo()
-{
-    ClientRight test1;
-    ClientRight test2;
-
-    SET_PERMISSION_GRANTABLE(test1, test2, admin.invite, 1)
-}
