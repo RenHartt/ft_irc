@@ -5,19 +5,21 @@
 #include <Command.hpp>
 
 #include <arpa/inet.h>
+#include <cstdlib>
+#include <cstring>
+#include <map>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <cstdlib>
-#include <cstring>
-#include <map>
 #include <vector>
 
 #include "Channel.hpp"
 #include "Client.hpp"
 #include "Command.hpp"
 #include "IrcError.hpp"
+
+extern bool running;
 
 class Server
 {
@@ -31,10 +33,10 @@ class Server
     void handleEvents();
     void acceptNewClient();
     void handleCommand(int client_fd);
-	void updateNickname(int client_fd, const std::string &new_nickname);
+    void updateNickname(int client_fd, const std::string &new_nickname);
 
     std::map<int, Client *> getClientsList(void) const;
-    std::vector<pollfd>             getPollFds(void) const;
+    std::vector<pollfd>     getPollFds(void) const;
 
   private:
     int                 _server_fd;
@@ -43,13 +45,15 @@ class Server
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
 
-    std::map<int, Client *>  _clients_list;
+    std::map<int, Client *>          _clients_list;
     std::map<std::string, Channel *> _channels_list;
 
+    void _initSockAddr(sockaddr_in &address);
+    void _newFdToPoll(void);
 
-	void _createSocket(void);
-	void _bindSocket(sockaddr_in &address);
-	void _listenSocket(void);
+    void _createSocket(void);
+    void _bindSocket(void);
+    void _listenSocket(void);
 
     Command _command;
 };

@@ -17,6 +17,9 @@ CommandMap Command::_initCommands()
     commands["QUIT"] = &Command::_executeQuit;
 	commands["HELP"] = &Command::_executeHelp;
 	commands["WHOAMI"] = &Command::_executeWhoami;
+
+	//debug
+	commands["STOP"] = &Command::_executeStop;
     return commands;
 }
 

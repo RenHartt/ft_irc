@@ -6,12 +6,15 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 19:38:24 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/24 21:40:42 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include <iostream>
+#include <netinet/in.h>
+
+bool running = true;
 
 /* constructor  */
 
@@ -20,31 +23,30 @@ Server::Server(std::string port, std::string password)
       _password(password),
       _command(this)
 {
-
-    sockaddr_in address;
-    memset(&address, 0, sizeof(address));
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(_port);
-
     _createSocket();
-    _bindSocket(address);
+    _bindSocket();
     _listenSocket();
-
-    pollfd server_pollfd;
-    server_pollfd.fd = this->_server_fd;
-    server_pollfd.events = POLLIN;
-    server_pollfd.revents = 0;
-    this->_poll_fds.push_back(server_pollfd);
+    _newFdToPoll();
 }
 
 /* destructor */
 
-Server::~Server(void) { close(_server_fd); }
+Server::~Server(void)
+{
+    close(_server_fd);
+
+    for (std::vector<pollfd>::iterator it = _poll_fds.begin();
+         it != _poll_fds.end(); it++)
+        close(it->fd);
+
+    for (std::map<int, Client *>::iterator it = _clients_list.begin();
+         it != _clients_list.end(); it++)
+        delete it->second;
+}
 
 /* getter */
 
-std::map<int, Client *>         Server::getClientsList(void) const
+std::map<int, Client *> Server::getClientsList(void) const
 {
     return (_clients_list);
 }
@@ -54,7 +56,7 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 void Server::run()
 {
     std::cout << "The IRC server is listening on port :" << _port << std::endl;
-    while (true)
+    while (running)
     {
         int poll_count = poll(_poll_fds.data(), _poll_fds.size(), -1);
         if (poll_count == -1)
@@ -69,7 +71,6 @@ void Server::run()
 
 void Server::handleEvents()
 {
-
     if (_poll_fds[0].revents & POLLIN)
     {
         acceptNewClient();
@@ -122,6 +123,23 @@ void Server::handleCommand(int client_fd)
 
 /* private function */
 
+void Server::_initSockAddr(sockaddr_in &address)
+{
+    memset(&address, 0, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(_port);
+}
+
+void Server::_newFdToPoll()
+{
+    pollfd server_pollfd;
+    server_pollfd.fd = this->_server_fd;
+    server_pollfd.events = POLLIN;
+    server_pollfd.revents = 0;
+    this->_poll_fds.push_back(server_pollfd);
+}
+
 void Server::_createSocket(void)
 {
     this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -131,8 +149,11 @@ void Server::_createSocket(void)
     }
 }
 
-void Server::_bindSocket(sockaddr_in &address)
+void Server::_bindSocket(void)
 {
+    sockaddr_in address;
+    _initSockAddr(address);
+
     if (bind(this->_server_fd, (sockaddr *)&address, sizeof(address)) < 0)
     {
         throw IrcError("Impossible to link socket", SERVER);
