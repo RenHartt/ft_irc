@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 00:57:47 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/23 20:38:21 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/24 17:17:01 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 
 #include "Channel.hpp"
 #include "Client.hpp"
+#include "Command.hpp"
 
 class Client;
 class Channel;
@@ -36,21 +37,15 @@ class Server
   public:
     Server(std::string port, std::string password);
 
-    bool                     isCommand(const std::string &command);
     std::vector<std::string> splitCommand(const char *buffer);
 
-    void init();
     void run();
     void handleEvents();
     void acceptNewClient();
     void handleCommand(int client_fd);
 
-    void executeUser(Client *client, std::vector<std::string>);
-    void executeNick(Client *client, std::vector<std::string>);
-    void executeJoin(Client *client, std::vector<std::string>);
-    void executePart(Client *client, std::vector<std::string>);
-    void executePrivmsg(Client *client, std::vector<std::string>);
-    void executeQuit(Client *client, std::vector<std::string>);
+    std::map<std::string, Client *> getClientsList(void) const;
+    std::vector<pollfd>             getPollFds(void) const;
 
   private:
     int                 _server_fd;
@@ -62,8 +57,7 @@ class Server
     std::map<std::string, Client *>  _clients_list;
     std::map<std::string, Channel *> _channels_list;
 
-    std::map<std::string, void (Server::*)(Client *, std::vector<std::string>)>
-        _commands;
+    Command _command;
 };
 
 std::string itoa(int value);

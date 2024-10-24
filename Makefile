@@ -5,7 +5,7 @@ OBJS_DIR = .objs
 OBJS = $(patsubst %.cpp, $(OBJS_DIR)/%.o, $(SRCS))
 
 CXX = c++
-CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -I inc
+CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -I inc -g -MMD -MP
 
 TOTAL_FILES := $(words $(OBJS))
 COMPILED_FILES = 0

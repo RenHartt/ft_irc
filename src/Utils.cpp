@@ -6,17 +6,11 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 12:17:48 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/23 20:38:58 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/24 17:16:17 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-
-bool Server::isCommand(const std::string &command)
-{
-    return (command == "USER" || command == "NICK" || command == "PRIVMSG" ||
-            command == "QUIT");
-}
 
 std::vector<std::string> Server::splitCommand(const char *buffer)
 {
