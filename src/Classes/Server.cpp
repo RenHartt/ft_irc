@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/24 21:40:42 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/25 12:59:45 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,10 @@ void Server::handleCommand(int client_fd)
     char                     buffer[1024] = {0};
     int                      valread = read(client_fd, buffer, 1024);
     std::vector<std::string> command = splitCommand(buffer);
+	if (command.size() == 0)
+		return;
 
-    if (valread >= 1)
+    if (valread > 1)
         _command.exec(command[0], client, command);
 }
 

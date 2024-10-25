@@ -17,6 +17,7 @@ CommandMap Command::_initCommands()
     commands["QUIT"] = &Command::_executeQuit;
 	commands["HELP"] = &Command::_executeHelp;
 	commands["WHOAMI"] = &Command::_executeWhoami;
+	commands["LIST"] = &Command::_executeList;
 
 	//debug
 	commands["STOP"] = &Command::_executeStop;
@@ -27,7 +28,7 @@ void Command::exec(const std::string &cmd, Client *client,
                    std::vector<std::string> args)
 {
     CmdAddr func = _find(cmd);
-
+	std::cout << "Command: " << cmd << std::endl;	
     if (func)
         (this->*func)(client, args);
     else
