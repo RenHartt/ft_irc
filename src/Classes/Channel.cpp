@@ -1,9 +1,24 @@
-#include "Channel.hpp"
+#include <Channel.hpp>
+#include <Server.hpp>
 
-Channel::Channel(const std::string &name) : _name(name) {}
+Channel::Channel(std::string) {}
 
-Channel::~Channel() {}
+void Channel::addClient(Client *client)
+{
+    ClientRight defaultRight;
+    _clients_rights[client->getFd()] = defaultRight;
+}
 
-const std::string &Channel::getName() const { return _name; }
-
-const std::vector<Client *> &Channel::getClients() const { return _clients; }
+void Channel::broadcastMessage(const std::string &message, Client *sender)
+{
+    for (std::map<int, ClientRight>::iterator it = _clients_rights.begin();
+         it != _clients_rights.end(); it++)
+    {
+        int fd = it->first;
+        if (fd != sender->getFd())
+        {
+            send(fd, message.c_str(), message.length(), 0);
+        }
+    }
+}
+>>>>>>> refs/remotes/origin/main
