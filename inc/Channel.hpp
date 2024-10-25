@@ -59,12 +59,16 @@ class Client;
 class Channel
 {
   public:
-    Channel(std::string channel_name);
+    Channel(const std::string &channel_name);
 
     void addClient(Client *client);
     void broadcastMessage(const std::string &message, Client *sender);
 
+	std::string getChannelName(void) const;
+
   private:
+    std::string                _channel_name;
     std::map<int, ClientRight> _clients_rights;
-    ChannelSettings            _settings;
+    ChannelSettings            _channel_settings;
+    std::string                _password;
 };

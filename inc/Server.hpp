@@ -24,7 +24,7 @@ extern bool running;
 class Server
 {
   public:
-    Server(std::string port, std::string password);
+    Server(const std::string &port, const std::string &password);
     ~Server(void);
 
     std::vector<std::string> splitCommand(const char *buffer);
@@ -38,6 +38,9 @@ class Server
     std::map<std::string, Channel *> getChannelsList(void) const;
     std::map<int, Client *>          getClientsList(void) const;
     std::vector<pollfd>              getPollFds(void) const;
+
+	void addChannel(const std::string &channel_name, Channel *channel);
+	void addClient(int fd, Client *);
 
   private:
     int                 _server_fd;
@@ -58,4 +61,3 @@ class Server
 
     Command _command;
 };
-

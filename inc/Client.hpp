@@ -19,8 +19,8 @@ class Client
     std::string &getRealname();
 
     void setNickname(const std::string &nickname);
-    void setUsername(std::string &username);
-    void setRealname(std::string &realname);
+    void setUsername(const std::string &username);
+    void setRealname(const std::string &realname);
 
   private:
     int         _client_fd;

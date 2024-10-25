@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/25 13:10:26 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/25 16:46:29 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ bool running = true;
 
 /* constructor  */
 
-Server::Server(std::string port, std::string password)
+Server::Server(const std::string &port, const std::string &password)
     : _port(atoi(port.c_str())),
       _password(password),
       _command(this)
@@ -42,13 +42,17 @@ Server::~Server(void)
     for (std::map<int, Client *>::iterator it = _clients_list.begin();
          it != _clients_list.end(); it++)
         delete it->second;
+
+    for (std::map<std::string, Channel *>::iterator it = _channels_list.begin();
+         it != _channels_list.end(); it++)
+        delete it->second;
 }
 
 /* getter */
 
 std::map<std::string, Channel *> Server::getChannelsList(void) const
 {
-	return (_channels_list);
+    return (_channels_list);
 }
 
 std::map<int, Client *> Server::getClientsList(void) const
@@ -57,6 +61,15 @@ std::map<int, Client *> Server::getClientsList(void) const
 }
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
+
+/* adder */
+
+void Server::addChannel(const std::string &channel_name, Channel *channel)
+{
+    _channels_list[channel_name] = channel;
+}
+
+void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
 void Server::run()
 {
@@ -121,7 +134,7 @@ void Server::handleCommand(int client_fd)
     char                     buffer[1024] = {0};
     int                      valread = read(client_fd, buffer, 1024);
     std::vector<std::string> command = splitCommand(buffer);
-	
+
     if (valread >= 1 && !command.empty())
         _command.exec(command[0], client, command);
 }
