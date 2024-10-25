@@ -67,6 +67,7 @@ class Channel
     void broadcastMessage(const std::string &message, Client *sender);
 
 	std::string getChannelName(void) const;
+	std::string list_channel(Channel *channel) const;
 
   private:
     std::string                _channel_name;

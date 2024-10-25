@@ -3,12 +3,13 @@
 
 void Command::_executeList(Client *client, std::vector<std::string>)
 {
-	std::string message = "List of connected users:\n";
-	std::map<int, Client *> clients = _server->getClientsList();
-	for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+	std::string list = "Channel List: \n";
+	std::map<std::string, Channel*> channel_list = _server->getChannelsList();
+	std::map<std::string, Channel*>::iterator it = channel_list.begin();
+	while (it != channel_list.end())
 	{
-		message += it->second->getNickname() + "\n";
-	}
-	send(client->getFd(), message.c_str(), message.size(), 0);
-
+		list += it->first + "\n";
+		it++;
+	}	
+	send(client->getFd(), list.c_str(), list.size(), 0);	
 }
