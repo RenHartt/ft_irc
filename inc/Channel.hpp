@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <stdint.h>
+#include <vector>
 
 struct Rights {
     uint8_t write : 1;
@@ -34,6 +35,7 @@ struct ChannelSettings {
 };
 
 // need to be rework parse the input for better error message
+
 inline void err_message(const char *str) { std::cerr << str << std::endl; }
 
 #define SET_PERMISSION(grantor_rights, target_user, permission, state)         \
@@ -67,8 +69,15 @@ class Channel
 	std::string getChannelName(void) const;
 
   private:
+<<<<<<< HEAD
     std::string                _channel_name;
     std::map<int, ClientRight> _clients_rights;
     ChannelSettings            _channel_settings;
     std::string                _password;
+=======
+	std::string _name;
+	std::vector<Client *> _clients;
+    std::map<int, ClientRight> _clients_rights;
+    /* ChannelSettings            _settings; */
+>>>>>>> refs/remotes/origin/main
 };

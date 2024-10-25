@@ -20,7 +20,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 
 	if (recipient_fd > 0)
 	{
-		std::string full_message = sender->getNickname() + " : " + message;
+		std::string full_message = sender->getNickname() + " : " + message + "\n";
 		send(recipient_fd, full_message.c_str(), full_message.size(), 0);
 	}
 	else

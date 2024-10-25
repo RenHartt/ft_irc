@@ -6,7 +6,7 @@
 #    By: adjoly <adjoly@student.42angouleme.fr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/24 10:51:54 by adjoly            #+#    #+#              #
-#    Updated: 2024/10/24 10:59:57 by adjoly           ###   ########.fr        #
+#    Updated: 2024/10/25 14:17:30 by babonnet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@
 						gdb
 						norminette
 						valgrind
-						weechat
+						hexchat
 						inputs.pogit.packages.${system}.default
 						git
 					];
