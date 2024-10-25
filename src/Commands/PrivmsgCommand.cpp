@@ -1,8 +1,6 @@
+#include "Utils.hpp"
 #include <Command.hpp>
 #include <Server.hpp>
-
-#include <cctype>  // Pour ::isdigit
-#include <sstream> // Pour std::stringstream
 
 void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 {
@@ -13,52 +11,21 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
         return;
     }
 
+    std::map<int, Client *> clients_list = _server->getClientsList();
+
     std::string recipient = command[1];
     std::string message = command[2];
     
-    bool is_fd = true;
-    for (size_t i = 0; i < recipient.size(); ++i)
-    {
-        if (!std::isdigit(recipient[i]))
-        {
-            is_fd = false;
-            break;
-        }
-    }
+	int recipient_fd = getFdByNickname(recipient, clients_list);
 
-    std::map<int, Client *> clients_list = _server->getClientsList();
-
-    if (is_fd)
-    {
-        std::stringstream ss(recipient);
-        int recipient_fd;
-        ss >> recipient_fd;
-
-        for (std::map<int, Client *>::iterator it = clients_list.begin(); it != clients_list.end(); ++it)
-        {
-            if (it->second->getFd() == recipient_fd)
-            {
-                std::string full_message = sender->getNickname() + " : " + message;
-                send(recipient_fd, full_message.c_str(), full_message.size(), 0);
-                return;
-            }
-        }
-        std::string error_message = "Client with FD not found\n";
-        send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
-        return;
-    }
-    /* else */
-    /* { */
-    /*     if (clients_list.find(recipient) != clients_list.end()) */
-    /*     { */
-    /*         Client *recipient_client = clients_list[recipient]; */
-    /*         std::string full_message = sender->getNickname() + " : " + message; */
-    /*         send(recipient_client->getFd(), full_message.c_str(), full_message.size(), 0); */
-    /*     } */
-    /*     else */
-    /*     { */
-    /*         std::string error_message = "Client not found\n"; */
-    /*         send(sender->getFd(), error_message.c_str(), error_message.size(), 0); */
-    /*     } */
-    /* } */
+	if (recipient_fd > 0)
+	{
+		std::string full_message = sender->getNickname() + " : " + message;
+		send(recipient_fd, full_message.c_str(), full_message.size(), 0);
+	}
+	else
+	{
+		std::string error_message = "Recipient not found\n";
+		send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
+	}
 }

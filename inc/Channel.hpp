@@ -27,8 +27,14 @@ struct ClientRight {
     Rights grantable;
 };
 
+struct ChannelSettings {
+    uint8_t inviteOnly : 1;
+    uint8_t enableKey : 1;
+    uint8_t hiddenMode : 1;
+};
+
 // need to be rework parse the input for better error message
-void err_message(const char *str) { std::cerr << str << std::endl; }
+inline void err_message(const char *str) { std::cerr << str << std::endl; }
 
 #define SET_PERMISSION(grantor_rights, target_user, permission, state)         \
     {                                                                          \
@@ -53,8 +59,12 @@ class Client;
 class Channel
 {
   public:
-    Channel();
+    Channel(std::string channel_name);
+
+    void addClient(Client *client);
+    void broadcastMessage(const std::string &message, Client *sender);
 
   private:
     std::map<int, ClientRight> _clients_rights;
+    ChannelSettings            _settings;
 };

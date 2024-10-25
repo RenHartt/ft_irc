@@ -1,5 +1,6 @@
 #include <Client.hpp>
 #include <Server.hpp>
+#include <Utils.hpp>
 
 Client::Client(int client_fd)
     : _client_fd(client_fd),
