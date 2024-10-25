@@ -33,17 +33,20 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
         return;
     }
 
-    std::string channel_name = args[1];
+	for (std::vector<std::string>::iterator it_args = args.begin() + 1; it_args != args.end(); it_args++)
+	{
+		std::string channel_name = *it_args;
 
-    std::map<std::string, Channel *> channels_list = _server->getChannelsList();
-    std::map<std::string, Channel *>::iterator it =
-        channels_list.find(channel_name);
-    if (it == channels_list.end())
-        _createChannel(client, channel_name);
-    else
-        _joinChannel(client, it->second);
+		std::map<std::string, Channel *> channels_list = _server->getChannelsList();
+		std::map<std::string, Channel *>::iterator it_channel =
+			channels_list.find(channel_name);
+		if (it_channel == channels_list.end())
+			_createChannel(client, channel_name);
+		else
+			_joinChannel(client, it_channel->second);
 
-    std::string welcome_message =
-        "Welcome to " + channel_name + ", " + client->getNickname() + "\r\n";
-    send(client->getFd(), welcome_message.c_str(), welcome_message.length(), 0);
+		std::string welcome_message =
+			"Welcome to " + channel_name + ", " + client->getNickname() + "\r\n";
+		send(client->getFd(), welcome_message.c_str(), welcome_message.length(), 0);
+	}
 }

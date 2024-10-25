@@ -27,8 +27,6 @@ class Server
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
-    std::vector<std::string> splitCommand(const char *buffer);
-
     void run();
     void handleEvents();
     void acceptNewClient();
@@ -41,6 +39,8 @@ class Server
 
 	void addChannel(const std::string &channel_name, Channel *channel);
 	void addClient(int fd, Client *);
+
+    std::vector<std::string> splitCommand(const char *buffer);
 
   private:
     int                 _server_fd;
