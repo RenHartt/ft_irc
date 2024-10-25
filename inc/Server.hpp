@@ -35,8 +35,9 @@ class Server
     void handleCommand(int client_fd);
     void updateNickname(int client_fd, const std::string &new_nickname);
 
-    std::map<int, Client *> getClientsList(void) const;
-    std::vector<pollfd>     getPollFds(void) const;
+    std::map<std::string, Channel *> getChannelsList(void) const;
+    std::map<int, Client *>          getClientsList(void) const;
+    std::vector<pollfd>              getPollFds(void) const;
 
   private:
     int                 _server_fd;
@@ -58,4 +59,3 @@ class Server
     Command _command;
 };
 
-std::string itoa(int value);

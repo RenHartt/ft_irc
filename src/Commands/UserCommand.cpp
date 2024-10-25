@@ -1,6 +1,7 @@
 #include <Command.hpp>
 #include <Client.hpp>
 #include <Server.hpp>
+#include <Utils.hpp>
 
 void Command::_executeUser(Client *sender, std::vector<std::string>)
 {

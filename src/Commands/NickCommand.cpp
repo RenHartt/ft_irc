@@ -25,7 +25,7 @@ void Command::_executeNick(Client *client, std::vector<std::string> args)
 {
     if (args.size() < 2)
     {
-        std::string message = "Please enter a nickname\n";
+        std::string message = "Usage : NICK <nickname>\n";
         send(client->getFd(), message.c_str(), message.size(), 0);
         std::cout << "Please enter a nickname" << std::endl;
     }

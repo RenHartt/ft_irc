@@ -1,3 +1,4 @@
+#include "Utils.hpp"
 #include <Server.hpp>
 #include <sstream>
 
@@ -34,4 +35,14 @@ std::string itoa(int value)
     std::stringstream ss;
     ss << value;
     return (ss.str());
+}
+
+int getFdByNickname(const std::string &nickname, std::map<int, Client *> clients_list)
+{
+	for (std::map<int, Client *>::iterator it = clients_list.begin(); it != clients_list.end(); it++)
+	{
+		if (it->second->getNickname() == nickname)
+			return it->first;
+	}
+	return -1;
 }
