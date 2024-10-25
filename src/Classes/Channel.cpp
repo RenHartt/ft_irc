@@ -21,4 +21,3 @@ void Channel::broadcastMessage(const std::string &message, Client *sender)
         }
     }
 }
->>>>>>> refs/remotes/origin/main

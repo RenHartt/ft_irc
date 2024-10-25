@@ -70,5 +70,5 @@ class Channel
 	std::string _name;
 	std::vector<Client *> _clients;
     std::map<int, ClientRight> _clients_rights;
-    ChannelSettings            _settings;
+    /* ChannelSettings            _settings; */
 };
