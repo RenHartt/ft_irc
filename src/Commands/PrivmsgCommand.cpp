@@ -13,8 +13,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 
     std::map<int, Client *> clients_list = _server->getClientsList();
 
-    std::string recipient = command[1];
-    std::string message = command[2];
+    std::string recipient = command[1], message = command[2];
     
 	int recipient_fd = getFdByNickname(recipient, clients_list);
 

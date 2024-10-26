@@ -17,9 +17,11 @@ std::vector<std::string> Server::splitCommand(const char *buffer)
 
     std::stringstream ss(command);
     std::string       token;
-
+    
     while (ss >> token)
         splited.push_back(token);
+
+	/* splited = split(command, ' '); */
 
     if (!trailing.empty())
         splited.push_back(trailing);
