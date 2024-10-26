@@ -16,5 +16,6 @@
 #define ERR_UNKNOWNCOMMAND(source, command)            (std::string("421 ") + source + " " + command + " :Unknown command")
 #define ERR_USERONCHANNEL(source, target, channel)     (std::string("443 ") + source + " " + target + " " + channel + " :is already on channel")
 #define ERR_NOSUCHNICK(source, name)                   (std::string("401 ") + source + " " + name + " :No such nick/channel")
-#define ERR_ERRONEUSNICKNAME(source, nickname) (std::string("432 ") + source + " " + nickname + " :Erroneous nickname")
-
+#define ERR_ERRONEUSNICKNAME(source, nickname)			(std::string("432 ") + source + " " + nickname + " :Erroneous nickname")
+#define ERR_NORECIPIENT(nickname)						("411 " + nickname + " :No recipient given (PRIVMSG)\r\n")
+#define ERR_NOTEXTTOSEND(nickname)						("412 " + nickname + " :No text to send\r\n")
