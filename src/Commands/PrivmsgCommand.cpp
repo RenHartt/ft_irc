@@ -2,11 +2,19 @@
 #include <Command.hpp>
 #include <Server.hpp>
 
+
 void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 {
-    if (command.size() < 3)
+    if (command.size() < 2 || command[1].empty())
     {
-        std::string error_message = "Usage : PRIVMSG <recipient> :<message>\n";
+        std::string error_message = ERR_NORECIPIENT(sender->getNickname());
+        send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
+        return;
+    }
+
+    if (command.size() < 3 || command[2].empty())
+    {
+        std::string error_message = ERR_NOTEXTTOSEND(sender->getNickname());
         send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
         return;
     }
@@ -28,3 +36,4 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 		send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
 	}
 }
+

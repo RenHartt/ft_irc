@@ -10,3 +10,6 @@ void Command::_executeUser(Client *sender, std::vector<std::string>)
     message = "fd -> " + itoa(sender->getFd()) + "\n";
     send(sender->getFd(), message.c_str(), message.size(), 0);
 }
+
+
+
