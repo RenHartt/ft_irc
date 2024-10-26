@@ -7,9 +7,7 @@
 
 void Command::_createChannel(Client *client, const std::string &channel_name, const std::string &password)
 {
-	Channel *newChannel;
-	password.empty() ? newChannel = new Channel(channel_name, password) 
-					: newChannel = new Channel(channel_name);
+    Channel *newChannel = new Channel(channel_name, password);
     newChannel->addClient(client);
 
     _server->addChannel(channel_name, newChannel);
@@ -29,13 +27,17 @@ void Command::_joinChannel(Client *client, Channel *channel)
 std::vector<std::pair<std::string, std::string> > initRequestList(std::vector<std::string> args)
 {
     std::vector<std::pair<std::string, std::string> > request_list;
+	std::vector<std::string> channels_list, password_list;
 
-    std::vector<std::string> channels_list = split(args[1], ',');
-    std::vector<std::string> password_list = split(args[2], ',');
+	if (args.size() > 1)
+		channels_list = split(args[1], ',');
+	if (args.size() > 2)
+		password_list = split(args[2], ',');
 
-    for (std::size_t i = 0; i < channels_list.size(); i++)
+    for (std::size_t i = 0; i < channels_list.size(); ++i)
     {
-        std::string password = (i < password_list.size()) ? password_list[i] : "";
+        std::string password =
+            (i < password_list.size()) ? password_list[i] : "";
         request_list.push_back(std::make_pair(channels_list[i], password));
     }
 
