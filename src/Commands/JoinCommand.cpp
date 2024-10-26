@@ -24,9 +24,9 @@ void Command::_joinChannel(Client *client, Channel *channel)
     channel->broadcastMessage(join_message, client);
 }
 
-std::vector<std::pair<std::string, std::string> > initRequestList(std::vector<std::string> args)
+ChannelPasswordList initRequestList(std::vector<std::string> args)
 {
-    std::vector<std::pair<std::string, std::string> > request_list;
+    ChannelPasswordList request_list;
 	std::vector<std::string> channels_list, password_list;
 
 	if (args.size() > 1)
@@ -54,9 +54,9 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
         return;
     }
 
-    std::vector<std::pair<std::string, std::string> > request_list = initRequestList(args);
+    ChannelPasswordList request_list = initRequestList(args);
 
-    for (std::vector<std::pair<std::string, std::string> >::iterator it = request_list.begin(); it != request_list.end(); it++)
+    for (ChannelPasswordList::iterator it = request_list.begin(); it != request_list.end(); it++)
     {
         std::string channel_name = it->first, password = it->second;
 

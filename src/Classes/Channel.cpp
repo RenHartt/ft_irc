@@ -1,3 +1,4 @@
+#include "Utils.hpp"
 #include <Channel.hpp>
 #include <Server.hpp>
 #include <cstring>
@@ -37,4 +38,11 @@ void Channel::broadcastMessage(const std::string &message, Client *sender)
         if (fd != sender->getFd())
             send(fd, message.c_str(), message.length(), 0);
     }
+}
+
+bool Channel::isMember(Client *client)
+{
+    int client_fd = client->getFd();
+    
+    return _clients_rights.find(client_fd) != _clients_rights.end();
 }

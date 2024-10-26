@@ -19,3 +19,5 @@
 #define ERR_ERRONEUSNICKNAME(source, nickname)			(std::string("432 ") + source + " " + nickname + " :Erroneous nickname")
 #define ERR_NORECIPIENT(nickname)						("411 " + nickname + " :No recipient given (PRIVMSG)\r\n")
 #define ERR_NOTEXTTOSEND(nickname)						("412 " + nickname + " :No text to send\r\n")
+#define ERR_BADCHANMASK(source, channel)               (std::string("476 ") + source + " " + channel + " :Bad Channel Mask")
+#define ERR_CANNOTSENDTOCHAN(source, channel)          (std::string("404 ") + source + " " + channel + " :Cannot send to channel")
