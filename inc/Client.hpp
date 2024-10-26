@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Utils.hpp"
 #include <Channel.hpp>
 
-#include <map>
 #include <queue>
 #include <string>
 
@@ -28,7 +28,6 @@ class Client
     std::string _username;
     std::string _realname;
 
-    std::map<std::string, Channel *> _channels;
-
+    ClientMap _channels;
     std::queue<std::string> _private_message;
 };

@@ -1,7 +1,7 @@
-#include "Utils.hpp"
+#include <Utils.hpp>
 #include <Command.hpp>
 #include <Server.hpp>
-
+#include <ErrTable.hpp>
 
 void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 {
@@ -19,7 +19,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
         return;
     }
 
-    std::map<int, Client *> clients_list = _server->getClientsList();
+    ClientMap clients_list = _server->getClientsList();
 
     std::string recipient = command[1], message = command[2];
     

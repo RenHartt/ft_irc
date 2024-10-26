@@ -3,6 +3,7 @@
 #include <Client.hpp>
 #include <Command.hpp>
 #include <Server.hpp>
+#include <ErrTable.hpp>
 
 void Command::_createChannel(Client *client, const std::string &channel_name, const std::string &password)
 {
@@ -35,9 +36,8 @@ std::vector<std::pair<std::string, std::string> > initRequestList(std::vector<st
 
     for (std::size_t i = 0; i < channels_list.size(); ++i)
     {
-        std::string password =
-            (i < password_list.size()) ? password_list[i] : "";
-        request_list.push_back(std::make_pair(channels_list[i], password));
+        std::string password = (i < password_list.size()) ? password_list[i] : "";
+		request_list.push_back(std::make_pair(channels_list[i], password));
     }
 
     return request_list;
@@ -60,8 +60,8 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
     {
         std::string channel_name = it->first, password = it->second;
 
-        std::map<std::string, Channel *> channels_list = _server->getChannelsList();
-        std::map<std::string, Channel *>::iterator it_channel = channels_list.find(channel_name);
+        ChannelMap channels_list = _server->getChannelsList();
+        ChannelMap::iterator it_channel = channels_list.find(channel_name);
 
         if (it_channel == channels_list.end())
             _createChannel(client, channel_name, password);

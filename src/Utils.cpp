@@ -21,8 +21,6 @@ std::vector<std::string> Server::splitCommand(const char *buffer)
     while (ss >> token)
         splited.push_back(token);
 
-	/* splited = split(command, ' '); */
-
     if (!trailing.empty())
         splited.push_back(trailing);
 
@@ -48,9 +46,9 @@ std::string itoa(int value)
     return (ss.str());
 }
 
-int getFdByNickname(const std::string &nickname, std::map<int, Client *> clients_list)
+int getFdByNickname(const std::string &nickname, ClientMap clients_list)
 {
-    for (std::map<int, Client *>::iterator it = clients_list.begin(); it != clients_list.end(); it++)
+    for (ClientMap::iterator it = clients_list.begin(); it != clients_list.end(); it++)
     {
         if (it->second->getNickname() == nickname)
             return it->first;

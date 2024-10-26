@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/25 23:55:24 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/26 19:47:29 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,23 +39,23 @@ Server::~Server(void)
          it != _poll_fds.end(); it++)
         close(it->fd);
 
-    for (std::map<int, Client *>::iterator it = _clients_list.begin();
+    for (ClientMap::iterator it = _clients_list.begin();
          it != _clients_list.end(); it++)
         delete it->second;
 
-    for (std::map<std::string, Channel *>::iterator it = _channels_list.begin();
+    for (ChannelMap::iterator it = _channels_list.begin();
          it != _channels_list.end(); it++)
         delete it->second;
 }
 
 /* getter */
 
-std::map<std::string, Channel *> Server::getChannelsList(void) const
+ChannelMap Server::getChannelsList(void) const
 {
     return (_channels_list);
 }
 
-std::map<int, Client *> Server::getClientsList(void) const
+ClientMap Server::getClientsList(void) const
 {
     return (_clients_list);
 }

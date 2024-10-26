@@ -6,13 +6,12 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:21:32 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/26 17:26:31 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/26 18:32:51 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <map>
 #include <string>
-#include "ErrTable.hpp"
 
 enum e_IrcErrorType {
     NONE,

@@ -18,6 +18,7 @@
 #include "Client.hpp"
 #include "Command.hpp"
 #include "IrcError.hpp"
+#include "Utils.hpp"
 
 extern bool running;
 
@@ -33,12 +34,12 @@ class Server
     void handleCommand(int client_fd);
     void updateNickname(int client_fd, const std::string &new_nickname);
 
-    std::map<std::string, Channel *> getChannelsList(void) const;
-    std::map<int, Client *>          getClientsList(void) const;
-    std::vector<pollfd>              getPollFds(void) const;
+    ChannelMap          getChannelsList(void) const;
+    ClientMap           getClientsList(void) const;
+    std::vector<pollfd> getPollFds(void) const;
 
-	void addChannel(const std::string &channel_name, Channel *channel);
-	void addClient(int fd, Client *);
+    void addChannel(const std::string &channel_name, Channel *channel);
+    void addClient(int fd, Client *);
 
     std::vector<std::string> splitCommand(const char *buffer);
 
@@ -49,8 +50,8 @@ class Server
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
 
-    std::map<int, Client *>          _clients_list;
-    std::map<std::string, Channel *> _channels_list;
+    ClientMap  _clients_list;
+    ChannelMap _channels_list;
 
     void _initSockAddr(sockaddr_in &address);
     void _newFdToPoll(void);

@@ -7,7 +7,7 @@ void Server::updateNickname(int client_fd, const std::string &new_nickname)
 {
     Client *client = _clients_list[client_fd];
 
-    for (std::map<int, Client *>::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
         if (it->second == client)
         {

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <map>
 #include <stdint.h>
-#include <vector>
 
 struct Rights {
     uint8_t write : 1;
