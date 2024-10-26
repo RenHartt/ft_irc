@@ -9,9 +9,17 @@ Channel::Channel(const std::string &channel_name)
     memset(&_channel_settings, 0, sizeof(_channel_settings));
 }
 
+Channel::Channel(const std::string &channel_name, const std::string &password)
+    : _channel_name(channel_name),
+      _password(password)
+{
+    memset(&_channel_settings, 0, sizeof(_channel_settings));
+}
 /* getter */
 
 std::string Channel::getChannelName(void) const { return _channel_name; }
+
+std::string Channel::getPassword(void) const { return _password; }
 
 void Channel::addClient(Client *client)
 {
