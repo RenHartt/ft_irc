@@ -44,9 +44,11 @@ std::vector<std::pair<std::string, std::string> > initRequestList(std::vector<st
 
 void Command::_executeJoin(Client *client, std::vector<std::string> args)
 {
+
     if (args.size() < 2 || args[1].empty())
     {
-        std::string error_message = "Error: No channel name provided.\r\n";
+        std::string nickname = client->getNickname().empty() ? "*" : client->getNickname();
+        std::string error_message = ERR_NEEDMOREPARAMS(nickname, "JOIN") + "\r\n";
         send(client->getFd(), error_message.c_str(), error_message.length(), 0);
         return;
     }
