@@ -13,7 +13,7 @@ class Client
   public:
     Client(int fd);
 
-    int          getFd();
+    int          getFd() const;
     std::string &getNickname();
     std::string &getUsername();
     std::string &getRealname();

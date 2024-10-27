@@ -7,7 +7,7 @@ Client::Client(int client_fd)
       _nickname(itoa(client_fd))
 {}
 
-int Client::getFd() { return (this->_client_fd); }
+int Client::getFd() const { return (this->_client_fd); }
 
 std::string &Client::getNickname() { return _nickname; }
 std::string &Client::getUsername() { return _username; }
