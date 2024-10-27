@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:21:32 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/27 19:46:27 by bonsthie         ###   ########.fr       */
+/*   Updated: 2024/10/27 20:26:48 by bonsthie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class IrcError
     std::string    getMsg(void) const;
 
     void    log(void) const;
-    ssize_t sendto(const Client &sender);
+    ssize_t sendto(const Client &sender) const;
 
   private:
     std::string              _msg;

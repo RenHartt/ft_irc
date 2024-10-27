@@ -33,6 +33,8 @@ class Command
 	void sendToChannel(Client *sender, const std::string &recipient, const std::string &message, ChannelMap &channel_map);
 	void sendToClient(Client *sender, const std::string &recipient, const std::string &message, ClientMap &clients_list);
 
+	void routePrivmsg(Client *client, std::vector<std::string>);
+
     void _executeJoin(Client *client, std::vector<std::string>);
     void _executeUser(Client *client, std::vector<std::string>);
     void _executeNick(Client *client, std::vector<std::string>);
