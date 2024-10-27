@@ -9,11 +9,12 @@ Client::Client(int client_fd)
 
 int Client::getFd() { return (this->_client_fd); }
 
-std::string &Client::getNickname() { return _nickname; }
-std::string &Client::getUsername() { return _username; }
-std::string &Client::getRealname() { return _realname; }
+bool Client::getIsRegistered() { return _isRegistered; }
+const std::string &Client::getNickname() const { return _nickname; }
+const std::string &Client::getUsername() const { return _username; }
+const std::string &Client::getRealname() const { return _realname; }
 
+void Client::setIsRegistered(bool isRegistered) { _isRegistered = isRegistered; }
 void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
-
 void Client::setUsername(const std::string &username) { _username = username; }
 void Client::setRealname(const std::string &realname) { _realname = realname; }

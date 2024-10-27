@@ -22,13 +22,12 @@ void Command::sendToChannel(Client *sender, const std::string &recipient, const 
 		{
 			std::string error_message = ERR_CANNOTSENDTOCHAN(sender->getNickname(), recipient);
 			send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
-			return ;
+		} else
+		{
+			std::string full_message = sender->getNickname() + " : " + message;
+			channel->broadcastMessage(full_message, sender);
 		}
-
-		std::string full_message = sender->getNickname() + " : " + message;
-		channel->broadcastMessage(full_message, sender);
-	}
-	else
+	} else
 	{
 		std::string error_message = ERR_NOSUCHCHANNEL(sender->getNickname(), recipient);
 		send(sender->getFd(), error_message.c_str(), error_message.size(), 0);

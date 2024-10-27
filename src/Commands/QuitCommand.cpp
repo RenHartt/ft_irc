@@ -9,9 +9,7 @@ void Command::_executeQuit(Client *client, std::vector<std::string>)
     for (ClientMap::iterator it = clients_list.begin(); it != clients_list.end(); it++)
     {
         if (it->second != client) 
-        {
             send(it->second->getFd(), quit_message.c_str(), quit_message.size(), 0);
-        }
     }
 
     close(client->getFd());
@@ -26,7 +24,6 @@ void Command::_executeQuit(Client *client, std::vector<std::string>)
     }
 
     clients_list.erase(client->getFd());
-
     delete client;
 
     std::cout << quit_message << std::endl;
