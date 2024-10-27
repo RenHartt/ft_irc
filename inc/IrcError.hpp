@@ -6,17 +6,40 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:21:32 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/27 18:37:35 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/27 19:49:40 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Client.hpp"
 #include <map>
 #include <string>
+#include <sys/types.h>
 
 enum e_IrcErrorType {
     NONE,
     SERVER,
     CLIENT,
+    CLIENT_NONICKNAMEGIVEN,
+    CLIENT_ALREADYREGISTERED,
+    CLIENT_PASSWDMISMATCH,
+    CLIENT_NOTREGISTERED,
+    CLIENT_NORECIPIENT,
+    CLIENT_NOTEXTTOSEND,
+    CLIENT_NEEDMOREPARAMS,
+    CLIENT_NOTONCHANNEL,
+    CLIENT_CHANNELISFULL,
+    CLIENT_BADCHANNELKEY,
+    CLIENT_INVITEONLYCHAN,
+    CLIENT_NOSUCHCHANNEL,
+    CLIENT_CHANOPRIVSNEEDED,
+    CLIENT_BADCHANMASK,
+    CLIENT_CANNOTSENDTOCHAN,
+    CLIENT_NICKNAMEINUSE,
+    CLIENT_ERRONEUSNICKNAME,
+    CLIENT_UNKNOWNCOMMAND,
+    CLIENT_NOSUCHNICK,
+    CLIENT_USERNOTINCHANNEL,
+    CLIENT_USERONCHANNEL,
 };
 
 typedef std::map<enum e_IrcErrorType, std::string> MapError;
@@ -24,16 +47,20 @@ typedef std::map<enum e_IrcErrorType, std::string> MapError;
 class IrcError
 {
 
-public:
+  public:
     IrcError(const std::string &msg, e_IrcErrorType type);
+    IrcError(const std::string &msg, const std::string &msg2, e_IrcErrorType type);
+    IrcError(const std::string &msg, const std::string &msg2, const std::string &msg3,
+             e_IrcErrorType type);
 
     e_IrcErrorType getIrcErrorType(void) const;
     std::string    getMsg(void) const;
 
-    void log(void) const;
+    void    log(void) const;
+    ssize_t sendto(const Client &sender);
 
   private:
-    const std::string _msg;
-    e_IrcErrorType    _type;
-	static const std::string _map_error[];
+    std::string              _msg;
+    e_IrcErrorType           _type;
+    static const std::string _map_error[];
 };

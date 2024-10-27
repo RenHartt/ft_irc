@@ -12,16 +12,16 @@ class Client
   public:
     Client(int fd);
 
-    int                getFd();
     bool               getIsRegistered();
     const std::string &getNickname() const;
     const std::string &getUsername() const;
     const std::string &getRealname() const;
+    int                getFd() const;
 
-    void               setIsRegistered(bool isRegistered);
-    void               setNickname(const std::string &nickname);
-    void               setUsername(const std::string &username);
-    void               setRealname(const std::string &realname);
+    void setIsRegistered(bool isRegistered);
+    void setNickname(const std::string &nickname);
+    void setUsername(const std::string &username);
+    void setRealname(const std::string &realname);
 
   private:
     int         _client_fd;
