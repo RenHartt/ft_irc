@@ -6,11 +6,12 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/26 19:49:14 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/27 20:57:54 by bonsthie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Server.hpp>
+#include <IrcError.hpp>
 #include <iostream>
 
 int main(int argc, char **argv)

@@ -6,12 +6,13 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/26 19:47:29 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/27 20:56:58 by bonsthie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include <iostream>
+#include <IrcError.hpp>
 #include <netinet/in.h>
 
 bool running = true;

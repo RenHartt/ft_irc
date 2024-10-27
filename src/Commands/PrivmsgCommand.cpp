@@ -16,7 +16,6 @@ void Command::sendToChannel(Client *sender, const std::string &recipient,
     {
         Channel *channel = channel_it->second;
 
-<<<<<<< HEAD
         if (!channel->isMember(sender))
             throw IrcError(sender->getNickname(), recipient, CLIENT_CANNOTSENDTOCHAN);
 
@@ -24,22 +23,6 @@ void Command::sendToChannel(Client *sender, const std::string &recipient,
         channel->broadcastMessage(full_message, sender);
     } else
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHCHANNEL);
-=======
-		if (!channel->isMember(sender))
-		{
-			std::string error_message = ERR_CANNOTSENDTOCHAN(sender->getNickname(), recipient);
-			send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
-		} else
-		{
-			std::string full_message = sender->getNickname() + " : " + message;
-			channel->broadcastMessage(full_message, sender);
-		}
-	} else
-	{
-		std::string error_message = ERR_NOSUCHCHANNEL(sender->getNickname(), recipient);
-		send(sender->getFd(), error_message.c_str(), error_message.size(), 0);
-	}
->>>>>>> refs/remotes/origin/main
 }
 
 void Command::sendToClient(Client *sender, const std::string &recipient, const std::string &message,
