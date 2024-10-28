@@ -33,6 +33,7 @@ class Server
     void handleCommand(int client_fd);
     void updateNickname(int client_fd, const std::string &new_nickname);
 
+    bool                NicknameAlreadyUsed(const std::string &nickname);
     ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
     std::vector<pollfd> getPollFds(void) const;
