@@ -28,6 +28,7 @@ class Client
     std::string _nickname;
     std::string _username;
     std::string _realname;
+	std::string _hostname;
     bool        _isRegistered;
 
     ClientMap _channels;

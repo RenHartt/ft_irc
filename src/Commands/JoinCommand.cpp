@@ -1,12 +1,17 @@
-#include <Utils.hpp>
 #include <Channel.hpp>
 #include <Client.hpp>
 #include <Command.hpp>
-#include <Server.hpp>
 #include <ErrTable.hpp>
+#include <IrcError.hpp>
+#include <Server.hpp>
+#include <Utils.hpp>
 
-void Command::_createChannel(Client *client, const std::string &channel_name, const std::string &password)
+void Command::_createChannel(Client *client, const std::string &channel_name,
+                             const std::string &password)
 {
+    if (!isValidChannelName(channel_name))
+        throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANMASK);
+
     Channel *newChannel = new Channel(channel_name, password);
     newChannel->addClient(client);
 
@@ -20,24 +25,25 @@ void Command::_joinChannel(Client *client, Channel *channel)
 {
     channel->addClient(client);
 
-    std::string join_message = ":" + client->getNickname() + " JOIN " + channel->getChannelName() + "\r\n";
+    std::string join_message =
+        ":" + client->getNickname() + " JOIN " + channel->getChannelName() + "\r\n";
     channel->broadcastMessage(join_message, client);
 }
 
 ChannelPasswordList initRequestList(std::vector<std::string> args)
 {
-    ChannelPasswordList request_list;
-	std::vector<std::string> channels_list, password_list;
+    ChannelPasswordList      request_list;
+    std::vector<std::string> channels_list, password_list;
 
-	if (args.size() > 1)
-		channels_list = split(args[1], ',');
-	if (args.size() > 2)
-		password_list = split(args[2], ',');
+    if (args.size() > 1)
+        channels_list = split(args[1], ',');
+    if (args.size() > 2)
+        password_list = split(args[2], ',');
 
-    for (std::size_t i = 0; i < channels_list.size(); ++i)
+    for (std::size_t i = 0; i < channels_list.size(); i++)
     {
         std::string password = (i < password_list.size()) ? password_list[i] : "";
-		request_list.push_back(std::make_pair(channels_list[i], password));
+        request_list.push_back(std::make_pair(channels_list[i], password));
     }
 
     return request_list;
@@ -49,9 +55,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
     if (args.size() < 2 || args[1].empty())
     {
         std::string nickname = client->getNickname().empty() ? "*" : client->getNickname();
-        std::string error_message = ERR_NEEDMOREPARAMS(nickname, "JOIN") + "\r\n";
-        send(client->getFd(), error_message.c_str(), error_message.length(), 0);
-        return;
+        throw IrcError(nickname, "JOIN", CLIENT_NEEDMOREPARAMS);
     }
 
     ChannelPasswordList request_list = initRequestList(args);
@@ -60,7 +64,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
     {
         std::string channel_name = it->first, password = it->second;
 
-        ChannelMap channels_list = _server->getChannelsList();
+        ChannelMap           channels_list = _server->getChannelsList();
         ChannelMap::iterator it_channel = channels_list.find(channel_name);
 
         if (it_channel == channels_list.end())
@@ -69,13 +73,10 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
         {
             Channel *channel = it_channel->second;
             _joinChannel(client, channel);
-            std::string welcome_message = "Welcome to " + channel_name + ", " + client->getNickname() + "\r\n";
+            std::string welcome_message =
+                "Welcome to " + channel_name + ", " + client->getNickname() + "\r\n";
             send(client->getFd(), welcome_message.c_str(), welcome_message.length(), 0);
         } else
-        {
-            std::string error_message = "Error: Incorrect password for channel " + channel_name + ".\r\n";
-            send(client->getFd(), error_message.c_str(), error_message.length(), 0);
-            continue;
-        }
+            throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
     }
 }
