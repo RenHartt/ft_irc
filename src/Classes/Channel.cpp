@@ -36,7 +36,9 @@ Channel::Channel(const std::string &channel_name, const std::string &password)
 std::string Channel::getChannelName(void) const { return _channel_name; }
 
 std::string Channel::getPassword(void) const { return _password; }
-
+std::string Channel::list_channel(Channel *) const {
+    return _topic.empty() ? "No topic set" : _topic; 
+}
 void Channel::addClient(Client *client)
 {
     ClientRight defaultRight;
@@ -61,3 +63,13 @@ bool Channel::isMember(Client *client)
 
     return _clients_rights.find(client_fd) != _clients_rights.end();
 }
+
+std::string Channel::getTopic() const {
+    return _topic;
+}
+
+void Channel::setTopic(const std::string &new_topic) {
+    _topic = new_topic;
+}
+
+

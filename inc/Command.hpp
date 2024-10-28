@@ -44,6 +44,6 @@ class Command
     void _executeHelp(Client *client, std::vector<std::string>);
     void _executeWhoami(Client *client, std::vector<std::string> args);
     void _executeList(Client *client, std::vector<std::string>);
-
+	void _executeTopic(Client *, std::vector<std::string>);
     void _executeStop(Client *client, std::vector<std::string>);
 };

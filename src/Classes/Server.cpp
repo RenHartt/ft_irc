@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/28 12:11:59 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/28 17:31:00 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 /* adder */
 
+std::string Server::getName() const { return _server_name; }
+int Server::getClientCount() const { return _clients_list.size();}
 void Server::addChannel(const std::string &channel_name, Channel *channel)
 {
     _channels_list[channel_name] = channel;

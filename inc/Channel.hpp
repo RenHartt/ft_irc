@@ -25,10 +25,12 @@ class Channel
 
     std::string getChannelName(void) const;
     std::string getPassword(void) const;
+	std::string getTopic() const;
+
+	void setTopic(const std::string &new_topic);
+
     std::string list_channel(Channel *channel) const;
-
-    bool isMember(Client *client);
-
+	bool isMember(Client *client);
   private:
     std::string _channel_name;
     std::string _password;

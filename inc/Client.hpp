@@ -22,7 +22,7 @@ class Client
     void setNickname(const std::string &nickname);
     void setUsername(const std::string &username);
     void setRealname(const std::string &realname);
-
+    bool isOperator() const;
   private:
     int         _client_fd;
     std::string _nickname;

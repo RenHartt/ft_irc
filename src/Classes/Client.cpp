@@ -18,3 +18,8 @@ void Client::setIsRegistered(bool isRegistered) { _isRegistered = isRegistered; 
 void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
 void Client::setUsername(const std::string &username) { _username = username; }
 void Client::setRealname(const std::string &realname) { _realname = realname; }
+bool Client::isOperator() const {
+
+	//TODO clients right for operator !!!!!
+    return false; 
+}

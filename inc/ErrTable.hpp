@@ -23,3 +23,8 @@
 
 #define ERR_USERNOTINCHANNEL(source, user, channel)		(std::string("441 ") + source + " " + user + " " + channel + " :They aren't on that channel")
 #define ERR_USERONCHANNEL(source, target, channel)     (std::string("443 ") + source + " " + target + " " + channel + " :is already on channel")
+#define RPL_LIST(source, client, channel, num_users, topic) \
+    (std::string("322 ") + source + " " + client + " " + channel + " " + std::to_string(num_users) + " :" + topic + "\r\n")
+
+#define RPL_LISTEND(source, client) (std::string("323 ") + source + " " + client + " :End of /LIST\r\n")
+
