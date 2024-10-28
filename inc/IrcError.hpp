@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:21:32 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/27 19:49:40 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/28 12:10:05 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 enum e_IrcErrorType {
     NONE,
     SERVER,
+    SERVER_INIT,
     CLIENT,
     CLIENT_NONICKNAMEGIVEN,
     CLIENT_ALREADYREGISTERED,
@@ -57,7 +58,7 @@ class IrcError
     std::string    getMsg(void) const;
 
     void    log(void) const;
-    ssize_t sendto(const Client &sender);
+    ssize_t sendto(const Client &sender) const;
 
   private:
     std::string              _msg;

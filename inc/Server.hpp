@@ -17,7 +17,6 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 #include "Command.hpp"
-#include "IrcError.hpp"
 #include "Utils.hpp"
 
 extern bool running;
