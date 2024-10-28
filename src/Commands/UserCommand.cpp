@@ -19,8 +19,7 @@ void Command::_executeUser(Client* client, std::vector<std::string> args)
         return;
     }
 
-    std::string username = args[1];
-    std::string realname = args[2];
+    std::string username = args[1], realname = args[2];
 
     if (realname[0] == ':')
         realname = realname.substr(1);
