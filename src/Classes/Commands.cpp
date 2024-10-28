@@ -19,7 +19,7 @@ CommandMap Command::_initCommands()
     commands["HELP"] = &Command::_executeHelp;
     commands["WHOAMI"] = &Command::_executeWhoami;
     commands["LIST"] = &Command::_executeList;
-
+	commands["TOPIC"] = &Command::_executeTopic;
     // debug
     commands["STOP"] = &Command::_executeStop;
     return commands;

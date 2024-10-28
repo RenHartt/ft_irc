@@ -69,9 +69,9 @@ class Channel
     std::string getChannelName(void) const;
 	std::string getPassword(void) const;
     std::string list_channel(Channel *channel) const;
-	
+	std::string getTopic() const;
+	void setTopic(const std::string &new_topic);
 	bool isMember(Client *client);
-
   private:
     std::string                _channel_name;
     std::string                _password;

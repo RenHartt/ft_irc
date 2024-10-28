@@ -32,7 +32,8 @@ class Server
     void acceptNewClient();
     void handleCommand(int client_fd);
     void updateNickname(int client_fd, const std::string &new_nickname);
-
+	std::string getName() const;
+	int getClientCount() const;
     bool                NicknameAlreadyUsed(const std::string &nickname);
     ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
