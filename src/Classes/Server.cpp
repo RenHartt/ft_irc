@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/27 20:56:58 by bonsthie         ###   ########.fr       */
+/*   Updated: 2024/10/28 12:11:59 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void Server::_createSocket(void)
     this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (this->_server_fd == -1)
     {
-        throw IrcError("Impossible to create the server socket", SERVER);
+        throw IrcError("Impossible to create the server socket", SERVER_INIT);
     }
 }
 
@@ -174,14 +174,14 @@ void Server::_bindSocket(void)
 
     if (bind(this->_server_fd, (sockaddr *)&address, sizeof(address)) < 0)
     {
-        throw IrcError("Impossible to link socket", SERVER);
+        throw IrcError("Impossible to link socket", SERVER_INIT);
     }
 }
 
 void Server::_listenSocket()
 {
-    if (listen(this->_server_fd, 5) < 0)
+    if (listen(this->_server_fd, 5) > 0)
     {
-        throw IrcError("Impossible to listen on the socket", SERVER);
+        throw IrcError("Impossible to listen on the socket", SERVER_INIT);
     }
 }

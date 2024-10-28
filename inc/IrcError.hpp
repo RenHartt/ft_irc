@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:21:32 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/27 20:55:50 by bonsthie         ###   ########.fr       */
+/*   Updated: 2024/10/28 12:10:05 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 enum e_IrcErrorType {
     NONE,
     SERVER,
+    SERVER_INIT,
     CLIENT,
     CLIENT_NONICKNAMEGIVEN,
     CLIENT_ALREADYREGISTERED,

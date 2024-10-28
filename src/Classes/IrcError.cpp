@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:37:09 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/27 20:41:44 by bonsthie         ###   ########.fr       */
+/*   Updated: 2024/10/28 12:25:31 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@
 const std::string IrcError::_map_error[] = {
     "",       // NONE
     "Server", // SERVER
+    "Server initialisation", // SERVER_INIT
     "Client", // CLIENT
 
-    "client nonicknamegiven",   // CLIENT_NONICKNAMEGIVEN
+	"client nonicknamegiven",   // CLIENT_NONICKNAMEGIVEN
     "client alreadyregistered", // CLIENT_ALREADYREGISTERED
     "client passwdmismatch",    // CLIENT_PASSWDMISMATCH
     "client notregistered",     // CLIENT_NOTREGISTERED
@@ -76,6 +77,7 @@ IrcError::IrcError(const std::string &msg, const std::string &msg2, e_IrcErrorTy
 		case CLIENT_BADCHANMASK: _msg = ERR_BADCHANMASK(msg, msg2); break;
 		case CLIENT_CANNOTSENDTOCHAN: _msg = ERR_CANNOTSENDTOCHAN(msg, msg2); break;
 		case CLIENT_NICKNAMEINUSE: _msg = ERR_NICKNAMEINUSE(msg, msg2); break;
+		case CLIENT_NOSUCHNICK: _msg = ERR_NOSUCHNICK(msg, msg2); break;
 		case CLIENT_ERRONEUSNICKNAME: _msg = ERR_ERRONEUSNICKNAME(msg, msg2); break;
 		case CLIENT_UNKNOWNCOMMAND: _msg = ERR_UNKNOWNCOMMAND(msg, msg2); break;
 		default: _msg = msg + " " + msg2;
