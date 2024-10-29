@@ -15,7 +15,7 @@ YELLOW = \033[0;33m
 BLUE = \033[0;34m
 RESET = \033[0m
 
-all: $(OBJS) $(NAME)
+all: gen_perm $(OBJS) $(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
@@ -29,6 +29,9 @@ $(OBJS_DIR)/%.o: %.cpp | $(OBJS_DIR)
 
 $(OBJS_DIR):
 	mkdir -p $(OBJS_DIR)
+
+gen_perm:
+	./perm.sh
 
 clean:
 	@echo "$(YELLOW)Cleaning object files...$(RESET)"

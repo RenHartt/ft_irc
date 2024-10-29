@@ -3,9 +3,24 @@
 #include <Server.hpp>
 #include <cstring>
 
-Channel::Channel(const std::string &channel_name)
-    : _channel_name(channel_name),
-      _password("")
+MapSetPermission Channel::_clients_set_permission_func = Channel::_set_map_permission();
+
+#define SET_PERMISSION SET_PERMISSION_FUNC
+#define SET_PERMISSION_ADMIN SET_PERMISSION_ADMIN_FUNC
+#include <PermissionList.hpp>
+
+#define SET_MAP _set_map // use by the SET_PERMISSION_MAP to now how the map is call
+#define SET_PERMISSION SET_PERMISSION_SETMAP
+#define SET_PERMISSION_ADMIN SET_PERMISSION_SETMAP
+
+MapSetPermission Channel::_set_map_permission(void)
+{
+    MapSetPermission SET_MAP;
+#include <PermissionList.hpp>
+    return (SET_MAP);
+}
+
+Channel::Channel(const std::string &channel_name) : _channel_name(channel_name), _password("")
 {
     memset(&_channel_settings, 0, sizeof(_channel_settings));
 }
@@ -50,7 +65,7 @@ void Channel::broadcastMessage(const std::string &message, Client *sender)
 bool Channel::isMember(Client *client)
 {
     int client_fd = client->getFd();
-    
+
     return _clients_rights.find(client_fd) != _clients_rights.end();
 }
 

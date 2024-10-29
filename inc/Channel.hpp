@@ -2,30 +2,9 @@
 
 #include <Client.hpp>
 
-#include <iostream>
+#include <Permission.hpp>
 #include <map>
 #include <stdint.h>
-
-struct Rights {
-    uint8_t write : 1;
-    /* uint8_t     uploadImg : 1; */
-
-    struct {
-        uint8_t mute : 1;
-        uint8_t kick : 1;
-        uint8_t ban : 1;
-        uint8_t invite : 1;
-        uint8_t setPassWord : 1;
-        uint8_t changeChannelVisibility : 1;
-        uint8_t changeChannelName : 1;
-        uint8_t changeGrantable : 1;
-    } admin;
-};
-
-struct ClientRight {
-    Rights rights;
-    Rights grantable;
-};
 
 struct ChannelSettings {
     uint8_t inviteOnly : 1;
@@ -79,4 +58,7 @@ class Channel
 
     std::map<int, ClientRight> _clients_rights;
     ChannelSettings            _channel_settings;
+
+    static MapSetPermission _clients_set_permission_func;
+    static MapSetPermission _set_map_permission(void);
 };
