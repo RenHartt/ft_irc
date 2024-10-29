@@ -5,7 +5,7 @@
 #include <Server.hpp>
 #include <sys/socket.h>
 
-Channel* getChannel(Client* client, ChannelMap channels_list, const std::string &channel_name)
+Channel *getChannel(Client *client, ChannelMap channels_list, const std::string &channel_name)
 {
 	std::string client_nickname = client->getNickname();
     ChannelMap::iterator channel_it = channels_list.find(channel_name);
@@ -13,7 +13,7 @@ Channel* getChannel(Client* client, ChannelMap channels_list, const std::string 
     if (channel_it == channels_list.end())
         throw IrcError(client_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
 
-    Channel* channel = channel_it->second;
+    Channel *channel = channel_it->second;
 
     if (!channel->isMember(client))
         throw IrcError(client_nickname, channel_name, CLIENT_NOTONCHANNEL);
@@ -39,7 +39,7 @@ void kickTargetFromChannel(Client *client, Channel *channel, Client *target, con
     send(target->getFd(), notify_message.c_str(), notify_message.size(), 0);
 }
 
-void Command::_executeKick(Client* client, std::vector<std::string> args)
+void Command::_executeKick(Client *client, std::vector<std::string> args)
 {
     if (args.size() < 3)
         throw IrcError(client->getNickname(), "KICK", CLIENT_NEEDMOREPARAMS);
@@ -51,15 +51,15 @@ void Command::_executeKick(Client* client, std::vector<std::string> args)
 	ChannelMap channels_list = _server->getChannelsList();
 	ClientMap clients_list = _server->getClientsList();
 
-    for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ++ch_it)
+    for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ch_it++)
     {
         try
         {
-            Channel* channel = getChannel(client, channels_list, *ch_it);
+            Channel *channel = getChannel(client, channels_list, *ch_it);
 
-            for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); ++cli_it)
+            for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); cli_it++)
             {
-				Client* target = _server->getClientbyNickname(*cli_it); 
+				Client *target = _server->getClientbyNickname(*cli_it); 
                 try
                 {
                     kickTargetFromChannel(client, channel, target, comment);
