@@ -20,7 +20,8 @@ CommandMap Command::_initCommands()
     commands["HELP"] = &Command::_executeHelp;
     commands["WHOAMI"] = &Command::_executeWhoami;
     commands["LIST"] = &Command::_executeList;
-	commands["TOPIC"] = &Command::_executeTopic;
+    commands["TOPIC"] = &Command::_executeTopic;
+	commands["INVITE"] = &Command::_executeInvite;	
     // debug
     commands["STOP"] = &Command::_executeStop;
     return commands;
@@ -31,17 +32,17 @@ void Command::exec(const std::string &cmd, Client *client, std::vector<std::stri
     CmdAddr func = _find(cmd);
     std::cout << "Command: " << cmd << std::endl;
     if (!func)
-	{
+    {
         std::cerr << "Wrong function" << std::endl;
-		return ;
-	}
+        return;
+    }
 
     try
     {
         (this->*func)(client, args);
     } catch (const IrcError &e)
     {
-		e.log();
+        e.log();
         e.sendto(*client);
     }
 }

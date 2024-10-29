@@ -2,7 +2,6 @@
 #include <map>
 #include <stdint.h>
 
-
 struct Rights {
     uint8_t write : 1;
     /* uint8_t     uploadImg : 1; */
@@ -16,7 +15,7 @@ struct Rights {
         uint8_t changeChannelVisibility : 1;
         uint8_t changeChannelName : 1;
         uint8_t changeGrantable : 1;
-		uint8_t caca : 1;
+        uint8_t caca : 1;
     } admin;
 };
 

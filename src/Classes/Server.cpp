@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/29 14:30:54 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/10/29 14:49:05 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,5 +194,14 @@ void Server::_listenSocket()
     if (listen(this->_server_fd, 5) > 0)
     {
         throw IrcError("Impossible to listen on the socket", SERVER_INIT);
+    }
+}
+
+void Server::removeClient(int fd)
+{
+    ClientMap::iterator it = _clients_list.find(fd);
+    if (it != _clients_list.end())
+    {
+        _clients_list.erase(it);
     }
 }

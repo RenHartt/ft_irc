@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Utils.hpp>
 #include <map>
 #include <string>
 #include <vector>
-#include <Utils.hpp>
 
 class Server;
 class Client;
@@ -33,15 +33,16 @@ class Command
 	void routePrivmsg(Client *client, std::vector<std::string> args);
 
 	void _executeKick(Client *client, std::vector<std::string> args);
-    void _executeJoin(Client *client, std::vector<std::string> args);
-    void _executeUser(Client *client, std::vector<std::string> args);
-    void _executeNick(Client *client, std::vector<std::string> args);
-    void _executePart(Client *client, std::vector<std::string> args);
-	void _executePrivmsg(Client *client, std::vector<std::string> args);
-    void _executeQuit(Client *client, std::vector<std::string> args);
-    void _executeHelp(Client *client, std::vector<std::string> args);
+    void _executeJoin(Client *client, std::vector<std::string>);
+    void _executeUser(Client *client, std::vector<std::string>);
+    void _executeNick(Client *client, std::vector<std::string>);
+    void _executePart(Client *client, std::vector<std::string>);
+    void _executePrivmsg(Client *client, std::vector<std::string>);
+    void _executeQuit(Client *client, std::vector<std::string>);
+    void _executeHelp(Client *client, std::vector<std::string>);
     void _executeWhoami(Client *client, std::vector<std::string> args);
-    void _executeList(Client *client, std::vector<std::string> args);
-	void _executeTopic(Client *client, std::vector<std::string> args);
-    void _executeStop(Client *client, std::vector<std::string> args);
+    void _executeList(Client *client, std::vector<std::string>);
+    void _executeTopic(Client *, std::vector<std::string>);
+    void _executeStop(Client *client, std::vector<std::string>);
+	void _executeInvite(Client *client, std::vector<std::string>);
 };

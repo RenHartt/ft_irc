@@ -5,6 +5,5 @@
 
 void Command::_executePart(Client *client, std::vector<std::string>)
 {
-	std::cout << "PART : " << client->getFd() << std::endl;
+    std::cout << "PART : " << client->getFd() << std::endl;
 }
-

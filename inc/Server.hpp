@@ -13,7 +13,6 @@
 #include <unistd.h>
 #include <vector>
 
-#include "Channel.hpp"
 #include "Client.hpp"
 #include "Command.hpp"
 #include "Utils.hpp"
@@ -43,6 +42,7 @@ class Server
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
     void delClient(int fd, Client *client);
+    void                     removeClient(int fd);
 
     std::vector<std::string> splitCommand(const char *buffer);
 

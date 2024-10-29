@@ -1,17 +1,17 @@
 #pragma once
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 struct ClientRight;
 class Client;
 class Channel;
 
-typedef std::map<int, Client *> ClientMap;
-typedef std::map<std::string, Channel *> ChannelMap;
-typedef std::vector<std::pair<std::string, std::string> > ChannelPasswordList;
-typedef std::map<int, ClientRight> ClientRightMap;
+typedef std::map<int, Client *>                          ClientMap;
+typedef std::map<std::string, Channel *>                 ChannelMap;
+typedef std::vector<std::pair<std::string, std::string> >ChannelPasswordList;
+typedef std::map<int, ClientRight>                       ClientRightMap;
 
 std::string itoa(int value);
 
