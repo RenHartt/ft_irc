@@ -17,7 +17,7 @@ class Command
 {
   public:
     Command(Server *server);
-    void exec(const std::string &cmd, Client *client, std::vector<std::string>);
+    void exec(const std::string &cmd, Client *client, std::vector<std::string> args);
 
   private:
     static CommandMap _commands;
@@ -33,17 +33,18 @@ class Command
 	void sendToChannel(Client *sender, const std::string &recipient, const std::string &message, ChannelMap &channel_map);
 	void sendToClient(Client *sender, const std::string &recipient, const std::string &message, ClientMap &clients_list);
 
-	void routePrivmsg(Client *client, std::vector<std::string>);
+	void routePrivmsg(Client *client, std::vector<std::string> args);
 
-    void _executeJoin(Client *client, std::vector<std::string>);
-    void _executeUser(Client *client, std::vector<std::string>);
-    void _executeNick(Client *client, std::vector<std::string>);
-    void _executePart(Client *client, std::vector<std::string>);
-	void _executePrivmsg(Client *client, std::vector<std::string>);
-    void _executeQuit(Client *client, std::vector<std::string>);
-    void _executeHelp(Client *client, std::vector<std::string>);
+	void _executeKick(Client *client, std::vector<std::string> args);
+    void _executeJoin(Client *client, std::vector<std::string> args);
+    void _executeUser(Client *client, std::vector<std::string> args);
+    void _executeNick(Client *client, std::vector<std::string> args);
+    void _executePart(Client *client, std::vector<std::string> args);
+	void _executePrivmsg(Client *client, std::vector<std::string> args);
+    void _executeQuit(Client *client, std::vector<std::string> args);
+    void _executeHelp(Client *client, std::vector<std::string> args);
     void _executeWhoami(Client *client, std::vector<std::string> args);
-    void _executeList(Client *client, std::vector<std::string>);
-	void _executeTopic(Client *, std::vector<std::string>);
-    void _executeStop(Client *client, std::vector<std::string>);
+    void _executeList(Client *client, std::vector<std::string> args);
+	void _executeTopic(Client *client, std::vector<std::string> args);
+    void _executeStop(Client *client, std::vector<std::string> args);
 };

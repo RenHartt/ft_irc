@@ -27,20 +27,21 @@ class Server
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
-    void run();
-    void handleEvents();
-    void acceptNewClient();
-    void handleCommand(int client_fd);
-    void updateNickname(int client_fd, const std::string &new_nickname);
-	std::string getName() const;
-	int getClientCount() const;
+    void                run();
+    void                handleEvents();
+    void                acceptNewClient();
+    void                handleCommand(int client_fd);
+    void                updateNickname(int client_fd, const std::string &new_nickname);
+    std::string         getName() const;
+    int                 getClientCount() const;
     bool                NicknameAlreadyUsed(const std::string &nickname);
     ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
     std::vector<pollfd> getPollFds(void) const;
 
     void addChannel(const std::string &channel_name, Channel *channel);
-    void addClient(int fd, Client *);
+    void addClient(int fd, Client *client);
+	void delClient(int fd, Client *client);
 
     std::vector<std::string> splitCommand(const char *buffer);
 

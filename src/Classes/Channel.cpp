@@ -31,6 +31,11 @@ void Channel::addClient(Client *client)
     _clients_rights[client->getFd()] = defaultRight;
 }
 
+void Channel::delCLient(Client *client)
+{
+	_clients_rights.erase(client->getFd());
+}
+
 void Channel::broadcastMessage(const std::string &message, Client *sender)
 {
     for (std::map<int, ClientRight>::iterator it = _clients_rights.begin();

@@ -1,7 +1,6 @@
 #include <Command.hpp>
 #include <Client.hpp>
 #include <Server.hpp>
-#include <iostream>
 #include <IrcError.hpp>
 #include <sys/socket.h>
 
@@ -20,8 +19,6 @@ bool Server::NicknameAlreadyUsed(const std::string &nickname)
 void Server::updateNickname(int client_fd, const std::string &new_nickname)
 {
 	_clients_list[client_fd]->setNickname(new_nickname);
-
-    std::cout << "Client with FD " << client_fd << " has taken nickname: " << new_nickname << std::endl;
 }
 
 void Command::_executeNick(Client *client, std::vector<std::string> args)
