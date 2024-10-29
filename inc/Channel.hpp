@@ -14,23 +14,25 @@ struct ChannelSettings {
 
 // need to be rework parse the input for better error message
 
-inline void err_message(const char *str) { std::cerr << str << std::endl; }
-
-#define SET_PERMISSION(grantor_rights, target_user, permission, state)                             \
+#define SET_PERMISSION_FUNC(permission)                                                            \
+    void set_permission_##permission(const ClientRight &grantor, ClientRight &target, bool state)  \
     {                                                                                              \
-        if (grantor_rights.grantable.permission)                                                   \
-            target_user.rights.permission = state;                                                 \
+        if (grantor.grantable.permission)                                                          \
+            target.rights.permission = state;                                                      \
         else                                                                                       \
             err_message("rights." #permission);                                                    \
     }
 
-#define SET_PERMISSION_GRANTABLE(grantor_rights, target_user, permission, state)                   \
+#define SET_PERMISSION_ADMIN_FUNC(permission)                                                      \
+    void set_permission_##permission(const ClientRight &grantor, ClientRight &target, bool state)  \
     {                                                                                              \
-        if (grantor_rights.grantable.admin.changeGrantable && grantor_rights.grantable.permission) \
-            target_user.grantable.permission = state;                                              \
+        if (grantor.grantable.admin.permission)                                                    \
+            target.rights.admin.permission = state;                                                \
         else                                                                                       \
-            err_message("grantable." #permission);                                                 \
+            err_message("rights." #permission);                                                    \
     }
+
+#define SET_PERMISSION_SETMAP(value) SET_MAP[#value] = set_permission_##value;
 
 class Client;
 
@@ -41,7 +43,7 @@ class Channel
     Channel(const std::string &channel_name, const std::string &password);
 
     void addClient(Client *client);
-	void delCLient(Client *client);
+	void delClient(Client *client);
     void broadcastMessage(const std::string &message, Client *sender);
 
     std::string getChannelName(void) const;

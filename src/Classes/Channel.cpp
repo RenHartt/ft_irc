@@ -46,7 +46,7 @@ void Channel::addClient(Client *client)
     _clients_rights[client->getFd()] = defaultRight;
 }
 
-void Channel::delCLient(Client *client)
+void Channel::delClient(Client *client)
 {
 	_clients_rights.erase(client->getFd());
 }
