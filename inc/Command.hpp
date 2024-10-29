@@ -17,7 +17,7 @@ class Command
 {
   public:
     Command(Server *server);
-    void exec(const std::string &cmd, Client *client, std::vector<std::string>);
+    void exec(const std::string &cmd, Client *client, std::vector<std::string> args);
 
   private:
     static CommandMap _commands;
@@ -37,6 +37,7 @@ class Command
 
     void routePrivmsg(Client *client, std::vector<std::string>);
 
+	void _executeKick(Client *client, std::vector<std::string> args);
     void _executeJoin(Client *client, std::vector<std::string>);
     void _executeUser(Client *client, std::vector<std::string>);
     void _executeNick(Client *client, std::vector<std::string>);

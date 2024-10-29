@@ -10,6 +10,7 @@ Command::Command(Server *server) { _server = server; }
 CommandMap Command::_initCommands()
 {
     CommandMap commands;
+	commands["KICK"] = &Command::_executeKick;
     commands["NICK"] = &Command::_executeNick;
     commands["USER"] = &Command::_executeUser;
     commands["PRIVMSG"] = &Command::_executePrivmsg;

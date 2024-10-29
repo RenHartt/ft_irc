@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Channel.hpp>
 #include <Utils.hpp>
 
 #include <string>

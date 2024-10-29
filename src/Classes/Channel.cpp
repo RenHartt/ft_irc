@@ -1,5 +1,4 @@
 #include "Utils.hpp"
-#include <Channel.hpp>
 #include <Server.hpp>
 #include <cstring>
 
@@ -45,6 +44,11 @@ void Channel::addClient(Client *client)
     ClientRight defaultRight;
 
     _clients_rights[client->getFd()] = defaultRight;
+}
+
+void Channel::delClient(Client *client)
+{
+	_clients_rights.erase(client->getFd());
 }
 
 void Channel::broadcastMessage(const std::string &message, Client *sender)
