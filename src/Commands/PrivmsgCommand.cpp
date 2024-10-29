@@ -5,7 +5,7 @@
 #include <Utils.hpp>
 #include <cstring>
 
-void Command::sendToChannel(Client *sender, const std::string &recipient,
+void sendToChannel(Client *sender, const std::string &recipient,
                             const std::string &message, ChannelMap &channels_list)
 {
     if (!isValidChannelName(recipient))
@@ -25,10 +25,8 @@ void Command::sendToChannel(Client *sender, const std::string &recipient,
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHCHANNEL);
 }
 
-void Command::sendToClient(Client *sender, const std::string &recipient, const std::string &message,
-                           ClientMap &clients_list)
+void sendToClient(Client *sender, const std::string &recipient, int recipient_fd, const std::string &message)
 {
-    int recipient_fd = getFdByNickname(recipient, clients_list);
     if (recipient_fd > 0)
     {
         std::string full_message = sender->getNickname() + " : " + message;
@@ -55,12 +53,13 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
     for (std::vector<std::string>::iterator it = recipients.begin(); it != recipients.end(); ++it)
     {
         std::string recipient = *it;
+		int recipient_fd = _server->getFdByNickname(recipient);
         try
         {
             if (recipient[0] == '#' || recipient[0] == '&')
                 sendToChannel(sender, recipient, message, channels_list);
             else
-                sendToClient(sender, recipient, message, clients_list);
+                sendToClient(sender, recipient, recipient_fd, message);
         } catch (const IrcError &e)
         {
             e.sendto(*sender);

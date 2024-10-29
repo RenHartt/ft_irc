@@ -51,12 +51,3 @@ std::string itoa(int value)
     return (ss.str());
 }
 
-int getFdByNickname(const std::string &nickname, ClientMap clients_list)
-{
-    for (ClientMap::iterator it = clients_list.begin(); it != clients_list.end(); it++)
-    {
-        if (it->second->getNickname() == nickname)
-            return it->first;
-    }
-    return -1;
-}

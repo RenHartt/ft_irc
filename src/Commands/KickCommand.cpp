@@ -5,7 +5,41 @@
 #include <Server.hpp>
 #include <sys/socket.h>
 
-void Command::_executeKick(Client *client, std::vector<std::string> args)
+Channel* getChannel(Client* client, ChannelMap channels_list, const std::string &channel_name)
+{
+	std::string client_nickname = client->getNickname();
+    ChannelMap::iterator channel_it = channels_list.find(channel_name);
+
+    if (channel_it == channels_list.end())
+        throw IrcError(client_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
+
+    Channel* channel = channel_it->second;
+
+    if (!channel->isMember(client))
+        throw IrcError(client_nickname, channel_name, CLIENT_NOTONCHANNEL);
+
+    return channel;
+}
+
+void kickTargetFromChannel(Client *client, Channel *channel, Client *target, const std::string &comment)
+{
+	std::string client_nickname = client->getNickname();
+	std::string target_nickname = target->getNickname();
+	std::string channel_name = channel->getChannelName();
+
+    if (!target || !channel->isMember(target))
+        throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
+
+    channel->delClient(target);
+
+    std::string kick_message = ":" + client_nickname + " KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
+    channel->broadcastMessage(kick_message, client);
+
+    std::string notify_message = "You have been kicked from " + channel_name + " by " + client_nickname + " : " + comment + "\r\n";
+    send(target->getFd(), notify_message.c_str(), notify_message.size(), 0);
+}
+
+void Command::_executeKick(Client* client, std::vector<std::string> args)
 {
     if (args.size() < 3)
         throw IrcError(client->getNickname(), "KICK", CLIENT_NEEDMOREPARAMS);
@@ -14,43 +48,21 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
     std::vector<std::string> targets = split(args[2], ',');
     std::string comment = (args.size() > 3) ? args[3] : "No reason given";
 
-    ChannelMap channels_list = _server->getChannelsList();
-    ClientMap clients_list = _server->getClientsList();
+	ChannelMap channels_list = _server->getChannelsList();
+	ClientMap clients_list = _server->getClientsList();
 
-    for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ch_it++)
+    for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ++ch_it)
     {
-        std::string channel_name = *ch_it;
-        ChannelMap::iterator channel_it = channels_list.find(channel_name);
-
         try
         {
-            if (channel_it == channels_list.end())
-                throw IrcError(client->getNickname(), channel_name, CLIENT_NOSUCHCHANNEL);
+            Channel* channel = getChannel(client, channels_list, *ch_it);
 
-            Channel* channel = channel_it->second;
-
-            if (!channel->isMember(client))
-                throw IrcError(client->getNickname(), channel_name, CLIENT_NOTONCHANNEL);
-
-            for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); cli_it++)
+            for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); ++cli_it)
             {
-                std::string target_nick = *cli_it;
-                ClientMap::iterator target_it = clients_list.find(getFdByNickname(target_nick, clients_list));
-
+				Client* target = _server->getClientbyNickname(*cli_it); 
                 try
                 {
-                    if (target_it == clients_list.end() || !channel->isMember(target_it->second))
-                        throw IrcError(client->getNickname(), target_nick, CLIENT_USERNOTINCHANNEL);
-
-                    Client* target_client = target_it->second;
-
-                    channel->delClient(target_client);
-
-                    std::string kick_message = ":" + client->getNickname() + " KICK " + channel_name + " " + target_nick + " :" + comment + "\r\n";
-                    channel->broadcastMessage(kick_message, client);
-
-                    std::string notify_message = "You have been kicked from " + channel_name + " by " + client->getNickname() + " : " + comment + "\r\n";
-                    send(target_client->getFd(), notify_message.c_str(), notify_message.size(), 0);
+                    kickTargetFromChannel(client, channel, target, comment);
                 }
                 catch (const IrcError& e)
                 {

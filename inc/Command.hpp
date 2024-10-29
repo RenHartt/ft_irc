@@ -30,9 +30,6 @@ class Command
                         const std::string &password);
     void _joinChannel(Client *client, Channel *channel);
 
-	void sendToChannel(Client *sender, const std::string &recipient, const std::string &message, ChannelMap &channel_map);
-	void sendToClient(Client *sender, const std::string &recipient, const std::string &message, ClientMap &clients_list);
-
 	void routePrivmsg(Client *client, std::vector<std::string> args);
 
 	void _executeKick(Client *client, std::vector<std::string> args);

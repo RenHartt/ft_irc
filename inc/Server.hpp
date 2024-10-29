@@ -7,7 +7,6 @@
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
-#include <map>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
@@ -35,13 +34,15 @@ class Server
     std::string         getName() const;
     int                 getClientCount() const;
     bool                NicknameAlreadyUsed(const std::string &nickname);
+    int                 getFdByNickname(const std::string &nickname);
+    Client             *getClientbyNickname(const std::string &nickname);
     ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
     std::vector<pollfd> getPollFds(void) const;
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
-	void delClient(int fd, Client *client);
+    void delClient(int fd, Client *client);
 
     std::vector<std::string> splitCommand(const char *buffer);
 
