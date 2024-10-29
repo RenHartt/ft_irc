@@ -23,12 +23,13 @@ class Client
     void setUsername(const std::string &username);
     void setRealname(const std::string &realname);
     bool isOperator() const;
+
   private:
     int         _client_fd;
     std::string _nickname;
     std::string _username;
     std::string _realname;
-	std::string _hostname;
+    std::string _hostname;
     bool        _isRegistered;
 
     ClientMap _channels;

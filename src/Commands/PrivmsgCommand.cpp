@@ -37,14 +37,13 @@ void Command::sendToClient(Client *sender, const std::string &recipient, const s
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHNICK);
 }
 
-
 void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 {
-	if (command.size() < 2 || command[1].empty())
-		throw IrcError(sender->getNickname(), CLIENT_NORECIPIENT);
+    if (command.size() < 2 || command[1].empty())
+        throw IrcError(sender->getNickname(), CLIENT_NORECIPIENT);
 
-	if (command.size() < 3 || command[2].empty())
-		throw IrcError(sender->getNickname(), CLIENT_NOTEXTTOSEND);
+    if (command.size() < 3 || command[2].empty())
+        throw IrcError(sender->getNickname(), CLIENT_NOTEXTTOSEND);
 
     ClientMap  clients_list = _server->getClientsList();
     ChannelMap channels_list = _server->getChannelsList();

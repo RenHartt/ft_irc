@@ -1,16 +1,16 @@
-#include <Command.hpp>
 #include <Client.hpp>
+#include <Command.hpp>
+#include <IrcError.hpp>
 #include <Server.hpp>
 #include <Utils.hpp>
-#include <IrcError.hpp>
 
-void Command::_executeUser(Client* client, std::vector<std::string> args)
+void Command::_executeUser(Client *client, std::vector<std::string> args)
 {
     if (args.size() < 3)
-		throw IrcError(client->getNickname(), CLIENT_NEEDMOREPARAMS);
+        throw IrcError(client->getNickname(), CLIENT_NEEDMOREPARAMS);
 
     if (client->getIsRegistered())
-		throw IrcError(client->getNickname(), CLIENT_ALREADYREGISTERED);
+        throw IrcError(client->getNickname(), CLIENT_ALREADYREGISTERED);
 
     std::string username = args[1], realname = args[2];
 

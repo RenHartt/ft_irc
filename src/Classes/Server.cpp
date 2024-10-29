@@ -6,13 +6,13 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/28 17:31:00 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/29 13:04:59 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include <iostream>
 #include <IrcError.hpp>
+#include <iostream>
 #include <netinet/in.h>
 
 bool running = true;
@@ -36,38 +36,29 @@ Server::~Server(void)
 {
     close(_server_fd);
 
-    for (std::vector<pollfd>::iterator it = _poll_fds.begin();
-         it != _poll_fds.end(); it++)
+    for (std::vector<pollfd>::iterator it = _poll_fds.begin(); it != _poll_fds.end(); it++)
         close(it->fd);
 
-    for (ClientMap::iterator it = _clients_list.begin();
-         it != _clients_list.end(); it++)
+    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
         delete it->second;
 
-    for (ChannelMap::iterator it = _channels_list.begin();
-         it != _channels_list.end(); it++)
+    for (ChannelMap::iterator it = _channels_list.begin(); it != _channels_list.end(); it++)
         delete it->second;
 }
 
 /* getter */
 
-ChannelMap Server::getChannelsList(void) const
-{
-    return (_channels_list);
-}
+ChannelMap Server::getChannelsList(void) const { return (_channels_list); }
 
-ClientMap Server::getClientsList(void) const
-{
-    return (_clients_list);
-}
+ClientMap Server::getClientsList(void) const { return (_clients_list); }
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 /* adder */
 
 std::string Server::getName() const { return _server_name; }
-int Server::getClientCount() const { return _clients_list.size();}
-void Server::addChannel(const std::string &channel_name, Channel *channel)
+int         Server::getClientCount() const { return _clients_list.size(); }
+void        Server::addChannel(const std::string &channel_name, Channel *channel)
 {
     _channels_list[channel_name] = channel;
 }
@@ -111,8 +102,7 @@ void Server::acceptNewClient()
     sockaddr_in client_address;
     socklen_t   client_len = sizeof(client_address);
 
-    int client_fd =
-        accept(_server_fd, (sockaddr *)&client_address, &client_len);
+    int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
     if (client_fd < 0)
     {
         std::cerr << "Erreur: impossible d'accepter une connexion" << std::endl;
@@ -121,8 +111,7 @@ void Server::acceptNewClient()
 
     Client *new_client = new Client(client_fd);
     _clients_list[client_fd] = new_client;
-    std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr)
-              << std::endl;
+    std::cout << "Nouvelle connexion : " << inet_ntoa(client_address.sin_addr) << std::endl;
 
     pollfd client_pollfd;
     client_pollfd.fd = client_fd;
@@ -185,5 +174,14 @@ void Server::_listenSocket()
     if (listen(this->_server_fd, 5) > 0)
     {
         throw IrcError("Impossible to listen on the socket", SERVER_INIT);
+    }
+}
+
+void Server::removeClient(int fd)
+{
+    ClientMap::iterator it = _clients_list.find(fd);
+    if (it != _clients_list.end())
+    {
+        _clients_list.erase(it);
     }
 }
