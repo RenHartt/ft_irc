@@ -16,7 +16,6 @@ struct Rights {
         uint8_t changeChannelVisibility : 1;
         uint8_t changeChannelName : 1;
         uint8_t changeGrantable : 1;
-		uint8_t caca : 1;
     } admin;
 };
 
