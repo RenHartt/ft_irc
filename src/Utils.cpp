@@ -1,10 +1,32 @@
-#include "Utils.hpp"
 #include <Server.hpp>
+#include <Utils.hpp>
+#include <regex.h>
 #include <sstream>
+
+bool regex(const char *expression, const char *pattern)
+{
+    regex_t regex;
+
+    if (regcomp(&regex, pattern, REG_EXTENDED)) 
+		return false;
+    int ret = regexec(&regex, expression, 0, NULL, 0);
+    regfree(&regex);
+    return (ret == 0);
+}
 
 bool isValidChannelName(const std::string &channel_name)
 {
-    return (channel_name[0] == '#' || channel_name[0] == '&');
+    return (regex(channel_name.c_str(), "^[#&][^ ,:]{1,19}$"));
+}
+
+bool isValidNickname(const std::string &nickname)
+{
+    return (regex(nickname.c_str(), "^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\^{}_-]{0,8}$"));
+}
+
+bool isValidUsername(const std::string &username)
+{
+    return (regex(username.c_str(), "^[a-zA-Z0-9\\[\\]\\\\^{}_-]{1,10}$"));
 }
 
 std::vector<std::string> Server::splitCommand(const char *buffer)
@@ -50,4 +72,3 @@ std::string itoa(int value)
     ss << value;
     return (ss.str());
 }
-

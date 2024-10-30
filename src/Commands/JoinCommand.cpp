@@ -9,7 +9,7 @@
 void Command::_createChannel(Client *client, const std::string &channel_name,
                              const std::string &password)
 {
-    if (!isValidChannelName(channel_name))
+    if (isValidChannelName(channel_name) == false)
         throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANMASK);
 
     Channel *newChannel = new Channel(channel_name, password);

@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include <Utils.hpp>
 #include <Client.hpp>
 #include <Command.hpp>
 #include <IrcError.hpp>
@@ -51,28 +51,20 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
 	ChannelMap channels_list = _server->getChannelsList();
 	ClientMap clients_list = _server->getClientsList();
 
-    for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ch_it++)
-    {
-        try
-        {
-            Channel *channel = getChannel(client, channels_list, *ch_it);
-
-            for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); cli_it++)
-            {
+	for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ch_it++)
+	{
+		for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); cli_it++)
+		{
+			try
+			{
 				Client *target = _server->getClientbyNickname(*cli_it); 
-                try
-                {
-                    kickTargetFromChannel(client, channel, target, comment);
-                }
-                catch (const IrcError& e)
-                {
-                    e.sendto(*client);
-                }
-            }
-        }
-        catch (const IrcError& e)
-        {
-            e.sendto(*client);
-        }
-    }
+				Channel *channel = getChannel(client, channels_list, *ch_it);
+				kickTargetFromChannel(client, channel, target, comment);
+			}
+			catch (const IrcError& e)
+			{
+				e.sendto(*client);
+			}
+		}
+	}
 }

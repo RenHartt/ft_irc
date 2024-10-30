@@ -20,3 +20,5 @@ std::vector<std::string> split(const std::string &str, char delimiter);
 int getFdByNickname(const std::string &nickname, ClientMap clients_list);
 
 bool isValidChannelName(const std::string &channel_name);
+bool isValidNickname(const std::string &nickname);
+bool isValidUsername(const std::string &username);
