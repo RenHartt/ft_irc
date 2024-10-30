@@ -12,7 +12,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
-
+#include "sha256.h"
 #include "Client.hpp"
 #include "Command.hpp"
 #include "Utils.hpp"
@@ -38,11 +38,13 @@ class Server
     ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
     std::vector<pollfd> getPollFds(void) const;
+    std::string         getPassword();
+	bool				checkPassword(const std::string &password) const;
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
     void delClient(int fd, Client *client);
-    void                     removeClient(int fd);
+    void removeClient(int fd);
 
     std::vector<std::string> splitCommand(const char *buffer);
 
@@ -52,6 +54,7 @@ class Server
     std::string         _password;
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
+	uint8_t				_hash[32];
 
     ClientMap  _clients_list;
     ChannelMap _channels_list;

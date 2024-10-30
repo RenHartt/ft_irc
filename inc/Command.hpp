@@ -45,4 +45,5 @@ class Command
     void _executeTopic(Client *, std::vector<std::string>);
     void _executeStop(Client *client, std::vector<std::string>);
 	void _executeInvite(Client *client, std::vector<std::string>);
+	void _executePass(Client *client, std::vector<std::string> args);
 };
