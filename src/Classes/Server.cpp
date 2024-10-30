@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/30 17:00:07 by bgoron           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 #include <IrcError.hpp>
 #include <iostream>
@@ -24,6 +12,7 @@ Server::Server(const std::string &port, const std::string &password)
       _password(password),
       _command(this)
 {
+	sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), _hash);
     _createSocket();
     _bindSocket();
     _listenSocket();
@@ -136,13 +125,29 @@ void Server::acceptNewClient()
     _poll_fds.push_back(client_pollfd);
 }
 
+
 void Server::handleCommand(int client_fd)
 {
-    Client                  *client = _clients_list[client_fd];
-    char                     buffer[1024] = {0};
-    int                      valread = read(client_fd, buffer, 1024);
+    Client *client = _clients_list[client_fd];
+
+    char buffer[1024] = {0};
+    int valread = read(client_fd, buffer, 1024);
+    if (valread <= 0)
+    {
+        return;
+    }
+
     std::vector<std::string> command = splitCommand(buffer);
-    if (valread >= 1 && !command.empty())
+	if (command.empty())
+		return;
+    if (!client->isAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
+    {
+        IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+        e.sendto(*client);
+        return;
+    }
+
+    if (!command.empty())
         _command.exec(command[0], client, command);
 }
 
@@ -198,4 +203,13 @@ void Server::removeClient(int fd)
     ClientMap::iterator it = _clients_list.find(fd);
     if (it != _clients_list.end())
         _clients_list.erase(it);
+}
+
+std::string Server::getPassword() { return _password; }
+bool Server::checkPassword(const std::string &password) const {
+	if (password.empty())
+		return false;
+    uint8_t hash[32];
+    sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), hash);
+    return std::memcmp(_hash, hash, 32) == 0;  
 }

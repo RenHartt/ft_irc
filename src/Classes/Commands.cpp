@@ -21,7 +21,8 @@ CommandMap Command::_initCommands()
     commands["WHOAMI"] = &Command::_executeWhoami;
     commands["LIST"] = &Command::_executeList;
     commands["TOPIC"] = &Command::_executeTopic;
-	commands["INVITE"] = &Command::_executeInvite;	
+	commands["INVITE"] = &Command::_executeInvite;
+	commands["PASS"] = &Command::_executePass;
     // debug
     commands["STOP"] = &Command::_executeStop;
     return commands;

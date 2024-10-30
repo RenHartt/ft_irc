@@ -22,6 +22,8 @@ class Client
     void setUsername(const std::string &username);
     void setRealname(const std::string &realname);
     bool isOperator() const;
+	void setAuthenticated(bool authenticated); 
+    bool isAuthenticated() const; 
 
   private:
     int         _client_fd;
@@ -30,6 +32,7 @@ class Client
     std::string _realname;
     std::string _hostname;
     bool        _isRegistered;
+	bool		_authenticated;
 
     ClientMap _channels;
 };
