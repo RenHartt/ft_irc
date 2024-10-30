@@ -21,12 +21,12 @@ bool isValidChannelName(const std::string &channel_name)
 
 bool isValidNickname(const std::string &nickname)
 {
-    return (regex(nickname.c_str(), "^[a-zA-Z][a-zA-Z0-9\\[\\]\\\\^{}_-]{0,8}$"));
+    return (regex(nickname.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{0,8}$"));
 }
 
 bool isValidUsername(const std::string &username)
 {
-    return (regex(username.c_str(), "^[a-zA-Z0-9\\[\\]\\\\^{}_-]{1,10}$"));
+    return (regex(username.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{1,10}$"));
 }
 
 std::vector<std::string> Server::splitCommand(const char *buffer)

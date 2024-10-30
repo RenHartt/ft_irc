@@ -8,7 +8,7 @@
 void sendToChannel(Client *sender, const std::string &recipient,
                             const std::string &message, ChannelMap &channels_list)
 {
-    if (!isValidChannelName(recipient))
+    if (isValidChannelName(recipient) == false)
         throw IrcError(sender->getNickname(), recipient, CLIENT_BADCHANMASK);
 
     ChannelMap::iterator channel_it = channels_list.find(recipient);
@@ -49,7 +49,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
     std::vector<std::string> recipients = split(command[1], ',');
     std::string              message = command[2];
 
-    for (std::vector<std::string>::iterator it = recipients.begin(); it != recipients.end(); ++it)
+    for (std::vector<std::string>::iterator it = recipients.begin(); it != recipients.end(); it++)
     {
         std::string recipient = *it;
 		int recipient_fd = _server->getFdByNickname(recipient);
