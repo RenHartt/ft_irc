@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/31 11:49:21 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 #include <IrcError.hpp>
 #include <iostream>
@@ -49,21 +37,23 @@ Server::~Server(void)
 
 /* getter */
 
-ChannelMap Server::getChannelsList(void) const { return (_channels_list); }
+std::string Server::getName() const { return _server_name; }
+int         Server::getClientCount() const { return _clients_list.size(); }
+ChannelMap  Server::getChannelsList(void) const { return (_channels_list); }
 
 ClientMap Server::getClientsList(void) const { return (_clients_list); }
 
-Client *Server::getClientbyNickname(const std::string &nickname) 
+Client *Server::getClientbyNickname(const std::string &nickname)
 {
     for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
         if (it->second->getNickname() == nickname)
             return it->second;
     }
-    return	NULL;
+    return NULL;
 }
 
-int     Server::getFdByNickname(const std::string &nickname)
+int Server::getFdByNickname(const std::string &nickname)
 {
     for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
@@ -77,9 +67,7 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 /* adder */
 
-std::string Server::getName() const { return _server_name; }
-int         Server::getClientCount() const { return _clients_list.size(); }
-void        Server::addChannel(const std::string &channel_name, Channel *channel)
+void Server::addChannel(const std::string &channel_name, Channel *channel)
 {
     _channels_list[channel_name] = channel;
 }
@@ -106,16 +94,12 @@ void Server::run()
 void Server::handleEvents()
 {
     if (_poll_fds[0].revents & POLLIN)
-    {
         acceptNewClient();
-    }
 
     for (size_t i = 1; i < _poll_fds.size(); i++)
     {
         if (_poll_fds[i].revents & POLLIN)
-        {
             handleCommand(_poll_fds[i].fd);
-        }
     }
 }
 
@@ -224,9 +208,7 @@ void Server::removeClient(int fd)
 {
     ClientMap::iterator it = _clients_list.find(fd);
     if (it != _clients_list.end())
-    {
         _clients_list.erase(it);
-    }
 }
 __attribute((__annotate__(("fla"))))
 std::string Server::getPassword() { return _password; }

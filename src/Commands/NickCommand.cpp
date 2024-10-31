@@ -8,12 +8,8 @@ bool Server::NicknameAlreadyUsed(const std::string &nickname)
 {
     ClientMap::iterator it = _clients_list.begin();
     while (it != _clients_list.end())
-    {
-        if (it->second->getNickname() == nickname)
-            return true;
         it++;
-    }
-    return false;
+    return (it->second->getNickname() == nickname);
 }
 
 void Server::updateNickname(int client_fd, const std::string &new_nickname)
@@ -25,7 +21,7 @@ void Command::_executeNick(Client *client, std::vector<std::string> args)
 {
     if (args.size() < 2)
         throw IrcError(client->getNickname(), CLIENT_NONICKNAMEGIVEN);
-    if (!isValidNickname(args[1]))
+    if (isValidNickname(args[1]) == false)
         throw IrcError(client->getNickname(), CLIENT_ERRONEUSNICKNAME);
     if (_server->NicknameAlreadyUsed(args[1]))
         throw IrcError(client->getNickname(), args[1], CLIENT_NICKNAMEINUSE);

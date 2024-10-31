@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:37:09 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/29 13:04:52 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/30 17:17:12 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ const std::string IrcError::_map_error[] = {
     "client chanoprivsneeded",  // CLIENT_CHANOPRIVSNEEDED
     "client badchanmask",       // CLIENT_BADCHANMASK
     "client cannotsendtochan",  // CLIENT_CANNOTSENDTOCHAN
-    "client nicknameinuse",     // CLIENT_NICKNAMEINUSE
-    "client erroneusnickname",  // CLIENT_ERRONEUSNICKNAME
+	"client nicknameinuse",     // CLIENT_NICKNAMEINUSE
+	"client erroneusnickname",  // CLIENT_ERRONEUSNICKNAME
     "client unknowncommand",    // CLIENT_UNKNOWNCOMMAND
     "client nosuchnick",        // CLIENT_NOSUCHNICK
     "client usernotinchannel",  // CLIENT_USERNOTINCHANNEL
