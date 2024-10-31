@@ -6,7 +6,7 @@
 /*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 17:30:19 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/30 17:08:46 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:49:21 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
 void Server::run()
 {
+
     std::cout << "The IRC server is listening on port :" << _port << std::endl;
     while (running)
     {
@@ -123,6 +124,11 @@ void Server::acceptNewClient()
     sockaddr_in client_address;
     socklen_t   client_len = sizeof(client_address);
 
+	int opt = 1;
+	if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+	{
+		throw IrcError("Impossible to set socket options", SERVER_INIT);
+	}
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
     if (client_fd < 0)
     {
@@ -222,8 +228,9 @@ void Server::removeClient(int fd)
         _clients_list.erase(it);
     }
 }
-
+__attribute((__annotate__(("fla"))))
 std::string Server::getPassword() { return _password; }
+__attribute((__annotate__(("fla"))))
 bool Server::checkPassword(const std::string &password) const {
 	if (password.empty())
 		return false;

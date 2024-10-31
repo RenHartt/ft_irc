@@ -3,7 +3,7 @@
 #include <Channel.hpp>
 #include <Client.hpp>
 #include <Command.hpp>
-
+#include <sys/ptrace.h>
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
