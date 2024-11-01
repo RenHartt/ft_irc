@@ -3,7 +3,11 @@
 BotPluginRegistry::BotPluginRegistry() {}
 BotPluginRegistry::~BotPluginRegistry() {}
 
-BotPluginRegistry &BotPluginRegistry::plugin_instance(void) { return _instance; }
+BotPluginRegistry &BotPluginRegistry::plugin_instance(void)
+{
+    static BotPluginRegistry instance;
+    return instance;
+}
 
 const BotPlugin *BotPluginRegistry::get_bot(const std::string &bot) const
 {

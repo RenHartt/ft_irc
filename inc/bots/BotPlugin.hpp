@@ -9,4 +9,6 @@ class BotPlugin
   public:
     virtual ~BotPlugin();
     virtual void execute(Client *sender, std::vector<std::string> command) = 0;
+
+	/* connect_to_server() */
 };

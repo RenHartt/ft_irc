@@ -25,6 +25,5 @@ class BotPluginRegistry
 	//need to free the new class
     ~BotPluginRegistry();
 
-    static BotPluginRegistry _instance;
     MapBotPlugin             _bots;
 };
