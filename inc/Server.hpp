@@ -46,7 +46,7 @@ class Server
     void delClient(int fd, Client *client);
     void removeClient(int fd);
 
-    std::vector<std::string> splitCommand(const char *buffer);
+    std::vector<std::string> splitCommand(const std::string &buffer);
 
   private:
     int                 _server_fd;

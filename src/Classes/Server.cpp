@@ -136,25 +136,48 @@ void Server::handleCommand(int client_fd)
 {
     Client *client = _clients_list[client_fd];
 
+    static std::string partialCommand;  // Accumule les fragments de commande pour le client actuel
+
     char buffer[1024] = {0};
-    int valread = read(client_fd, buffer, 1024);
-    if (valread <= 0)
-    {
-        return;
+    int valread = read(client_fd, buffer, sizeof(buffer) - 1);
+    if (valread <= 0) {
+        // Si EOF est reçu sans commande complète, on retourne sans exécuter
+        if (partialCommand.empty()) {
+            return;
+        }
+        // Si EOF est reçu avec une commande partielle, on tente d’exécuter ce qui est accumulé
+        buffer[valread] = '\n'; // Simuler un retour à la ligne pour forcer l'exécution
     }
 
-    std::vector<std::string> command = splitCommand(buffer);
-	if (command.empty())
-		return;
-    if (!client->isAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
-    {
-        IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
-        e.sendto(*client);
-        return;
-    }
+    // Ajouter le buffer lu à la commande partielle
+    partialCommand.append(buffer, valread);
 
-    if (!command.empty())
-        _command.exec(command[0], client, command);
+    size_t pos;
+    while ((pos = partialCommand.find('\n')) != std::string::npos)
+    {
+        // Extraire la commande complète jusqu'à `\n`
+        std::string commandLine = partialCommand.substr(0, pos);
+        partialCommand.erase(0, pos + 1);  // Effacer la commande traitée du buffer
+
+        // Si la ligne est vide, ignorer et continuer
+        if (commandLine.empty())
+            continue;
+
+        // Diviser la commande en arguments
+        std::vector<std::string> command = splitCommand(commandLine);
+
+        // Vérifier l'authentification pour certaines commandes
+        if (!client->isAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
+        {
+            IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+            e.sendto(*client);
+            continue;
+        }
+
+        // Exécuter la commande si elle est valide
+        if (!command.empty())
+            _command.exec(command[0], client, command);
+    }
 }
 
 /* private function */

@@ -5,14 +5,6 @@
 #include <Utils.hpp>
 #include <cstddef>
 
-void Channel::setInviteOnly(bool ) {}
-void Channel::setPassword(bool ) {}
-void Channel::setHiddenMode(bool ) {}
-void Channel::setUserLimit(bool ) {}
-
-void handleClientMode() {}
-void handleChannelMode() {}
-
 void Command::_executeMode(Client *client, std::vector<std::string> args)
 {
     std::string client_nickname(client->getNickname());
@@ -28,30 +20,23 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     if (!channel)
         throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
 
+    bool        adding = true;
     std::string modes(args[2]);
     for (std::size_t i = 0; i < modes.length(); i++)
     {
         char mode = modes[i];
         if (mode == '+')
-            ;
+            adding = true;
         else if (mode == '-')
-            ;
+            adding = false;
         else
         {
             switch (mode)
             {
             case 'i':
-                /* channel->setInviteOnly(); */
+
                 break;
-            case 'm':
-                /* channel->setModerated(); */
-                break;
-            case 'n':
-                /* channel->setNoExternalMessages(); */
-                break;
-            case 't':
-                /* channel->setTopicProtection(); */
-                break;
+			/* ... */	 
             default:
 				throw IrcError(client_nickname, std::string(1, mode), CLIENT_UNKNOWNCOMMAND);
                 break;
