@@ -21,14 +21,15 @@ MapSetPermission Channel::_set_map_permission(void)
 
 Channel::Channel(const std::string &channel_name) : _channel_name(channel_name), _password("")
 {
-    memset(&_channel_settings, 0, sizeof(_channel_settings));
+    memset(&channel_settings, 0, sizeof(channel_settings));
 }
 
 Channel::Channel(const std::string &channel_name, const std::string &password)
     : _channel_name(channel_name),
       _password(password)
 {
-    memset(&_channel_settings, 0, sizeof(_channel_settings));
+    memset(&channel_settings, 0, sizeof(channel_settings));
+	channel_settings.k_enableKey = true;
 }
 /* getter */
 

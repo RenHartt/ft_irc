@@ -66,12 +66,13 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
 
         ChannelMap           channels_list = _server->getChannelsList();
         ChannelMap::iterator it_channel = channels_list.find(channel_name);
+        Channel             *channel = it_channel->second;
 
         if (it_channel == channels_list.end())
             _createChannel(client, channel_name, password);
-        else if (it_channel->second->getPassword() == password)
+        else if (it_channel->second->getPassword() == password ||
+                 channel->channel_settings.k_enableKey == false)
         {
-            Channel *channel = it_channel->second;
             _joinChannel(client, channel);
             std::string welcome_message =
                 "Welcome to " + channel_name + ", " + client->getNickname() + "\r\n";

@@ -31,7 +31,8 @@ $(OBJS_DIR):
 	mkdir -p $(OBJS_DIR)
 
 gen_perm:
-	./perm.sh
+	./perm.sh Rights inc/Permission.hpp inc/PermissionList.hpp
+	./perm.sh ChannelSettings  inc/Channel.hpp inc/ChannelPermissionList.hpp
 
 clean:
 	@echo "$(YELLOW)Cleaning object files...$(RESET)"

@@ -5,13 +5,16 @@
 #include <Utils.hpp>
 #include <cstddef>
 
-void Channel::setInviteOnly(bool ) {}
-void Channel::setPassword(bool ) {}
-void Channel::setHiddenMode(bool ) {}
-void Channel::setUserLimit(bool ) {}
+#define SET_PERMISSION(name)                                                                       \
+    case #name[0]:                                                                                 \
+        std::cout << #name << std::endl;                                                           \
+        channel->channel_settings.name = adding;                                                   \
+        break;
 
-void handleClientMode() {}
-void handleChannelMode() {}
+#define SET_PERMISSION_ADMIN(name)                                                                 \
+    case #name[0]:                                                                                 \
+        channel->channel_settings.admin.name = adding;                                             \
+        break;
 
 void Command::_executeMode(Client *client, std::vector<std::string> args)
 {
@@ -29,31 +32,21 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
 
     std::string modes(args[2]);
+    bool        adding = true;
     for (std::size_t i = 0; i < modes.length(); i++)
     {
         char mode = modes[i];
         if (mode == '+')
-            ;
+            adding = true;
         else if (mode == '-')
-            ;
+            adding = false;
         else
         {
             switch (mode)
             {
-            case 'i':
-                /* channel->setInviteOnly(); */
-                break;
-            case 'm':
-                /* channel->setModerated(); */
-                break;
-            case 'n':
-                /* channel->setNoExternalMessages(); */
-                break;
-            case 't':
-                /* channel->setTopicProtection(); */
-                break;
+#include <ChannelPermissionList.hpp> // yes
             default:
-				throw IrcError(client_nickname, std::string(1, mode), CLIENT_UNKNOWNCOMMAND);
+                throw IrcError(client_nickname, std::string(1, mode), CLIENT_UNKNOWNCOMMAND);
                 break;
             }
         }

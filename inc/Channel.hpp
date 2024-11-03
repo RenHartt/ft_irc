@@ -5,34 +5,15 @@
 #include <map>
 #include <stdint.h>
 
+// need to be formatted with the letter that correspond first
+// example : uint8_t f_foo() -> this will set the value of foo when f is send
 struct ChannelSettings {
-    uint8_t inviteOnly : 1;
-    uint8_t enableKey : 1;
-    uint8_t hiddenMode : 1;
-    uint8_t userLimit : 1;
+    uint8_t i_inviteOnly : 1;
+    uint8_t k_enableKey : 1;
+    /* uint8_t hiddenMode : 1; */
+    uint8_t l_userLimit : 1;
+    uint8_t c_caca : 1;
 };
-
-// need to be rework parse the input for better error message
-
-#define SET_PERMISSION_FUNC(permission)                                                            \
-    void set_permission_##permission(const ClientRight &grantor, ClientRight &target, bool state)  \
-    {                                                                                              \
-        if (grantor.grantable.permission)                                                          \
-            target.rights.permission = state;                                                      \
-        else                                                                                       \
-            err_message("rights." #permission);                                                    \
-    }
-
-#define SET_PERMISSION_ADMIN_FUNC(permission)                                                      \
-    void set_permission_##permission(const ClientRight &grantor, ClientRight &target, bool state)  \
-    {                                                                                              \
-        if (grantor.grantable.admin.permission)                                                    \
-            target.rights.admin.permission = state;                                                \
-        else                                                                                       \
-            err_message("rights." #permission);                                                    \
-    }
-
-#define SET_PERMISSION_SETMAP(value) SET_MAP[#value] = set_permission_##value;
 
 class Client;
 
@@ -56,13 +37,14 @@ class Channel
     std::string list_channel(Channel *channel) const;
     bool        isMember(Client *client);
 
+    ChannelSettings            channel_settings;
+
   private:
     std::string _channel_name;
     std::string _password;
     std::string _topic;
 
     std::map<int, ClientRight> _clients_rights;
-    ChannelSettings            _channel_settings;
 
     static MapSetPermission _clients_set_permission_func;
     static MapSetPermission _set_map_permission(void);
