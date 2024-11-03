@@ -11,7 +11,10 @@ struct ChannelSettings {
     uint8_t i_inviteOnly : 1;
     uint8_t k_enableKey : 1;
     /* uint8_t hiddenMode : 1; */
-    uint8_t l_userLimit;
+    uint8_t c_caca : 1;
+	struct argNum {
+		uint8_t l_userLimit : 1;
+	} argNum;
 };
 
 class Client;

@@ -16,6 +16,11 @@
         channel->channel_settings.admin.name = adding;                                             \
         break;
 
+#define SET_PERMISSION_ARGNUM(name)                                                                \
+    case #name[0]:                                                                                 \
+        channel->channel_settings.argNum.name = adding;                                            \
+        break;
+
 void Command::_executeMode(Client *client, std::vector<std::string> args)
 {
     std::string client_nickname(client->getNickname());
