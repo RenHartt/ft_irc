@@ -57,7 +57,7 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
 		{
 			try
 			{
-				Client *target = _server->getClientbyNickname(*cli_it); 
+				Client *target = _server->getClientByNickname(*cli_it); 
 				Channel *channel = getChannel(client, channels_list, *ch_it);
 				kickTargetFromChannel(client, channel, target, comment);
 			}

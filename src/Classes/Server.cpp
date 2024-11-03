@@ -8,23 +8,23 @@ bool running = true;
 /* constructor  */
 
 Server::Server(const std::string &port, const std::string &password)
-    : _port(atoi(port.c_str())),
+    : _network_manager(port),
       _password(password),
       _command(this)
 {
-	sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), _hash);
-    _createSocket();
-    _bindSocket();
-    _listenSocket();
+    _network_manager.createSocket();
+    _network_manager.bindSocket();
+    _network_manager.listenSocket();
     _newFdToPoll();
+
+	sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), _hash);
 }
+
 
 /* destructor */
 
 Server::~Server(void)
 {
-    close(_server_fd);
-
     for (std::vector<pollfd>::iterator it = _poll_fds.begin(); it != _poll_fds.end(); it++)
         close(it->fd);
 
@@ -43,7 +43,7 @@ ChannelMap  Server::getChannelsList(void) const { return (_channels_list); }
 
 ClientMap Server::getClientsList(void) const { return (_clients_list); }
 
-Client *Server::getClientbyNickname(const std::string &nickname)
+Client *Server::getClientByNickname(const std::string &nickname)
 {
     for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
@@ -65,8 +65,6 @@ int Server::getFdByNickname(const std::string &nickname)
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
-/* adder */
-
 void Server::addChannel(const std::string &channel_name, Channel *channel)
 {
     _channels_list[channel_name] = channel;
@@ -77,7 +75,7 @@ void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 void Server::run()
 {
 
-    std::cout << "The IRC server is listening on port :" << _port << std::endl;
+    std::cout << "The IRC server is listening on port : " << _network_manager.getPort() << std::endl;
     while (running)
     {
         int poll_count = poll(_poll_fds.data(), _poll_fds.size(), -1);
@@ -109,11 +107,11 @@ void Server::acceptNewClient()
     socklen_t   client_len = sizeof(client_address);
 
 	int opt = 1;
-	if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+	if (setsockopt(_network_manager.getFd(), SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
 	{
 		throw IrcError("Impossible to set socket options", SERVER_INIT);
 	}
-    int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
+    int client_fd = accept(_network_manager.getFd(), (sockaddr *)&client_address, &client_len);
     if (client_fd < 0)
     {
         std::cerr << "Erreur: impossible d'accepter une connexion" << std::endl;
@@ -157,52 +155,6 @@ void Server::handleCommand(int client_fd)
         _command.exec(command[0], client, command);
 }
 
-/* private function */
-
-void Server::_initSockAddr(sockaddr_in &address)
-{
-    memset(&address, 0, sizeof(address));
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(_port);
-}
-
-void Server::_newFdToPoll()
-{
-    pollfd server_pollfd;
-    server_pollfd.fd = this->_server_fd;
-    server_pollfd.events = POLLIN;
-    server_pollfd.revents = 0;
-    this->_poll_fds.push_back(server_pollfd);
-}
-
-void Server::_createSocket(void)
-{
-    this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->_server_fd == -1)
-    {
-        throw IrcError("Impossible to create the server socket", SERVER_INIT);
-    }
-}
-
-void Server::_bindSocket(void)
-{
-    sockaddr_in address;
-    _initSockAddr(address);
-
-    if (bind(this->_server_fd, (sockaddr *)&address, sizeof(address)) < 0)
-    {
-        throw IrcError("Impossible to link socket", SERVER_INIT);
-    }
-}
-
-void Server::_listenSocket()
-{
-    if (listen(this->_server_fd, 5) > 0)
-    {
-        throw IrcError("Impossible to listen on the socket", SERVER_INIT);
-    }
-}
 
 void Server::removeClient(int fd)
 {
@@ -212,6 +164,7 @@ void Server::removeClient(int fd)
 }
 __attribute((__annotate__(("fla"))))
 std::string Server::getPassword() { return _password; }
+
 __attribute((__annotate__(("fla"))))
 bool Server::checkPassword(const std::string &password) const {
 	if (password.empty())
@@ -220,3 +173,13 @@ bool Server::checkPassword(const std::string &password) const {
     sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), hash);
     return std::memcmp(_hash, hash, 32) == 0;  
 }
+
+void Server::_newFdToPoll()
+{
+    pollfd server_pollfd;
+    server_pollfd.fd = _network_manager.getFd();
+    server_pollfd.events = POLLIN;
+    server_pollfd.revents = 0;
+    this->_poll_fds.push_back(server_pollfd);
+}
+

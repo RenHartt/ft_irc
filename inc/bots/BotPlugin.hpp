@@ -1,14 +1,21 @@
-#pragma once 
+#pragma once
 
+#include "NetworkManager.hpp"
+#include <Client.hpp>
 #include <string>
 #include <vector>
-#include <Client.hpp>
 
 class BotPlugin
 {
   public:
-    virtual ~BotPlugin();
-    virtual void execute(Client *sender, std::vector<std::string> command) = 0;
+    BotPlugin(const std::string &bot_name);
 
-	/* connect_to_server() */
+    virtual ~BotPlugin();
+
+    virtual void execute(Client *sender, std::vector<std::string> command) = 0;
+    void         connect(const std::string &port, const std::string &passwod);
+
+  private:
+    NetworkManager _network_manager;
+    std::string    _bot_name;
 };

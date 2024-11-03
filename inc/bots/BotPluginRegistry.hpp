@@ -4,8 +4,8 @@
 #include <map>
 
 #define REGISTER_BOT(name, classType)                                                              \
-    static BotPlugin *create##classType() { return new classType(); }                              \
-    static bool _registered_##classType =                                                          \
+    static BotPlugin *create##classType() { return new classType(name); }                          \
+    static bool       _registered_##classType =                                                    \
         (BotPluginRegistry::plugin_instance().add_bot(name, create##classType), true);
 
 typedef BotPlugin                           *(*PluginFactory)();
@@ -22,8 +22,8 @@ class BotPluginRegistry
   private:
     // for singleton pattern
     BotPluginRegistry();
-	//need to free the new class
+    // need to free the new class
     ~BotPluginRegistry();
 
-    MapBotPlugin             _bots;
+    MapBotPlugin _bots;
 };
