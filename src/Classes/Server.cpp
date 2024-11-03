@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "bots/BotPluginRegistry.hpp"
 #include <IrcError.hpp>
 #include <iostream>
 #include <netinet/in.h>
@@ -16,6 +17,8 @@ Server::Server(const std::string &port, const std::string &password)
     _network_manager.bindSocket();
     _network_manager.listenSocket();
     _newFdToPoll();
+
+	BotPluginRegistry::plugin_instance().runBots(port, password);
 
 	sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), _hash);
 }

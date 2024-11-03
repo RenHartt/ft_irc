@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sys/poll.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 NetworkManager::NetworkManager(const std::string &port) : _port(atoi(port.c_str())) {}
@@ -39,6 +40,17 @@ void NetworkManager::listenSocket()
     {
         throw IrcError("Impossible to listen on the socket", SERVER_INIT);
     }
+}
+
+void  NetworkManager::connect_serv()
+{
+    sockaddr_in address;
+    _initSockAddr(address);
+
+	if (connect(this->_fd, (sockaddr *)&address, sizeof(address)))
+	{
+        throw IrcError("Impossible to connect to the Server", SERVER_INIT);
+	}
 }
 
 void NetworkManager::_initSockAddr(sockaddr_in &address)

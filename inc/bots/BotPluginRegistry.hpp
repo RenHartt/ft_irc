@@ -17,7 +17,8 @@ class BotPluginRegistry
     static BotPluginRegistry &plugin_instance(void);
 
     const BotPlugin *get_bot(const std::string &bot_name) const;
-    void             add_bot(const std::string bot_name, PluginFactory factory);
+    void             add_bot(const std::string &bot_name, PluginFactory factory);
+	void			 runBots(const std::string &port, const std::string &password);
 
   private:
     // for singleton pattern

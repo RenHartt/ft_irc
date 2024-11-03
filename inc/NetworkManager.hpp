@@ -16,6 +16,7 @@ class NetworkManager
     void createSocket();
     void bindSocket();
     void listenSocket();
+	void connect_serv();
 
     int getPort(void) const;
     int getFd(void) const;
