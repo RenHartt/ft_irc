@@ -76,6 +76,7 @@ void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
 void Server::run()
 {
+
     std::cout << "The IRC server is listening on port :" << _port << std::endl;
     while (running)
     {
@@ -107,6 +108,11 @@ void Server::acceptNewClient()
     sockaddr_in client_address;
     socklen_t   client_len = sizeof(client_address);
 
+	int opt = 1;
+	if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+	{
+		throw IrcError("Impossible to set socket options", SERVER_INIT);
+	}
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
     if (client_fd < 0)
     {
@@ -204,8 +210,9 @@ void Server::removeClient(int fd)
     if (it != _clients_list.end())
         _clients_list.erase(it);
 }
-
+__attribute((__annotate__(("fla"))))
 std::string Server::getPassword() { return _password; }
+__attribute((__annotate__(("fla"))))
 bool Server::checkPassword(const std::string &password) const {
 	if (password.empty())
 		return false;
