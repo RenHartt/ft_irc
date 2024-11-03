@@ -23,6 +23,7 @@ CommandMap Command::_initCommands()
     commands["TOPIC"] = &Command::_executeTopic;
 	commands["INVITE"] = &Command::_executeInvite;
 	commands["PASS"] = &Command::_executePass;
+	commands["MODE"] = &Command::_executeMode;
     // debug
     commands["STOP"] = &Command::_executeStop;
     return commands;

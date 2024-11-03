@@ -6,10 +6,12 @@
 
 bool Server::NicknameAlreadyUsed(const std::string &nickname)
 {
-    ClientMap::iterator it = _clients_list.begin();
-    while (it != _clients_list.end())
-        it++;
-    return (it->second->getNickname() == nickname);
+    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+	{
+		if (it->second->getNickname() == nickname)
+			return true;
+	}
+    return false;
 }
 
 void Server::updateNickname(int client_fd, const std::string &new_nickname)

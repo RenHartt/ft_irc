@@ -35,10 +35,17 @@ Channel::Channel(const std::string &channel_name, const std::string &password)
 std::string Channel::getChannelName(void) const { return _channel_name; }
 
 std::string Channel::getPassword(void) const { return _password; }
+
+SetPermission Channel::getSetPermission(const std::string &mode)
+{
+	return _clients_set_permission_func[mode];
+}
+
 std::string Channel::list_channel(Channel *) const
 {
     return _topic.empty() ? "No topic set" : _topic;
 }
+
 void Channel::addClient(Client *client)
 {
     ClientRight defaultRight;

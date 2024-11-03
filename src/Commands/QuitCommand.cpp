@@ -16,12 +16,7 @@ void Command::_executeQuit(Client *client, std::vector<std::string>)
 
     std::vector<pollfd> fds = _server->getPollFds();
     for (std::vector<pollfd>::iterator it = fds.begin(); it != fds.end();)
-    {
-        if (it->fd == client->getFd())
-            it = fds.erase(it);
-        else
-            it++;
-    }
+        it->fd == client->getFd() ? it = fds.erase(it) : it++;
 
     clients_list.erase(client->getFd());
     _server->removeClient(client->getFd());

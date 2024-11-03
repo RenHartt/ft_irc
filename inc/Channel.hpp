@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Client.hpp>
-
 #include <Permission.hpp>
 #include <map>
 #include <stdint.h>
@@ -10,6 +9,7 @@ struct ChannelSettings {
     uint8_t inviteOnly : 1;
     uint8_t enableKey : 1;
     uint8_t hiddenMode : 1;
+    uint8_t userLimit : 1;
 };
 
 // need to be rework parse the input for better error message
@@ -43,12 +43,13 @@ class Channel
     Channel(const std::string &channel_name, const std::string &password);
 
     void addClient(Client *client);
-	void delClient(Client *client);
+    void delClient(Client *client);
     void broadcastMessage(const std::string &message, Client *sender);
 
-    std::string getChannelName(void) const;
-    std::string getPassword(void) const;
-    std::string getTopic() const;
+    std::string   getChannelName(void) const;
+    std::string   getPassword(void) const;
+    std::string   getTopic(void) const;
+    SetPermission getSetPermission(const std::string &mode);
 
     void setTopic(const std::string &new_topic);
 
