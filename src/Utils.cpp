@@ -29,7 +29,7 @@ bool isValidUsername(const std::string &username)
     return (regex(username.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{1,10}$"));
 }
 
-std::vector<std::string> Server::splitCommand(const char *buffer)
+std::vector<std::string> Server::splitCommand(const std::string &buffer)
 {
     std::vector<std::string> splited;
     std::string              command(buffer);

@@ -36,8 +36,8 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     if (!channel)
         throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
 
-    std::string modes(args[2]);
     bool        adding = true;
+    std::string modes(args[2]);
     for (std::size_t i = 0; i < modes.length(); i++)
     {
         char mode = modes[i];
@@ -49,6 +49,16 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         {
             switch (mode)
             {
+				/* case 'i': */
+				/* 	channel->channel_settings.i_inviteOnly = adding;                                                   \ */
+				/* case 't' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+				/* case 'k' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+				/* case 'o' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+				/* case 'l' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
 #include <ChannelPermissionList.hpp> // yes
             default:
                 throw IrcError(client_nickname, std::string(1, mode), CLIENT_UNKNOWNCOMMAND);
