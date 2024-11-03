@@ -5,6 +5,17 @@
 #include <Utils.hpp>
 #include <cstddef>
 
+#define SET_PERMISSION(name)                                                                       \
+    case #name[0]:                                                                                 \
+        std::cout << #name << std::endl;                                                           \
+        channel->channel_settings.name = adding;                                                   \
+        break;
+
+#define SET_PERMISSION_ADMIN(name)                                                                 \
+    case #name[0]:                                                                                 \
+        channel->channel_settings.admin.name = adding;                                             \
+        break;
+
 void Command::_executeMode(Client *client, std::vector<std::string> args)
 {
     std::string client_nickname(client->getNickname());
@@ -33,12 +44,19 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         {
             switch (mode)
             {
-            case 'i':
-
-                break;
-			/* ... */	 
+				/* case 'i': */
+				/* 	channel->channel_settings.i_inviteOnly = adding;                                                   \ */
+				/* case 't' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+				/* case 'k' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+				/* case 'o' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+				/* case 'l' : */
+				/* 	channel->channel_settings.name = adding;                                                   \ */
+#include <ChannelPermissionList.hpp> // yes
             default:
-				throw IrcError(client_nickname, std::string(1, mode), CLIENT_UNKNOWNCOMMAND);
+                throw IrcError(client_nickname, std::string(1, mode), CLIENT_UNKNOWNCOMMAND);
                 break;
             }
         }
