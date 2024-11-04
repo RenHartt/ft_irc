@@ -19,7 +19,7 @@ void sendToChannel(Client *sender, const std::string &recipient,
         if (!channel->isMember(sender))
             throw IrcError(sender->getNickname(), recipient, CLIENT_CANNOTSENDTOCHAN);
 
-        std::string full_message = sender->getNickname() + " : " + message;
+        std::string full_message = sender->getNickname() + " : " + message + "\r\n";
         channel->broadcastMessage(full_message, sender);
     } else
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHCHANNEL);
@@ -29,7 +29,7 @@ void sendToClient(Client *sender, const std::string &recipient, int recipient_fd
 {
     if (recipient_fd > 0)
     {
-        std::string full_message = sender->getNickname() + " : " + message;
+        std::string full_message =  sender->getNickname() + " : " + message + "\r\n";
         send(recipient_fd, full_message.c_str(), full_message.size(), 0);
     } else
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHNICK);
