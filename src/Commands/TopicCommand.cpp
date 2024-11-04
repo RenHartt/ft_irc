@@ -36,7 +36,7 @@ void Command::_executeTopic(Client *client, std::vector<std::string> args)
     }
 
     std::string new_topic = args[2];
-    if (!client->isOperator())
+    if (!channel->isOperator(client) && channel->channel_settings.t_topicRestriction == true)
         throw IrcError(client->getNickname(), channel_name, CLIENT_CHANOPRIVSNEEDED);
 
     channel->setTopic(new_topic);

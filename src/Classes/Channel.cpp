@@ -93,3 +93,4 @@ void Channel::setTopic(const std::string &new_topic) { _topic = new_topic; }
 
 void Channel::setPassword(const std::string &password) { _password = password; }
 
+int Channel::getNbClient(void) const { return _clients_rights.size(); }

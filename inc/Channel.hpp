@@ -35,6 +35,7 @@ class Channel
     void setPassword(const std::string &password);
 
     std::string list_channel(Channel *channel) const;
+    int         getNbClient(void) const;
     bool        isMember(Client *client);
     bool        isOperator(Client *client);
 
