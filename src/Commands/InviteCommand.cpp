@@ -1,5 +1,4 @@
 #include "Command.hpp"
-#include "ErrTable.hpp"
 #include "IrcError.hpp"
 #include "Server.hpp"
 

@@ -12,7 +12,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
-#include "sha256.h"
 #include "Client.hpp"
 #include "Command.hpp"
 #include "Utils.hpp"
@@ -30,16 +29,18 @@ class Server
     void                acceptNewClient();
     void                handleCommand(int client_fd);
     void                updateNickname(int client_fd, const std::string &new_nickname);
+
     std::string         getName() const;
     int                 getClientCount() const;
-    bool                NicknameAlreadyUsed(const std::string &nickname);
     int                 getFdByNickname(const std::string &nickname);
     Client             *getClientbyNickname(const std::string &nickname);
     ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
     std::vector<pollfd> getPollFds(void) const;
     std::string         getPassword();
+
 	bool				checkPassword(const std::string &password) const;
+    bool                NicknameAlreadyUsed(const std::string &nickname);
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);

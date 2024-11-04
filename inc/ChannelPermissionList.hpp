@@ -3,9 +3,8 @@
 // To make changes, update 'inc/Channel.hpp' and rebuild.
 
 SET_PERMISSION(i_inviteOnly)
+SET_PERMISSION(t_topicRestriction)
 SET_PERMISSION(k_enableKey)
-SET_PERMISSION(c_caca)
-SET_PERMISSION_ARGNUM(l_userLimit)
 #undef SET_PERMISSION
 #undef SET_PERMISSION_ADMIN
 #undef SET_PERMISSION_ARGNUM
