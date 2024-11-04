@@ -47,11 +47,12 @@ std::string Channel::list_channel(Channel *) const
     return _topic.empty() ? "No topic set" : _topic;
 }
 
-void Channel::addClient(Client *client)
+void Channel::addClient(Client *client, bool isOperator)
 {
-    ClientRight defaultRight;
+    ClientRight right;
+	right.rights.isOperator = isOperator;
 
-    _clients_rights[client->getFd()] = defaultRight;
+    _clients_rights[client->getFd()] = right;
 }
 
 void Channel::delClient(Client *client)
@@ -77,6 +78,18 @@ bool Channel::isMember(Client *client)
     return _clients_rights.find(client_fd) != _clients_rights.end();
 }
 
+bool Channel::isOperator(Client *client)
+{
+    int client_fd = client->getFd();
+
+	ClientRightMap::iterator it = _clients_rights.find(client_fd);
+
+	return it->second.rights.isOperator;
+}
+
 std::string Channel::getTopic() const { return _topic; }
 
 void Channel::setTopic(const std::string &new_topic) { _topic = new_topic; }
+
+void Channel::setPassword(const std::string &password) { _password = password; }
+

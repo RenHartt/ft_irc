@@ -17,6 +17,7 @@ class Command
 {
   public:
     Command(Server *server);
+
     void exec(const std::string &cmd, Client *client, std::vector<std::string> args);
 
   private:
@@ -25,12 +26,6 @@ class Command
 
     static CommandMap _initCommands();
     CmdAddr           _find(const std::string &cmd);
-
-    void _createChannel(Client *client, const std::string &channel_name,
-                        const std::string &password);
-    void _joinChannel(Client *client, Channel *channel);
-
-	void routePrivmsg(Client *client, std::vector<std::string> args);
 
 	void _executeKick(Client *client, std::vector<std::string> args);
     void _executeJoin(Client *client, std::vector<std::string>);

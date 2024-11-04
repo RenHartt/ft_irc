@@ -2,6 +2,7 @@
 #include <IrcError.hpp>
 #include <iostream>
 #include <netinet/in.h>
+#include <sha256.h>
 
 bool running = true;
 
@@ -136,40 +137,23 @@ void Server::handleCommand(int client_fd)
 {
     Client *client = _clients_list[client_fd];
 
-    static std::string partialCommand;  
-
     char buffer[1024] = {0};
-    int valread = read(client_fd, buffer, sizeof(buffer) - 1);
-    if (valread <= 0) {
-        if (partialCommand.empty()) {
-            return;
-        }
-        buffer[valread] = '\n'; 
-    }
+    int valread = read(client_fd, buffer, 1024);
+    if (valread <= 0)
+        return;
 
-    partialCommand.append(buffer, valread);
-
-    size_t pos;
-    while ((pos = partialCommand.find('\n')) != std::string::npos)
+    std::vector<std::string> command = splitCommand(buffer);
+	if (command.empty())
+		return;
+    if (!client->isAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
     {
-        std::string commandLine = partialCommand.substr(0, pos);
-        partialCommand.erase(0, pos + 1);  
-
-        if (commandLine.empty())
-            continue;
-
-        std::vector<std::string> command = splitCommand(commandLine);
-
-        if (!client->isAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
-        {
-            IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
-            e.sendto(*client);
-            continue;
-        }
-
-        if (!command.empty())
-            _command.exec(command[0], client, command);
+        IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+        e.sendto(*client);
+        return;
     }
+
+    if (!command.empty())
+        _command.exec(command[0], client, command);
 }
 
 /* private function */
