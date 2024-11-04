@@ -29,24 +29,20 @@ while IFS= read -r line; do
         continue
     fi
 
-    # Check if entering Rights struct
     if [[ "$line" == "struct $1 {" ]]; then
         in_rights=1
         continue
     fi
 
-    # Check if exiting Rights struct
     if [[ "$line" == "};" && $in_rights -eq 1 ]]; then
         in_rights=0
         continue
     fi
 
-    # Skip lines if not inside Rights struct
     if [[ $in_rights -eq 0 ]]; then
         continue
     fi
 
-    # Check if entering admin struct
     if [[ "$line" == "struct {" ]]; then
         in_admin=1
         continue
@@ -57,7 +53,6 @@ while IFS= read -r line; do
         continue
     fi
 
-    # Check if exiting admin struct
     if [[ "$line" == "} admin;" ]]; then
         in_admin=0
         continue
