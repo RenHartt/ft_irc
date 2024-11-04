@@ -11,11 +11,13 @@ static void sendMsg(int fd, const std::string &str) { send(fd, str.c_str(), str.
 
 void BotPlugin::connect(const std::string &port, const std::string &password)
 {
+	/* pthread_t thread; */
+
     _network_manager.setPort(port);
     _network_manager.createSocket();
 	_network_manager.connect_serv();
 
     int fd = _network_manager.getFd();
+	sendMsg(fd, "PASS " + password);
     sendMsg(fd, "NICK " + _bot_name);
-    sendMsg(fd, "PASS " + password);
 }
