@@ -12,6 +12,7 @@ void Command::_executeHelp(Client *client, std::vector<std::string>)
     help += "MSG <#channel> <message>		: Send a message to a channel\n";
     help += "PRIVMSG <nickname> <message>		: Send a private message to a user\n";
     help += "HELP					: Display this help message\n";
+	help += "MODE <#channel>|<target> {[+|-]|i|t|k|o|l} [<limit>] [<user>]\n";
     help += "QUIT					: Disconnect from the server\n\n";
     send(client->getFd(), help.c_str(), help.size(), 0);
 }

@@ -4,6 +4,7 @@
 #include <Server.hpp>
 #include <Utils.hpp>
 #include <cstddef>
+#include <sstream>
 #include <sys/types.h>
 
 void i_mode(bool adding, Channel *channel) { channel->channel_settings.i_inviteOnly = adding; }
@@ -28,18 +29,24 @@ void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
         channel->setPassword(args[arg_index++]);
         channel->channel_settings.k_enableKey = true;
     } else
+	{
         channel->channel_settings.k_enableKey = false;
+		channel->setPassword("");
+	}
 }
 
 void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
             size_t &arg_index)
 {
     std::string client_nickname(client->getNickname());
+
     if (adding)
     {
-        if (arg_index >= args.size())
+        std::istringstream iss(args[arg_index++]);
+        int                limit;
+        if (arg_index >= args.size() || !(iss >> limit))
             throw IrcError(client_nickname, "l", CLIENT_NEEDMOREPARAMS);
-        channel->channel_settings.l_userLimit = std::atoi(args[arg_index++].c_str());
+        channel->channel_settings.l_userLimit = limit;
     } else
         channel->channel_settings.l_userLimit = 0;
 }
@@ -61,13 +68,7 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     if (!target_client || !channel->isMember(target_client))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
-    if (adding)
-    {
-        channel->_clients_rights[target_client->getFd()].rights.isOperator = true;
-    } else
-    {
-        channel->_clients_rights[target_client->getFd()].rights.isOperator = false;
-    }
+    channel->_clients_rights[target_client->getFd()].rights.isOperator = adding;
 }
 
 void Command::_executeMode(Client *client, std::vector<std::string> args)
