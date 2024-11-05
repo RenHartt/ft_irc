@@ -1,29 +1,68 @@
 #include <Client.hpp>
 #include <Server.hpp>
 #include <Utils.hpp>
+#include <sstream>
 
-Client::Client(int client_fd) : _client_fd(client_fd), _nickname(itoa(client_fd))
+Client::Client(int client_fd) :
+	_nickname(itoa(client_fd)), 
+	_client_fd(client_fd)
 {
     _isRegistered = false;
     _authenticated = false;
 }
 
-int Client::getFd() const { return (this->_client_fd); }
-
-bool               Client::getIsRegistered() { return _isRegistered; }
+int                Client::getFd() const { return (this->_client_fd); }
+const std::string &Client::getBuffer() const { return _buffer; }
 const std::string &Client::getNickname() const { return _nickname; }
 const std::string &Client::getUsername() const { return _username; }
 const std::string &Client::getRealname() const { return _realname; }
+bool               Client::getIsRegistered() { return _isRegistered; }
+bool               Client::getAuthenticated() const { return _authenticated; }
 
-void Client::setIsRegistered(bool isRegistered) { _isRegistered = isRegistered; }
+void Client::setBuffer(const std::string &buffer) { _buffer = buffer; }
 void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
 void Client::setUsername(const std::string &username) { _username = username; }
 void Client::setRealname(const std::string &realname) { _realname = realname; }
+void Client::setIsRegistered(bool isRegistered) { _isRegistered = isRegistered; }
 void Client::setAuthenticated(bool authenticated) { _authenticated = authenticated; }
-bool Client::isAuthenticated() const { return _authenticated; }
-bool Client::isOperator() const
-{
 
-    // TODO clients right for operator !!!!!
-    return false;
+void Client::appendToBuffer(const std::string &buffer) { _buffer += buffer; }
+void Client::clearBufferUpTo(std::size_t start, std::size_t end) { _buffer.erase(start, end + 1); }
+
+std::vector<std::string> Client::splitCommand(const std::string &buffer)
+{
+    std::vector<std::string> splited;
+    std::string              command(buffer);
+    std::size_t              colonPos = command.find(':');
+    std::string              trailing;
+
+    if (colonPos != std::string::npos)
+    {
+        trailing = command.substr(colonPos + 1);
+        command = command.substr(0, colonPos);
+    }
+
+    std::stringstream ss(command);
+    std::string       token;
+
+    while (ss >> token)
+        splited.push_back(token);
+
+    if (!trailing.empty())
+        splited.push_back(trailing);
+
+    return splited;
+}
+
+void Client::accumulateAndExtractCommand(const std::string        &buffer,
+                                         std::vector<std::string> &command)
+{
+    _buffer += buffer;
+    size_t pos = _buffer.find('\n');
+    if (pos != std::string::npos)
+    {
+        std::string commandLine = _buffer.substr(0, pos);
+        _buffer.erase(0, pos + 1);
+        command = splitCommand(commandLine);
+    }
 }

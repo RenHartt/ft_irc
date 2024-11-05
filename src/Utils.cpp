@@ -1,7 +1,11 @@
 #include <Server.hpp>
 #include <Utils.hpp>
+#include <csignal>
 #include <regex.h>
 #include <sstream>
+#include <iostream>
+
+extern sig_atomic_t server_running;
 
 bool regex(const char *expression, const char *pattern)
 {
@@ -24,36 +28,6 @@ bool isValidNickname(const std::string &nickname)
     return (regex(nickname.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{0,8}$"));
 }
 
-bool isValidUsername(const std::string &username)
-{
-    return (regex(username.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{1,10}$"));
-}
-
-std::vector<std::string> Server::splitCommand(const std::string &buffer)
-{
-    std::vector<std::string> splited;
-    std::string              command(buffer);
-    std::size_t              colonPos = command.find(':');
-    std::string              trailing;
-
-    if (colonPos != std::string::npos)
-    {
-        trailing = command.substr(colonPos + 1);
-        command = command.substr(0, colonPos);
-    }
-
-    std::stringstream ss(command);
-    std::string       token;
-
-    while (ss >> token)
-        splited.push_back(token);
-
-    if (!trailing.empty())
-        splited.push_back(trailing);
-
-    return splited;
-}
-
 std::vector<std::string> split(const std::string &str, char delimiter)
 {
     std::vector<std::string> tokens;
@@ -72,3 +46,13 @@ std::string itoa(int value)
     ss << value;
     return (ss.str());
 }
+
+void handleSignal(int signal)
+{
+	if (signal == SIGINT)
+	{
+		std::cout << "\nServeur interrompu par SIGINT (Ctrl+C). Fermeture en cours...\n";
+		server_running = 0;
+	}
+}
+

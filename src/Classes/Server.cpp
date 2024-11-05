@@ -1,10 +1,11 @@
 #include "Server.hpp"
 #include <IrcError.hpp>
+#include <csignal>
 #include <iostream>
 #include <netinet/in.h>
 #include <sha256.h>
 
-bool running = true;
+extern sig_atomic_t server_running;
 
 /* constructor  */
 
@@ -13,7 +14,7 @@ Server::Server(const std::string &port, const std::string &password)
       _password(password),
       _command(this)
 {
-	sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), _hash);
+    sha256(reinterpret_cast<const uint8_t *>(password.c_str()), password.size(), _hash);
     _createSocket();
     _bindSocket();
     _listenSocket();
@@ -41,8 +42,7 @@ Server::~Server(void)
 std::string Server::getName() const { return _server_name; }
 int         Server::getClientCount() const { return _clients_list.size(); }
 ChannelMap  Server::getChannelsList(void) const { return (_channels_list); }
-
-ClientMap Server::getClientsList(void) const { return (_clients_list); }
+ClientMap   Server::getClientsList(void) const { return (_clients_list); }
 
 Client *Server::getClientbyNickname(const std::string &nickname)
 {
@@ -68,25 +68,18 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 /* adder */
 
-void Server::addChannel(const std::string &channel_name, Channel *channel)
-{
-    _channels_list[channel_name] = channel;
-}
-
+void Server::addChannel(const std::string &channel_name, Channel *channel) { _channels_list[channel_name] = channel; }
 void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
 void Server::run()
 {
 
     std::cout << "The IRC server is listening on port :" << _port << std::endl;
-    while (running)
+    while (server_running)
     {
         int poll_count = poll(_poll_fds.data(), _poll_fds.size(), -1);
         if (poll_count == -1)
-        {
-            std::cerr << "Erreur: echec de poll()" << std::endl;
             break;
-        }
 
         handleEvents();
     }
@@ -109,11 +102,12 @@ void Server::acceptNewClient()
     sockaddr_in client_address;
     socklen_t   client_len = sizeof(client_address);
 
-	int opt = 1;
-	if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
-	{
-		throw IrcError("Impossible to set socket options", SERVER_INIT);
-	}
+    int opt = 1;
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
+        0)
+    {
+        throw IrcError("Impossible to set socket options", SERVER_INIT);
+    }
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
     if (client_fd < 0)
     {
@@ -132,28 +126,42 @@ void Server::acceptNewClient()
     _poll_fds.push_back(client_pollfd);
 }
 
-
 void Server::handleCommand(int client_fd)
 {
-    Client *client = _clients_list[client_fd];
-
     char buffer[1024] = {0};
-    int valread = read(client_fd, buffer, 1024);
-    if (valread <= 0)
-        return;
-
-    std::vector<std::string> command = splitCommand(buffer);
-	if (command.empty())
-		return;
-    if (!client->isAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
+    int  valread = read(client_fd, buffer, sizeof(buffer) - 1);
+    if (valread == 0)
     {
-        IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
-        e.sendto(*client);
+        removeClient(client_fd);
         return;
     }
+    if (valread < 0)
+        return;
 
-    if (!command.empty())
-        _command.exec(command[0], client, command);
+    Client *client = _clients_list[client_fd];
+    client->appendToBuffer(std::string(buffer, valread));
+
+    std::size_t pos;
+    while ((pos = client->getBuffer().find('\n')) != std::string::npos)
+    {
+        std::string commandLine = client->getBuffer().substr(0, pos);
+        client->clearBufferUpTo(0, pos);
+
+        std::vector<std::string> command = client->splitCommand(commandLine);
+        if (command.empty())
+            continue;
+
+        if (!client->getAuthenticated() && command[0] != "NICK" && command[0] != "USER" &&
+            command[0] != "PASS")
+        {
+            IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+            e.sendto(*client);
+            return;
+        }
+
+        if (!command.empty())
+            _command.exec(command[0], client, command);
+    }
 }
 
 /* private function */
@@ -205,17 +213,26 @@ void Server::_listenSocket()
 
 void Server::removeClient(int fd)
 {
-    ClientMap::iterator it = _clients_list.find(fd);
-    if (it != _clients_list.end())
-        _clients_list.erase(it);
+    Client *client = _clients_list[fd];
+    if (client)
+    {
+        delete client;
+        _clients_list.erase(fd);
+    }
+
+    for (std::vector<pollfd>::iterator poll_it = _poll_fds.begin(); poll_it != _poll_fds.end();)
+        poll_it->fd == fd ? poll_it = _poll_fds.erase(poll_it) : poll_it++;
+
+    close(fd);
+    std::cout << "Client déconnecté (FD: " << fd << ")\n";
 }
-__attribute((__annotate__(("fla"))))
-std::string Server::getPassword() { return _password; }
-__attribute((__annotate__(("fla"))))
-bool Server::checkPassword(const std::string &password) const {
-	if (password.empty())
-		return false;
+
+__attribute((__annotate__(("fla")))) std::string Server::getPassword() { return _password; }
+__attribute((__annotate__(("fla")))) bool Server::checkPassword(const std::string &password) const
+{
+    if (password.empty())
+        return false;
     uint8_t hash[32];
-    sha256(reinterpret_cast<const uint8_t*>(password.c_str()), password.size(), hash);
-    return std::memcmp(_hash, hash, 32) == 0;  
+    sha256(reinterpret_cast<const uint8_t *>(password.c_str()), password.size(), hash);
+    return std::memcmp(_hash, hash, 32) == 0;
 }

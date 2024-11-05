@@ -1,40 +1,32 @@
-#include "Command.hpp"
-#include "ErrTable.hpp"
-#include "IrcError.hpp"
-#include "Server.hpp"
-
-#include <sstream>
+#include <Command.hpp>
+#include <IrcError.hpp>
+#include <Server.hpp>
+#include <Utils.hpp>
+#include <iostream>
 #include <sys/types.h>
 
 void Command::_executeList(Client *client, std::vector<std::string>)
 {
-    std::ostringstream   oss;
-    std::string          list;
-    ChannelMap           channel_list = _server->getChannelsList();
-    ChannelMap::iterator it = channel_list.begin();
-
+    std::string list;
     std::string client_nickname = client->getNickname();
+    ChannelMap  channel_list = _server->getChannelsList();
 
     // RPL_LISTSTART
     list += "321 " + client_nickname + " Channel :Users  Name\r\n";
 
-    while (it != channel_list.end())
+    for (ChannelMap::iterator it = channel_list.begin(); it != channel_list.end(); it++)
     {
         Channel    *channel = it->second;
-        int         member_count = channel->getNbClient();
-        std::string topic = channel->getTopic();  
+        std::string channel_name = channel->getChannelName();
+        std::string member_count = itoa(channel->getNbClient());
+        std::string topic = channel->getTopic();
 
-        oss.str("");
-        oss << member_count;
-        list += "322 " + client_nickname + " " + channel->getChannelName() + " " +
-                oss.str() + " :" + topic + "\r\n";
-        ++it;
+        list += "322 " + client_nickname + " " + channel_name + " " + member_count + " :" + topic + "\r\n";
     }
 
     list += "323 " + client_nickname + " :End of /LIST\r\n";
 
-ssize_t bytes_sent = send(client->getFd(), list.c_str(), list.size(), 0);
-if (bytes_sent != (ssize_t)list.size()) {
-    std::cerr << "Erreur : envoi incomplet de la liste des canaux" << std::endl;
-}
+    ssize_t bytes_sent = send(client->getFd(), list.c_str(), list.size(), 0);
+    if (bytes_sent != (ssize_t)list.size())
+        std::cerr << "Erreur : envoi incomplet de la liste des canaux" << std::endl;
 }

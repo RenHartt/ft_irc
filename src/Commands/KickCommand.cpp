@@ -8,13 +8,12 @@
 Channel *getChannel(Client *client, ChannelMap channels_list, const std::string &channel_name)
 {
 	std::string client_nickname = client->getNickname();
-    ChannelMap::iterator channel_it = channels_list.find(channel_name);
 
+    ChannelMap::iterator channel_it = channels_list.find(channel_name);
     if (channel_it == channels_list.end())
         throw IrcError(client_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
 
     Channel *channel = channel_it->second;
-
     if (!channel->isMember(client))
         throw IrcError(client_nickname, channel_name, CLIENT_NOTONCHANNEL);
 
@@ -51,14 +50,15 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
 	ChannelMap channels_list = _server->getChannelsList();
 	ClientMap clients_list = _server->getClientsList();
 
-	for (std::vector<std::string>::iterator ch_it = channels.begin(); ch_it != channels.end(); ch_it++)
+	for (std::vector<std::string>::iterator channel_it = channels.begin(); channel_it != channels.end(); channel_it++)
 	{
-		for (std::vector<std::string>::iterator cli_it = targets.begin(); cli_it != targets.end(); cli_it++)
+		for (std::vector<std::string>::iterator client_it = targets.begin(); client_it != targets.end(); client_it++)
 		{
 			try
 			{
-				Client *target = _server->getClientbyNickname(*cli_it); 
-				Channel *channel = getChannel(client, channels_list, *ch_it);
+				Client *target = _server->getClientbyNickname(*client_it); 
+				Channel *channel = getChannel(client, channels_list, *channel_it);
+
 				kickTargetFromChannel(client, channel, target, comment);
 			}
 			catch (const IrcError& e)

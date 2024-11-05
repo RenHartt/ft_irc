@@ -1,18 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bgoron <bgoron@42angouleme.fr>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/21 22:23:57 by bgoron            #+#    #+#             */
-/*   Updated: 2024/10/30 18:03:05 by babonnet         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <Server.hpp>
 #include <IrcError.hpp>
+#include <csignal>
 #include <iostream>
+#include <Utils.hpp>
+
+volatile sig_atomic_t server_running = 1;
 
 int main(int argc, char **argv)
 {
@@ -21,6 +13,8 @@ int main(int argc, char **argv)
         std::cout << "Usage : ./ircserv <port> <password>" << std::endl;
         return (EXIT_FAILURE);
     }
+
+	signal(SIGINT, handleSignal);
 
     try
     {

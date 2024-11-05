@@ -5,6 +5,7 @@
 void Command::_executeQuit(Client *client, std::vector<std::string>)
 {
     std::string quit_message = ":" + client->getNickname() + " QUIT :Client disconnected\r\n";
+
     ClientMap   clients_list = _server->getClientsList();
     for (ClientMap::iterator it = clients_list.begin(); it != clients_list.end(); it++)
     {

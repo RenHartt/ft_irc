@@ -15,7 +15,6 @@ void sendToChannel(Client *sender, const std::string &recipient,
     if (channel_it != channels_list.end())
     {
         Channel *channel = channel_it->second;
-
         if (!channel->isMember(sender))
             throw IrcError(sender->getNickname(), recipient, CLIENT_CANNOTSENDTOCHAN);
 
@@ -39,7 +38,6 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 {
     if (command.size() < 2 || command[1].empty())
         throw IrcError(sender->getNickname(), CLIENT_NORECIPIENT);
-
     if (command.size() < 3 || command[2].empty())
         throw IrcError(sender->getNickname(), CLIENT_NOTEXTTOSEND);
 

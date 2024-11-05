@@ -10,22 +10,23 @@ Command::Command(Server *server) { _server = server; }
 CommandMap Command::_initCommands()
 {
     CommandMap commands;
-	commands["KICK"] = &Command::_executeKick;
-    commands["NICK"] = &Command::_executeNick;
-    commands["USER"] = &Command::_executeUser;
+	commands["KICK"]    = &Command::_executeKick;
+    commands["NICK"]    = &Command::_executeNick;
+    commands["USER"]    = &Command::_executeUser;
     commands["PRIVMSG"] = &Command::_executePrivmsg;
-    commands["JOIN"] = &Command::_executeJoin;
-    commands["PART"] = &Command::_executePart;
-    commands["QUIT"] = &Command::_executeQuit;
-    commands["HELP"] = &Command::_executeHelp;
-    commands["WHOAMI"] = &Command::_executeWhoami;
-    commands["LIST"] = &Command::_executeList;
-    commands["TOPIC"] = &Command::_executeTopic;
-	commands["INVITE"] = &Command::_executeInvite;
-	commands["PASS"] = &Command::_executePass;
-	commands["MODE"] = &Command::_executeMode;
+    commands["JOIN"]    = &Command::_executeJoin;
+    commands["PART"]    = &Command::_executePart;
+    commands["QUIT"]    = &Command::_executeQuit;
+    commands["HELP"]    = &Command::_executeHelp;
+    commands["WHOAMI"]  = &Command::_executeWhoami;
+    commands["LIST"]    = &Command::_executeList;
+    commands["TOPIC"]   = &Command::_executeTopic;
+	commands["INVITE"]  = &Command::_executeInvite;
+	commands["PASS"]    = &Command::_executePass;
+	commands["MODE"]    = &Command::_executeMode;
     // debug
-    commands["STOP"] = &Command::_executeStop;
+    commands["STOP"]    = &Command::_executeStop;
+
     return commands;
 }
 
@@ -49,13 +50,4 @@ void Command::exec(const std::string &cmd, Client *client, std::vector<std::stri
     }
 }
 
-CmdAddr Command::_find(const std::string &cmd)
-{
-    CommandMap::iterator it;
-
-    it = _commands.find(cmd);
-    if (it == _commands.end())
-        return (NULL);
-    else
-        return (it->second);
-}
+CmdAddr Command::_find(const std::string &cmd) { return _commands.find(cmd) != _commands.end() ? _commands.find(cmd)->second : NULL; }

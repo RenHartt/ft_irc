@@ -3,18 +3,16 @@
 #include <Channel.hpp>
 #include <Client.hpp>
 #include <Command.hpp>
-#include <sys/ptrace.h>
+#include <Utils.hpp>
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
 #include <netinet/in.h>
 #include <poll.h>
+#include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
-#include "Client.hpp"
-#include "Command.hpp"
-#include "Utils.hpp"
 
 extern bool running;
 
@@ -24,11 +22,10 @@ class Server
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
-    void                run();
-    void                handleEvents();
-    void                acceptNewClient();
-    void                handleCommand(int client_fd);
-    void                updateNickname(int client_fd, const std::string &new_nickname);
+    void run();
+    void handleEvents();
+    void acceptNewClient();
+    void handleCommand(int client_fd);
 
     std::string         getName() const;
     int                 getClientCount() const;
@@ -39,15 +36,14 @@ class Server
     std::vector<pollfd> getPollFds(void) const;
     std::string         getPassword();
 
-	bool				checkPassword(const std::string &password) const;
-    bool                NicknameAlreadyUsed(const std::string &nickname);
+    void updateNickname(int client_fd, const std::string &new_nickname);
+    bool checkPassword(const std::string &password) const;
+    bool NicknameAlreadyUsed(const std::string &nickname);
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
     void delClient(int fd, Client *client);
     void removeClient(int fd);
-
-    std::vector<std::string> splitCommand(const std::string &buffer);
 
   private:
     int                 _server_fd;
@@ -55,8 +51,9 @@ class Server
     std::string         _password;
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
-	uint8_t				_hash[32];
+    uint8_t             _hash[32];
 
+    Command    _command;
     ClientMap  _clients_list;
     ChannelMap _channels_list;
 
@@ -66,6 +63,4 @@ class Server
     void _createSocket(void);
     void _bindSocket(void);
     void _listenSocket(void);
-
-    Command _command;
 };

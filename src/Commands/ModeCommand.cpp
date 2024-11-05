@@ -29,10 +29,10 @@ void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
         channel->setPassword(args[arg_index++]);
         channel->channel_settings.k_enableKey = true;
     } else
-	{
+    {
         channel->channel_settings.k_enableKey = false;
-		channel->setPassword("");
-	}
+        channel->setPassword("");
+    }
 }
 
 void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
@@ -68,7 +68,19 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     if (!target_client || !channel->isMember(target_client))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
-    channel->_clients_rights[target_client->getFd()].rights.isOperator = adding;
+    channel->_clients_rights[target_client->getFd()] = adding;
+}
+
+void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes,
+                                const std::vector<std::string> &parameters)
+{
+    std::string response = ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes;
+
+    for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
+        response += " " + *it;
+    response += "\r\n";
+
+    channel->broadcastMessage(response, client);
 }
 
 void Command::_executeMode(Client *client, std::vector<std::string> args)
@@ -86,12 +98,14 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     if (!channel)
         throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
 
-    if (channel->isMember(client) == false)
+    if (!channel->isMember(client))
         throw IrcError(client_nickname, args[1], CLIENT_NOTONCHANNEL);
 
-    bool        adding = true;
-    std::string modes = args[2];
-    size_t      arg_index = 3;
+    std::string              modes = args[2];
+    std::string              modes_applied;
+    std::vector<std::string> parameters;
+	std::size_t              arg_index = 3;
+    bool                     adding = true;
 
     for (size_t i = 0; i < modes.size(); i++)
     {
@@ -105,22 +119,34 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
             {
             case 'i':
                 i_mode(adding, channel);
+                modes_applied += (adding ? "+i" : "-i");
                 break;
             case 't':
                 t_mode(adding, channel);
+                modes_applied += (adding ? "+t" : "-t");
                 break;
             case 'k':
                 k_mode(adding, channel, client, args, arg_index);
+                modes_applied += (adding ? "+k" : "-k");
+                if (adding)
+                    parameters.push_back(args[arg_index - 1]);
                 break;
             case 'o':
                 o_mode(adding, channel, client, args, arg_index, _server);
+                modes_applied += (adding ? "+o" : "-o");
+                parameters.push_back(args[arg_index - 1]);
                 break;
             case 'l':
                 l_mode(adding, channel, client, args, arg_index);
+                modes_applied += (adding ? "+l" : "-l");
+                if (adding)
+                    parameters.push_back(args[arg_index - 1]);
                 break;
             default:
                 throw IrcError(client_nickname, std::string(1, modes[i]), CLIENT_UNKNOWNCOMMAND);
             }
         }
     }
+
+    sendModeChangeConfirmation(client, channel, modes_applied, parameters);
 }
