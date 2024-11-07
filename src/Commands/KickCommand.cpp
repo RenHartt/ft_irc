@@ -4,6 +4,7 @@
 #include <IrcError.hpp>
 #include <Server.hpp>
 #include <sys/socket.h>
+#include <iostream>
 
 Channel *getChannel(Client *client, ChannelMap channels_list, const std::string &channel_name)
 {
@@ -58,6 +59,7 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
 			{
 				Client *target = _server->getClientbyNickname(*client_it); 
 				Channel *channel = getChannel(client, channels_list, *channel_it);
+				std::cout << target << std::endl;
 
 				kickTargetFromChannel(client, channel, target, comment);
 			}

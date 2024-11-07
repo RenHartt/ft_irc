@@ -9,13 +9,9 @@
 
 void i_mode(bool adding, Channel *channel) { channel->channel_settings.i_inviteOnly = adding; }
 
-void t_mode(bool adding, Channel *channel)
-{
-    channel->channel_settings.t_topicRestriction = adding;
-}
+void t_mode(bool adding, Channel *channel) { channel->channel_settings.t_topicRestriction = adding; }
 
-void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
-            size_t &arg_index)
+void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index)
 {
     std::string client_nickname(client->getNickname());
 
@@ -35,8 +31,7 @@ void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     }
 }
 
-void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
-            size_t &arg_index)
+void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index)
 {
     std::string client_nickname(client->getNickname());
 
@@ -51,8 +46,7 @@ void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
         channel->channel_settings.l_userLimit = 0;
 }
 
-void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
-            size_t &arg_index, Server *server)
+void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index, Server *server)
 {
     std::string client_nickname(client->getNickname());
 
@@ -71,8 +65,7 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     channel->_clients_rights[target_client->getFd()] = adding;
 }
 
-void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes,
-                                const std::vector<std::string> &parameters)
+void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes, const std::vector<std::string> &parameters)
 {
     std::string response = ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes;
 

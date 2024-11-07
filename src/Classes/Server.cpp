@@ -71,6 +71,28 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 void Server::addChannel(const std::string &channel_name, Channel *channel) { _channels_list[channel_name] = channel; }
 void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
+void Server::removeClient(int fd)
+{
+    Client *client = _clients_list[fd];
+    if (client)
+    {
+        delete client;
+        _clients_list.erase(fd);
+    }
+
+    for (std::vector<pollfd>::iterator poll_it = _poll_fds.begin(); poll_it != _poll_fds.end();)
+        poll_it->fd == fd ? poll_it = _poll_fds.erase(poll_it) : poll_it++;
+
+    close(fd);
+    std::cout << "Client déconnecté (FD: " << fd << ")\n";
+}
+
+void Server::broadcastServer(const std::string &message)
+{
+		for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+            send(it->first, message.c_str(), message.length(), 0);
+}
+
 void Server::run()
 {
 
@@ -83,6 +105,7 @@ void Server::run()
 
         handleEvents();
     }
+	broadcastServer("Server disconnected.\r\n");
 }
 
 void Server::handleEvents()
@@ -103,8 +126,7 @@ void Server::acceptNewClient()
     socklen_t   client_len = sizeof(client_address);
 
     int opt = 1;
-    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
-        0)
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
     {
         throw IrcError("Impossible to set socket options", SERVER_INIT);
     }
@@ -151,8 +173,7 @@ void Server::handleCommand(int client_fd)
         if (command.empty())
             continue;
 
-        if (!client->getAuthenticated() && command[0] != "NICK" && command[0] != "USER" &&
-            command[0] != "PASS")
+        if (!client->getAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
         {
             IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
             e.sendto(*client);
@@ -209,22 +230,6 @@ void Server::_listenSocket()
     {
         throw IrcError("Impossible to listen on the socket", SERVER_INIT);
     }
-}
-
-void Server::removeClient(int fd)
-{
-    Client *client = _clients_list[fd];
-    if (client)
-    {
-        delete client;
-        _clients_list.erase(fd);
-    }
-
-    for (std::vector<pollfd>::iterator poll_it = _poll_fds.begin(); poll_it != _poll_fds.end();)
-        poll_it->fd == fd ? poll_it = _poll_fds.erase(poll_it) : poll_it++;
-
-    close(fd);
-    std::cout << "Client déconnecté (FD: " << fd << ")\n";
 }
 
 __attribute((__annotate__(("fla")))) std::string Server::getPassword() { return _password; }

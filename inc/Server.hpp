@@ -26,6 +26,7 @@ class Server
     void handleEvents();
     void acceptNewClient();
     void handleCommand(int client_fd);
+	void broadcastServer(const std::string &message);
 
     std::string         getName() const;
     int                 getClientCount() const;
@@ -42,7 +43,6 @@ class Server
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
-    void delClient(int fd, Client *client);
     void removeClient(int fd);
 
   private:
