@@ -18,10 +18,8 @@ void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
             size_t &arg_index)
 {
     std::string client_nickname(client->getNickname());
-
     if (!channel->isOperator(client))
         throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
-
     if (adding)
     {
         if (arg_index >= args.size())
@@ -64,7 +62,8 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
 
     std::string target_nickname = args[arg_index++];
     Client     *target_client = server->getClientbyNickname(target_nickname);
-
+	if (!target_client)
+		throw IrcError(client_nickname, target_nickname, CLIENT_NOSUCHNICK);
     if (!target_client || !channel->isMember(target_client))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
