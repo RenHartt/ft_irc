@@ -14,13 +14,18 @@ void Command::_executeInvite(Client *client, std::vector<std::string> args)
 
 	ChannelMap channel_list = _server->getChannelsList();
 	ChannelMap::iterator it = channel_list.find(channel_name);
-
+	Client *target = _server->getClientbyNickname(nickname);
+	if (!target)
+		throw IrcError(client->getNickname(), nickname, CLIENT_NOSUCHNICK);
 	if (it == channel_list.end())
 		throw IrcError(client->getNickname(), channel_name, CLIENT_NOSUCHCHANNEL);
 
-	if (it->second->isMember(client))
+	if (it->second->isMember(target))
 		throw IrcError(client->getNickname(), channel_name, CLIENT_USERONCHANNEL);	
-
+	
+	
 	std::string invite_message = ":" + client->getNickname() + " INVITE " + nickname + " " + channel_name + "\r\n";
-	send(client->getFd(), invite_message.c_str(), invite_message.size(), 0);
+	Channel *channel = it->second;
+	channel->addClient(target, false);
+	send(target->getFd(), invite_message.c_str(), invite_message.size(), 0);
 }

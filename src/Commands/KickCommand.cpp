@@ -23,6 +23,10 @@ Channel *getChannel(Client *client, ChannelMap channels_list, const std::string 
 
 void kickTargetFromChannel(Client *client, Channel *channel, Client *target, const std::string &comment)
 {
+	if (!target)
+	{
+		throw IrcError(client->getNickname(), "KICK", CLIENT_NOSUCHNICK);
+	}
 	std::string client_nickname = client->getNickname();
 	std::string target_nickname = target->getNickname();
 	std::string channel_name = channel->getChannelName();
