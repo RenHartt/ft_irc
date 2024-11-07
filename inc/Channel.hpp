@@ -38,7 +38,7 @@ class Channel
     void broadcastMessage(const std::string &message, Client *sender);
 
     ChannelSettings channel_settings;
-    OperatorMap     _clients_rights;
+    OperatorMap     clients_rights;
 
   private:
     std::string _channel_name;

@@ -69,9 +69,11 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
 
 		if (it_channel == channels_list.end())
 			createChannel(_server, client, channel_name, password);
+		else if (channel->channel_settings.i_inviteOnly == true)
+			throw IrcError(client->getNickname(), channel_name, CLIENT_INVITEONLYCHAN);
 		else if (channel->getPassword() != password && channel->channel_settings.k_enableKey == true)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
-		else if (channel->_clients_rights.size() == channel->channel_settings.l_userLimit && channel->channel_settings.l_userLimit)
+		else if (channel->clients_rights.size() == channel->channel_settings.l_userLimit && channel->channel_settings.l_userLimit)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_CHANNELISFULL);
 		else
 		{

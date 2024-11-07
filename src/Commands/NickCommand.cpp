@@ -31,6 +31,9 @@ void Command::_executeNick(Client *client, std::vector<std::string> args)
     client->setNickname(args[1]);
     _server->updateNickname(client->getFd(), args[1]);
 
+	if (client->getUsername().empty() == false)
+		client->setIsRegistered(true);
+
     std::string message = "Your nickname is " + client->getNickname() + "\n";
     send(client->getFd(), message.c_str(), message.size(), 0);
 }

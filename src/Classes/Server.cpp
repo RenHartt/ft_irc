@@ -68,7 +68,10 @@ std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 /* adder */
 
-void Server::addChannel(const std::string &channel_name, Channel *channel) { _channels_list[channel_name] = channel; }
+void Server::addChannel(const std::string &channel_name, Channel *channel)
+{
+    _channels_list[channel_name] = channel;
+}
 void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
 void Server::removeClient(int fd)
@@ -89,8 +92,8 @@ void Server::removeClient(int fd)
 
 void Server::broadcastServer(const std::string &message)
 {
-		for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
-            send(it->first, message.c_str(), message.length(), 0);
+    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+        send(it->first, message.c_str(), message.length(), 0);
 }
 
 void Server::run()
@@ -105,7 +108,7 @@ void Server::run()
 
         handleEvents();
     }
-	broadcastServer("Server disconnected.\r\n");
+    broadcastServer("Server disconnected.\r\n");
 }
 
 void Server::handleEvents()
@@ -126,7 +129,8 @@ void Server::acceptNewClient()
     socklen_t   client_len = sizeof(client_address);
 
     int opt = 1;
-    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
+        0)
     {
         throw IrcError("Impossible to set socket options", SERVER_INIT);
     }
@@ -148,6 +152,30 @@ void Server::acceptNewClient()
     _poll_fds.push_back(client_pollfd);
 }
 
+void Server::checkAuth(Client *client, std::string command)
+{
+
+	if (!client->getIsAuthenticated())
+	{
+		if (command != "PASS")
+		{
+			IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+			e.sendto(*client);
+			return;
+		}
+	}
+
+	else if (!client->getIsRegistered())
+	{
+		if (command != "NICK" && command != "USER")
+		{
+			IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+			e.sendto(*client);
+			return;
+		}
+	}
+}
+
 void Server::handleCommand(int client_fd)
 {
     char buffer[1024] = {0};
@@ -156,8 +184,7 @@ void Server::handleCommand(int client_fd)
     {
         removeClient(client_fd);
         return;
-    }
-    if (valread < 0)
+    } else if (valread < 0)
         return;
 
     Client *client = _clients_list[client_fd];
@@ -173,15 +200,8 @@ void Server::handleCommand(int client_fd)
         if (command.empty())
             continue;
 
-        if (!client->getAuthenticated() && command[0] != "NICK" && command[0] != "USER" && command[0] != "PASS")
-        {
-            IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
-            e.sendto(*client);
-            return;
-        }
-
-        if (!command.empty())
-            _command.exec(command[0], client, command);
+		checkAuth(client, command[0]);
+        _command.exec(command[0], client, command);
     }
 }
 

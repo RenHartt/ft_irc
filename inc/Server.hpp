@@ -37,6 +37,7 @@ class Server
     std::vector<pollfd> getPollFds(void) const;
     std::string         getPassword();
 
+	void checkAuth(Client *client, std::string command);
     void updateNickname(int client_fd, const std::string &new_nickname);
     bool checkPassword(const std::string &password) const;
     bool NicknameAlreadyUsed(const std::string &nickname);

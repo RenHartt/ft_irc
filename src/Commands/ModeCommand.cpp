@@ -61,7 +61,7 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     if (!target_client || !channel->isMember(target_client))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
-    channel->_clients_rights[target_client->getFd()] = adding;
+    channel->clients_rights[target_client->getFd()] = adding;
 }
 
 void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes, const std::vector<std::string> &parameters)

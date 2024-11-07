@@ -33,12 +33,9 @@ class Command
     void _executeNick(Client *client, std::vector<std::string> args);
     void _executePart(Client *client, std::vector<std::string> args);
     void _executePrivmsg(Client *client, std::vector<std::string> args);
-    void _executeQuit(Client *client, std::vector<std::string> args);
     void _executeHelp(Client *client, std::vector<std::string> args);
-    void _executeWhoami(Client *client, std::vector<std::string> args);
-    void _executeList(Client *client, std::vector<std::string> args);
     void _executeTopic(Client *, std::vector<std::string> args);
-    void _executeStop(Client *client, std::vector<std::string> args);
+    void _executeDie(Client *client, std::vector<std::string> args);
 	void _executeInvite(Client *client, std::vector<std::string> args);
 	void _executePass(Client *client, std::vector<std::string> args);
 	void _executeMode(Client* client, std::vector<std::string> args);
