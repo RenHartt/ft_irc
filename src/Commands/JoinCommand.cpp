@@ -6,6 +6,15 @@
 #include <Server.hpp>
 #include <Utils.hpp>
 
+std::string getListOfClients(Channel *channel)
+{
+	std::string clients_list;
+	ClientMap::iterator it = channel->
+	for (; it != channel->clients.end(); it++)
+		clients_list += it->first->getNickname() + " ";
+	 
+}
+
 void createChannel(Server *server, Client *client, const std::string &channel_name,
                              const std::string &password)
 {
@@ -16,9 +25,14 @@ void createChannel(Server *server, Client *client, const std::string &channel_na
 
     server->addChannel(channel_name, newChannel);
     newChannel->addClient(client, true);
+	
+    std::string message = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost"+ " JOIN " + channel_name + "\r\n";
+	newChannel->broadcastMessage(message, client);
+	std::string mode_msg = ":localhost MODE " + channel_name + " +n\r\n";
+	mode_msg += ":localhost 353 " + client->getNickname() + " = " + channel_name + " :@" + client->getNickname() + "\r\n";
+	mode_msg += ":localhost 366 " + client->getNickname() + " " + channel_name + " :End of /NAMES list\r\n";
+	send(client->getFd(), mode_msg.c_str(), mode_msg.length(), 0);
 
-    std::string message = ":" + client->getNickname() + " JOIN " + channel_name + "\r\n";
-    newChannel->broadcastMessage(message, client);
 }
 
 void joinChannel(Client *client, Channel *channel)

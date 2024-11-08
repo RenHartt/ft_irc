@@ -19,6 +19,8 @@ Server::Server(const std::string &port, const std::string &password)
     _bindSocket();
     _listenSocket();
     _newFdToPoll();
+	time_t now = time(NULL);
+    _creationDate = ctime(&now);
 }
 
 /* destructor */
@@ -260,4 +262,8 @@ __attribute((__annotate__(("fla")))) bool Server::checkPassword(const std::strin
     uint8_t hash[32];
     sha256(reinterpret_cast<const uint8_t *>(password.c_str()), password.size(), hash);
     return std::memcmp(_hash, hash, 32) == 0;
+}
+
+std::string Server::getCreationDate() const {
+    return _creationDate;
 }

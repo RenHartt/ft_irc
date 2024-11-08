@@ -26,7 +26,7 @@ class Server
     void handleEvents();
     void acceptNewClient();
     void handleCommand(int client_fd);
-	void broadcastServer(const std::string &message);
+    void broadcastServer(const std::string &message);
 
     std::string         getName() const;
     int                 getClientCount() const;
@@ -36,8 +36,9 @@ class Server
     ClientMap           getClientsList(void) const;
     std::vector<pollfd> getPollFds(void) const;
     std::string         getPassword();
+    std::string         getCreationDate() const;
 
-	void checkAuth(Client *client, std::string command);
+    void checkAuth(Client *client, std::string command);
     void updateNickname(int client_fd, const std::string &new_nickname);
     bool checkPassword(const std::string &password) const;
     bool NicknameAlreadyUsed(const std::string &nickname);
@@ -57,7 +58,7 @@ class Server
     Command    _command;
     ClientMap  _clients_list;
     ChannelMap _channels_list;
-
+	std::string _creationDate;
     void _initSockAddr(sockaddr_in &address);
     void _newFdToPoll(void);
 
