@@ -20,22 +20,24 @@ Channel::Channel(const std::string &channel_name, const std::string &password)
 std::string Channel::getChannelName(void) const { return _channel_name; }
 std::string Channel::getPassword(void) const { return _password; }
 std::string Channel::getTopic(void) const { return _topic.empty() ? "No topic set" : _topic; }
-int Channel::getNbClient(void) const { return clients_rights.size(); }
+int Channel::getNbClient(void) const { return clients.size(); }
 
 void Channel::setTopic(const std::string &new_topic) { _topic = new_topic; }
 void Channel::setPassword(const std::string &password) { _password = password; }
 
-void Channel::addClient(Client *client, bool isOperator) { clients_rights[client->getFd()] = isOperator; }
-void Channel::delClient(Client *client) { clients_rights.erase(client->getFd()); }
+void Channel::addClient(Client *client) { clients[client->getFd()] = client; }
+void Channel::delClient(Client *client) { clients.erase(client->getFd()); }
 
-bool Channel::isMember(Client *client) { return clients_rights.find(client->getFd()) != clients_rights.end(); }
-bool Channel::isOperator(Client *client) { return clients_rights.find(client->getFd())->second; }
+void Channel::addOperator(Client *client) { operators[client->getFd()] = client; }
+void Channel::delOperator(Client *client) { operators.erase(client->getFd()); }
 
-void Channel::broadcastMessage(const std::string &message, Client *sender)
+bool Channel::isMember(Client *client) { return clients.find(client->getFd()) != clients.end(); }
+bool Channel::isOperator(Client *client) { return operators.find(client->getFd())->second; }
+
+void Channel::broadcastMessage(const std::string &message, Client *)
 {
-    for (OperatorMap::iterator it = clients_rights.begin(); it != clients_rights.end(); it++)
+    for (ClientMap::iterator it = clients.begin(); it != clients.end(); it++)
     {
-        if (it->first != sender->getFd())
-            send(it->first, message.c_str(), message.length(), 0);
+		send(it->first, message.c_str(), message.length(), 0);
     }
 }

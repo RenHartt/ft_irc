@@ -5,6 +5,18 @@
 #include <IrcError.hpp>
 #include <Server.hpp>
 #include <Utils.hpp>
+#include <sys/socket.h>
+
+std::string getUsersList(Channel *channel)
+{
+	std::string list;
+	for (ClientMap::iterator it = channel->clients.begin(); it != channel->clients.end() ; it++)
+	{
+		list += it->second->getNickname();
+		list += " ";
+	}
+	return list;
+}
 
 void createChannel(Server *server, Client *client, const std::string &channel_name,
                              const std::string &password)
@@ -15,15 +27,20 @@ void createChannel(Server *server, Client *client, const std::string &channel_na
     Channel *newChannel = new Channel(channel_name, password);
 
     server->addChannel(channel_name, newChannel);
-    newChannel->addClient(client, true);
+    newChannel->addClient(client);
+	newChannel->addOperator(client);
 
-    std::string message = ":" + client->getNickname() + " JOIN " + channel_name + "\r\n";
+	std::string message = "353 " + client->getNickname() + " = " + channel_name + " :" + getUsersList(newChannel) + "\r\n";
+	send(client->getFd(), message.c_str(), message.size(), 0);
+	message = "366 " + client->getNickname() + " "  + channel_name + " :End of /NAMES list.\r\n";
+	send(client->getFd(), message.c_str(), message.size(), 0);
+    message = ":" + client->getNickname() + " JOIN " + channel_name + "\r\n";
     newChannel->broadcastMessage(message, client);
 }
 
 void joinChannel(Client *client, Channel *channel)
 {
-    channel->addClient(client, false);
+    channel->addClient(client);
 
     std::string join_message = ":" + client->getNickname() + " JOIN " + channel->getChannelName() + "\r\n";
     channel->broadcastMessage(join_message, client);
@@ -73,7 +90,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_INVITEONLYCHAN);
 		else if (channel->getPassword() != password && channel->channel_settings.k_enableKey == true)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
-		else if (channel->clients_rights.size() == channel->channel_settings.l_userLimit && channel->channel_settings.l_userLimit)
+		else if (channel->clients.size() == channel->channel_settings.l_userLimit && channel->channel_settings.l_userLimit)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_CHANNELISFULL);
 		else
 		{

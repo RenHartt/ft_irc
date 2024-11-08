@@ -32,13 +32,17 @@ class Channel
     bool isMember(Client *client);
     bool isOperator(Client *client);
 
-    void addClient(Client *client, bool isOperator);
+    void addClient(Client *client);
     void delClient(Client *client);
+
+	void addOperator(Client *client);
+	void delOperator(Client *client);
 
     void broadcastMessage(const std::string &message, Client *sender);
 
     ChannelSettings channel_settings;
-    OperatorMap     clients_rights;
+	ClientMap		clients;
+    OperatorMap     operators;
 
   private:
     std::string _channel_name;
