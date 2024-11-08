@@ -39,7 +39,6 @@ class Server
     std::string         getCreationDate() const;
 
     void checkAuth(Client *client, std::string command);
-    void updateNickname(int client_fd, const std::string &new_nickname);
     bool checkPassword(const std::string &password) const;
     bool NicknameAlreadyUsed(const std::string &nickname);
 

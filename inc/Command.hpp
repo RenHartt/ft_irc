@@ -40,3 +40,5 @@ class Command
 	void _executePass(Client *client, std::vector<std::string> args);
 	void _executeMode(Client* client, std::vector<std::string> args);
 };
+
+std::string getListOfModes(Channel *channel);

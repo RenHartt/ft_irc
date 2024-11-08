@@ -73,20 +73,28 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
 void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes,
                                 const std::vector<std::string> &parameters)
 {
-    std::string response =
-        ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes;
+    std::string response = ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes;
 
-    for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end();
-         it++)
-        response += " " + *it;
+    for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
+		response += " " + *it;
     response += "\r\n";
 
-    channel->broadcastMessage(response, client);
+    channel->broadcastMessage(response, NULL);
 }
 
 void Command::_executeMode(Client *client, std::vector<std::string> args)
 {
     std::string client_nickname(client->getNickname());
+
+	if (args.size() == 2)
+	{
+		ChannelMap channels_map = _server->getChannelsList();
+		Channel *channel = channels_map[args[1]];
+		std::string modes_list = getListOfModes(channel);
+		std::string message = ":localhost 324 " + channel->getChannelName() + " " + modes_list + "\r\n";
+		send(client->getFd(), message.c_str(), message.size(), 0);
+		return;
+	}
 
     if (args.size() < 3)
         throw IrcError(client_nickname, CLIENT_NEEDMOREPARAMS);

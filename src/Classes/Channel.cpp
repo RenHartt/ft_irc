@@ -2,7 +2,8 @@
 #include <Server.hpp>
 #include <cstring>
 
-Channel::Channel(const std::string &channel_name) : _channel_name(channel_name), _password("")
+Channel::Channel(const std::string &channel_name)
+	: _channel_name(channel_name)
 {
     memset(&channel_settings, 0, sizeof(channel_settings));
 }
@@ -32,10 +33,11 @@ void Channel::delOperator(Client *client) { operators.erase(client->getFd()); }
 bool Channel::isMember(Client *client) { return clients.find(client->getFd()) != clients.end(); }
 bool Channel::isOperator(Client *client) { return operators.find(client->getFd())->second; }
 
-void Channel::broadcastMessage(const std::string &message, Client *)
+void Channel::broadcastMessage(const std::string &message, Client *client)
 {
     for (ClientMap::iterator it = clients.begin(); it != clients.end(); it++)
     {
-        send(it->first, message.c_str(), message.length(), 0);
+		if (client == NULL || it->second != client)
+			send(it->first, message.c_str(), message.length(), 0);
     }
 }

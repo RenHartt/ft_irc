@@ -1,8 +1,6 @@
 #include <Command.hpp>
 #include <IrcError.hpp>
 
-#include <iostream>
-
 CommandMap Command::_commands = Command::_initCommands();
 
 Command::Command(Server *server) { _server = server; }
