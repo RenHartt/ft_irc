@@ -9,9 +9,13 @@
 
 void i_mode(bool adding, Channel *channel) { channel->channel_settings.i_inviteOnly = adding; }
 
-void t_mode(bool adding, Channel *channel) { channel->channel_settings.t_topicRestriction = adding; }
+void t_mode(bool adding, Channel *channel)
+{
+    channel->channel_settings.t_topicRestriction = adding;
+}
 
-void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index)
+void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
+            size_t &arg_index)
 {
     std::string client_nickname(client->getNickname());
     if (!channel->isOperator(client))
@@ -29,7 +33,8 @@ void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     }
 }
 
-void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index)
+void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
+            size_t &arg_index)
 {
     std::string client_nickname(client->getNickname());
 
@@ -44,7 +49,8 @@ void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
         channel->channel_settings.l_userLimit = 0;
 }
 
-void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index, Server *server)
+void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args,
+            size_t &arg_index, Server *server)
 {
     std::string client_nickname(client->getNickname());
 
@@ -56,19 +62,22 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
 
     std::string target_nickname = args[arg_index++];
     Client     *target_client = server->getClientbyNickname(target_nickname);
-	if (!target_client)
-		throw IrcError(client_nickname, target_nickname, CLIENT_NOSUCHNICK);
+    if (!target_client)
+        throw IrcError(client_nickname, target_nickname, CLIENT_NOSUCHNICK);
     if (!target_client || !channel->isMember(target_client))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
-    channel->clients_rights[target_client->getFd()] = adding;
+    adding ? channel->addOperator(target_client) : channel->delOperator(target_client);
 }
 
-void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes, const std::vector<std::string> &parameters)
+void sendModeChangeConfirmation(Client *client, Channel *channel, const std::string &modes,
+                                const std::vector<std::string> &parameters)
 {
-    std::string response = ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes;
+    std::string response =
+        ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes;
 
-    for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
+    for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end();
+         it++)
         response += " " + *it;
     response += "\r\n";
 
@@ -96,7 +105,7 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     std::string              modes = args[2];
     std::string              modes_applied;
     std::vector<std::string> parameters;
-	std::size_t              arg_index = 3;
+    std::size_t              arg_index = 3;
     bool                     adding = true;
 
     for (size_t i = 0; i < modes.size(); i++)

@@ -5,14 +5,32 @@
 #include <IrcError.hpp>
 #include <Server.hpp>
 #include <Utils.hpp>
+#include <sys/socket.h>
 
 std::string getListOfClients(Channel *channel)
 {
 	std::string clients_list;
-	ClientMap::iterator it = channel->
+	ClientMap::iterator it = channel->clients.begin();
 	for (; it != channel->clients.end(); it++)
-		clients_list += it->first->getNickname() + " ";
-	 
+	{
+		if (channel->isOperator(it->second))
+			clients_list += "@" + it->second->getNickname() + " ";
+		else
+			clients_list += it->second->getNickname() + " ";
+	}
+		clients_list += it->second->getNickname() + " ";
+	return clients_list; 
+}
+
+std::string getListOfModes(Channel *channel)
+{
+	std::string modes_list;
+
+	channel->channel_settings.i_inviteOnly ? modes_list += "i" : modes_list += "";
+	channel->channel_settings.k_enableKey ? modes_list += "k" : modes_list += "";
+	channel->channel_settings.t_topicRestriction ? modes_list += "t" : modes_list += "";
+	channel->channel_settings.l_userLimit ? modes_list += "l " + itoa(channel->channel_settings.l_userLimit): modes_list += "";
+	return modes_list;
 }
 
 void createChannel(Server *server, Client *client, const std::string &channel_name,
@@ -24,7 +42,8 @@ void createChannel(Server *server, Client *client, const std::string &channel_na
     Channel *newChannel = new Channel(channel_name, password);
 
     server->addChannel(channel_name, newChannel);
-    newChannel->addClient(client, true);
+    newChannel->addClient(client);
+	newChannel->addOperator(client);
 	
     std::string message = ":" + client->getNickname() + "!" + client->getUsername() + "@localhost"+ " JOIN " + channel_name + "\r\n";
 	newChannel->broadcastMessage(message, client);
@@ -32,15 +51,19 @@ void createChannel(Server *server, Client *client, const std::string &channel_na
 	mode_msg += ":localhost 353 " + client->getNickname() + " = " + channel_name + " :@" + client->getNickname() + "\r\n";
 	mode_msg += ":localhost 366 " + client->getNickname() + " " + channel_name + " :End of /NAMES list\r\n";
 	send(client->getFd(), mode_msg.c_str(), mode_msg.length(), 0);
-
 }
 
 void joinChannel(Client *client, Channel *channel)
 {
-    channel->addClient(client, false);
+    channel->addClient(client);
 
     std::string join_message = ":" + client->getNickname() + " JOIN " + channel->getChannelName() + "\r\n";
     channel->broadcastMessage(join_message, client);
+	std::string mode_msg = ":localhost MODE " + channel->getChannelName() + " +n" + getListOfModes(channel) + "\r\n";
+	mode_msg += ":localhost 353 " + client->getNickname() + " = " + channel->getChannelName() + " :" + getListOfClients(channel) + "\r\n";
+	mode_msg += ":localhost 366 " + client->getNickname() + " " + channel->getChannelName() + " :End of /NAMES list\r\n";
+	send(client->getFd(), mode_msg.c_str(), mode_msg.length(), 0);
+
 }
 
 ChannelPasswordList initRequestList(std::vector<std::string> args)
@@ -87,7 +110,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_INVITEONLYCHAN);
 		else if (channel->getPassword() != password && channel->channel_settings.k_enableKey == true)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
-		else if (channel->clients_rights.size() == channel->channel_settings.l_userLimit && channel->channel_settings.l_userLimit)
+		else if (channel->clients.size() == channel->channel_settings.l_userLimit && channel->channel_settings.l_userLimit)
 			throw IrcError(client->getNickname(), channel_name, CLIENT_CHANNELISFULL);
 		else
 		{

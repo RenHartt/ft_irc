@@ -34,6 +34,6 @@ void Command::_executeNick(Client *client, std::vector<std::string> args)
 	if (client->getUsername().empty() == false)
 		client->setIsRegistered(true);
 
-    std::string message = "Your nickname is " + client->getNickname() + "\n";
-    send(client->getFd(), message.c_str(), message.size(), 0);
+    /* std::string message = "Your nickname is " + client->getNickname() + "\n"; */
+    /* send(client->getFd(), message.c_str(), message.size(), 0); */
 }

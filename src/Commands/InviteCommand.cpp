@@ -26,6 +26,6 @@ void Command::_executeInvite(Client *client, std::vector<std::string> args)
 	
 	std::string invite_message = ":" + client->getNickname() + " INVITE " + nickname + " " + channel_name + "\r\n";
 	Channel *channel = it->second;
-	channel->addClient(target, false);
+	channel->addClient(target);
 	send(target->getFd(), invite_message.c_str(), invite_message.size(), 0);
 }

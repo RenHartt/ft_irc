@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   IrcError.hpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/24 18:21:32 by babonnet          #+#    #+#             */
-/*   Updated: 2024/11/04 22:42:58 by bgoron           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <Client.hpp>
 #include <map>
 #include <string>
@@ -51,8 +39,7 @@ class IrcError
   public:
     IrcError(const std::string &msg, e_IrcErrorType type);
     IrcError(const std::string &msg, const std::string &msg2, e_IrcErrorType type);
-    IrcError(const std::string &msg, const std::string &msg2, const std::string &msg3,
-             e_IrcErrorType type);
+    IrcError(const std::string &msg, const std::string &msg2, const std::string &msg3, e_IrcErrorType type);
 
     e_IrcErrorType getIrcErrorType(void) const;
     std::string    getMsg(void) const;

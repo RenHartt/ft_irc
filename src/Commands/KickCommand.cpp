@@ -34,6 +34,7 @@ void kickTargetFromChannel(Client *client, Channel *channel, Client *target, con
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
     channel->delClient(target);
+	channel->delOperator(target);
 
     std::string kick_message = ":" + client_nickname + " KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
     channel->broadcastMessage(kick_message, client);
