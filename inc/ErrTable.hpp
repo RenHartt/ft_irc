@@ -27,7 +27,7 @@
 #define ERR_CANNOTSENDTOCHAN(source, channel)                                                      \
     (std::string("404 ") + source + " " + channel + " :Cannot send to channel\r\n")
 #define ERR_NICKNAMEINUSE(source, nickname)                                                        \
-    (std::string("433 ") + source + " " + nickname + " :Nickname is already in use\r\n")
+    (std::string(":localhost 433 ") + source + " " + nickname + " :Nickname is already in use\r\n")
 #define ERR_ERRONEUSNICKNAME(source, nickname)                                                     \
     (std::string("432 ") + source + " " + nickname + " :Erroneous nickname\r\n")
 #define ERR_UNKNOWNCOMMAND(source, command)                                                        \

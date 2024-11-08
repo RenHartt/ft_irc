@@ -161,10 +161,10 @@ void Server::handleCommand(int client_fd)
         std::vector<std::string> command = client->splitCommand(commandLine);
         if (command[0].empty())
             continue;
-
+		
 		if (!client->getIsAuthenticated())
 		{
-			if (command[0] != "PASS")
+			if (command[0] != "PASS" && commandLine != "CAP LS 302\r")
 			{
 				IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
 				e.sendto(*client);
@@ -181,8 +181,8 @@ void Server::handleCommand(int client_fd)
 				return;
 			}
 		}
-
-        _command.exec(command[0], client, command);
+		if (commandLine != "CAP LS 302\r")
+			_command.exec(command[0], client, command);
     }
 }
 

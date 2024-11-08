@@ -20,7 +20,7 @@ bool regex(const char *expression, const char *pattern)
 
 bool isValidChannelName(const std::string &channel_name)
 {
-    return (regex(channel_name.c_str(), "^[#&][^ ,:]{1,19}$"));
+    return (regex(channel_name.c_str(), "^#[^ ,:]{1,19}$"));
 }
 
 bool isValidNickname(const std::string &nickname)
