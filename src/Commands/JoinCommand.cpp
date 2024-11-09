@@ -12,8 +12,9 @@ std::string getListOfClients(Channel *channel)
     std::string clients_list;
     for (ClientMap::iterator it = channel->clients.begin(); it != channel->clients.end(); it++)
     {
-        channel->isOperator(it->second) ? clients_list += "@" + it->second->getNickname()
-                                        : clients_list += it->second->getNickname();
+        channel->isOperator(it->second) 
+			? clients_list += "@" + it->second->getNickname()
+            : clients_list += it->second->getNickname();
 
         if (it != channel->clients.end())
             clients_list += " ";
@@ -28,8 +29,9 @@ void createChannel(Server *server, Client *client, const std::string &channel_na
         throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANMASK);
 
     Channel *newChannel;
-    password.empty() ? newChannel = new Channel(channel_name)
-                     : newChannel = new Channel(channel_name, password);
+    password.empty() 
+		? newChannel = new Channel(channel_name)
+        : newChannel = new Channel(channel_name, password);
 
     server->addChannel(channel_name, newChannel);
     newChannel->addClient(client);
@@ -83,7 +85,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
     if (args.size() < 2)
         throw IrcError(client->getNickname(), "JOIN", CLIENT_NEEDMOREPARAMS);
 
-    ChannelPasswordList           request_list = initRequestList(args);
+    ChannelPasswordList request_list = initRequestList(args);
 
     for (ChannelPasswordList::iterator it = request_list.begin(); it != request_list.end(); it++)
     {

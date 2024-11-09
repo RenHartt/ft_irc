@@ -15,6 +15,7 @@ bool regex(const char *expression, const char *pattern)
 		return false;
     int ret = regexec(&regex, expression, 0, NULL, 0);
     regfree(&regex);
+
     return (ret == 0);
 }
 
@@ -44,6 +45,7 @@ std::string itoa(int value)
 {
     std::stringstream ss;
     ss << value;
+
     return (ss.str());
 }
 
@@ -55,4 +57,3 @@ void handleSignal(int signal)
 		server_running = 0;
 	}
 }
-

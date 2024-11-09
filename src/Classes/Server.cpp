@@ -60,7 +60,7 @@ int Server::getFdByNickname(const std::string &nickname)
         if (it->second->getNickname() == nickname)
             return it->first;
     }
-    return -1;
+    return 0;
 }
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
