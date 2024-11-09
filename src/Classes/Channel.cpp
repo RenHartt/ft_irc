@@ -20,8 +20,10 @@ std::string	Channel::getChannelName(void) const { return _channel_name; }
 std::string	Channel::getPassword(void) const { return _password; }
 std::string	Channel::getTopic(void) const { return _topic.empty() ? "No topic set" : _topic; }
 int			Channel::getNbClient(void) const { return clients.size(); }
+std::string Channel::getTopicSetter() const { return _topicSetter; }
 
 void Channel::setTopic(const std::string &new_topic) { _topic = new_topic; }
+void Channel::setTopicSetter(const std::string& setter) { _topicSetter = setter; }
 void Channel::setPassword(const std::string &password) { _password = password; }
 
 void Channel::addGuest(Client *client) { guests[client->getFd()] = client; }
@@ -44,3 +46,5 @@ void Channel::broadcastMessage(const std::string &message, Client *client)
 			send(it->first, message.c_str(), message.length(), 0);
     }
 }
+
+

@@ -44,6 +44,8 @@ class Channel
 
     void broadcastMessage(const std::string &message, Client *sender);
 
+    std::string getTopicSetter() const;
+	void setTopicSetter(const std::string &topicSetter);
     ChannelSettings channel_settings;
     ClientMap       clients;
     ClientMap       operators;
@@ -53,4 +55,5 @@ class Channel
     std::string _channel_name;
     std::string _password;
     std::string _topic;
+	std::string _topicSetter;
 };

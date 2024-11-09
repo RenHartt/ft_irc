@@ -79,9 +79,9 @@ ChannelPasswordList initRequestList(std::vector<std::string> args)
     return request_list;
 }
 
+
 void Command::_executeJoin(Client *client, std::vector<std::string> args)
 {
-
     if (args.size() < 2)
         throw IrcError(client->getNickname(), "JOIN", CLIENT_NEEDMOREPARAMS);
 
@@ -91,19 +91,25 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
     {
         std::string channel_name = it->first, password = it->second;
 
-        ChannelMap           channels_list = _server->getChannelsList();
+        ChannelMap channels_list = _server->getChannelsList();
         ChannelMap::iterator it_channel = channels_list.find(channel_name);
-        Channel             *channel = it_channel->second;
 
         if (it_channel == channels_list.end())
+        {
             createChannel(_server, client, channel_name, password);
-        else if (channel->channel_settings.i_inviteOnly == true && channel->isGuest(client) == false)
-            throw IrcError(client->getNickname(), channel_name, CLIENT_INVITEONLYCHAN);
-        else if (channel->channel_settings.k_enableKey == true && channel->getPassword() != password && channel->isGuest(client) == false)
-            throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
-        else if (channel->channel_settings.l_userLimit == true && channel->channel_settings.l_userLimit == channel->clients.size())
-            throw IrcError(client->getNickname(), channel_name, CLIENT_CHANNELISFULL);
+        }
         else
+        {
+            Channel *channel = it_channel->second;
+            if (channel->channel_settings.i_inviteOnly && !channel->isGuest(client))
+                throw IrcError(client->getNickname(), channel_name, CLIENT_INVITEONLYCHAN);
+            if (channel->channel_settings.k_enableKey && channel->getPassword() != password && !channel->isGuest(client))
+                throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
+            if (channel->channel_settings.l_userLimit && channel->clients.size() >= channel->channel_settings.l_userLimit)
+                throw IrcError(client->getNickname(), channel_name, CLIENT_CHANNELISFULL);
+
             joinChannel(client, channel);
+        }
     }
 }
+
