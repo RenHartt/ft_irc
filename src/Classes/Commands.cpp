@@ -28,9 +28,7 @@ void Command::exec(const std::string &cmd, Client *client, std::vector<std::stri
 {
     CmdAddr func = _find(cmd);
     if (!func)
-    {
         return;
-    }
 
     try
     {

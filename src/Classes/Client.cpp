@@ -51,8 +51,7 @@ std::vector<std::string> Client::splitCommand(const std::string &buffer)
     return splited;
 }
 
-void Client::accumulateAndExtractCommand(const std::string        &buffer,
-                                         std::vector<std::string> &command)
+void Client::accumulateAndExtractCommand(const std::string &buffer, std::vector<std::string> &command)
 {
     _buffer += buffer;
     size_t pos = _buffer.find('\n');

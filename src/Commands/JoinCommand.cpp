@@ -22,19 +22,6 @@ std::string getListOfClients(Channel *channel)
     return clients_list;
 }
 
-std::string getListOfModes(Channel *channel)
-{
-    std::string modes_list;
-
-    channel->channel_settings.i_inviteOnly ? modes_list += "i" : modes_list += "";
-    channel->channel_settings.k_enableKey ? modes_list += "k" : modes_list += "";
-    channel->channel_settings.t_topicRestriction ? modes_list += "t" : modes_list += "";
-    channel->channel_settings.l_userLimit
-        ? modes_list += "l " + itoa(channel->channel_settings.l_userLimit)
-        : modes_list += "";
-    return modes_list;
-}
-
 void createChannel(Server *server, Client *client, const std::string &channel_name, const std::string &password)
 {
     if (isValidChannelName(channel_name) == false)

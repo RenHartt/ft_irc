@@ -5,8 +5,7 @@
 #include <Utils.hpp>
 #include <cstring>
 
-void sendToChannel(Client *sender, const std::string &recipient,
-                            const std::string &message, ChannelMap &channels_list)
+void sendToChannel(Client *sender, const std::string &recipient, const std::string &message, ChannelMap &channels_list)
 {
     if (isValidChannelName(recipient) == false)
         throw IrcError(sender->getNickname(), recipient, CLIENT_BADCHANMASK);
@@ -15,9 +14,9 @@ void sendToChannel(Client *sender, const std::string &recipient,
     if (channel_it != channels_list.end())
     {
         Channel *channel = channel_it->second;
+
         if (!channel->isMember(sender))
             throw IrcError(sender->getNickname(), recipient, CLIENT_CANNOTSENDTOCHAN);
-
         
 		std::string full_message = ":" + sender->getNickname() + " PRIVMSG " + recipient + " :" + message + "\r\n";
         channel->broadcastMessage(full_message, sender);
@@ -54,7 +53,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
 		int recipient_fd = _server->getFdByNickname(recipient);
         try
         {
-            if (recipient[0] == '#' || recipient[0] == '&')
+            if (recipient[0] == '#')
                 sendToChannel(sender, recipient, message, channels_list);
             else
                 sendToClient(sender, recipient, recipient_fd, message);

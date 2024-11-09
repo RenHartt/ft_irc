@@ -157,11 +157,10 @@ void Server::handleCommand(int client_fd)
     {
         std::string commandLine = client->getBuffer().substr(0, pos);
         client->clearBufferUpTo(0, pos);
-
         std::vector<std::string> command = client->splitCommand(commandLine);
+
         if (command[0].empty())
             continue;
-		
 		if (!client->getIsAuthenticated())
 		{
 			if (command[0] != "PASS" && commandLine != "CAP LS 302\r")
@@ -171,7 +170,6 @@ void Server::handleCommand(int client_fd)
 				return;
 			}
 		}
-
 		else if (!client->getIsRegistered())
 		{
 			if (command[0] != "NICK" && command[0] != "USER")
@@ -237,6 +235,4 @@ __attribute((__annotate__(("fla")))) bool Server::checkPassword(const std::strin
     return std::memcmp(_hash, hash, 32) == 0;
 }
 
-std::string Server::getCreationDate() const {
-    return _creationDate;
-}
+std::string Server::getCreationDate() const { return _creationDate; }

@@ -4,17 +4,15 @@
 
 void Command::_executeTopic(Client *client, std::vector<std::string> args)
 {
-    if (args.size() < 2)
-        throw IrcError(client->getNickname(), "TOPIC", CLIENT_NEEDMOREPARAMS);
-
     std::string channel_name = args[1];
-
     ChannelMap  channel_list = _server->getChannelsList();
     ChannelMap::iterator it = channel_list.find(channel_name);
+    Channel *channel = it->second;
+
+    if (args.size() < 2)
+        throw IrcError(client->getNickname(), "TOPIC", CLIENT_NEEDMOREPARAMS);
     if (it == channel_list.end())
         throw IrcError(client->getNickname(), channel_name, CLIENT_NOSUCHCHANNEL);
-
-    Channel *channel = it->second;
     if (!channel->isMember(client))
         throw IrcError(client->getNickname(), channel_name, CLIENT_NOTONCHANNEL);
 

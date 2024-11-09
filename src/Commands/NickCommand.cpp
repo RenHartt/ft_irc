@@ -23,21 +23,19 @@ void Command::_executeNick(Client *client, std::vector<std::string> args)
     if (isValidNickname(args[1]) == false)
         throw IrcError(client->getNickname(), CLIENT_ERRONEUSNICKNAME);
     if (_server->NicknameAlreadyUsed(args[1]))
-    {
-        client->failed_nick = args[1];
         throw IrcError(client->getNickname(), args[1], CLIENT_NICKNAMEINUSE);
-    }
 
     client->setNickname(args[1]);
+	std::string message;
 
     if (client->getUsername().empty() == false && client->getIsRegistered() == false)
 	{
 		client->setIsRegistered(true);
-		std::string success_message = ":localhost 001 " + client->getNickname() + " :Welcome to the IRC server\r\n";
-		send(client->getFd(), success_message.c_str(), success_message.size(), 0);
+		message = ":localhost 001 " + client->getNickname() + " :Welcome to the IRC server\r\n";
+		send(client->getFd(), message.c_str(), message.size(), 0);
 	} else
 	{
-		std::string message = ":" + old_nickname + " NICK " + client->getNickname() + "\r\n";
+		message = ":" + old_nickname + " NICK " + client->getNickname() + "\r\n";
 		_server->broadcastServer(message);
 	}
 }
