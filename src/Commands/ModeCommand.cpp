@@ -73,16 +73,15 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
     if (!channel->isMember(client))
         throw IrcError(client_nickname, args[1], CLIENT_NOTONCHANNEL);
-
-    if (!channel->isOperator(client))
-        throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
-
     if (args.size() == 2)
     {
         std::string message = ":localhost 324 " + channel->getChannelName() + " " + getListOfModes(channel) + "\r\n";
         send(client->getFd(), message.c_str(), message.size(), 0);
         return;
     }
+    if (!channel->isOperator(client))
+        throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
+
 
     bool                     adding = true;
     std::string              modes = args[2];

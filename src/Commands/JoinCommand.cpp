@@ -95,9 +95,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
         ChannelMap::iterator it_channel = channels_list.find(channel_name);
 
         if (it_channel == channels_list.end())
-        {
             createChannel(_server, client, channel_name, password);
-        }
         else
         {
             Channel *channel = it_channel->second;
