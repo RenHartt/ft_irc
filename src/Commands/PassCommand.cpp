@@ -11,5 +11,6 @@ void Command::_executePass(Client *client, std::vector<std::string> args)
         throw IrcError(client->getNickname(), "PASS", CLIENT_NEEDMOREPARAMS);
     else if (!_server->checkPassword(args[1]))
         throw IrcError(client->getNickname(), CLIENT_PASSWDMISMATCH);
+
     client->setIsAuthenticated(true);
 }

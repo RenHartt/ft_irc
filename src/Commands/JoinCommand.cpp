@@ -84,9 +84,8 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
         throw IrcError(client->getNickname(), "JOIN", CLIENT_NEEDMOREPARAMS);
 
     ChannelPasswordList           request_list = initRequestList(args);
-    ChannelPasswordList::iterator it = request_list.begin();
 
-    for (; it != request_list.end(); it++)
+    for (ChannelPasswordList::iterator it = request_list.begin(); it != request_list.end(); it++)
     {
         std::string channel_name = it->first, password = it->second;
 
@@ -96,11 +95,9 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
 
         if (it_channel == channels_list.end())
             createChannel(_server, client, channel_name, password);
-        else if (channel->isGuest(client) == true)
-            joinChannel(client, channel);
         else if (channel->channel_settings.i_inviteOnly == true && channel->isGuest(client) == false)
             throw IrcError(client->getNickname(), channel_name, CLIENT_INVITEONLYCHAN);
-        else if (channel->channel_settings.k_enableKey == true && channel->getPassword() != password)
+        else if (channel->channel_settings.k_enableKey == true && channel->getPassword() != password && channel->isGuest(client) == false)
             throw IrcError(client->getNickname(), channel_name, CLIENT_BADCHANNELKEY);
         else if (channel->channel_settings.l_userLimit == true && channel->channel_settings.l_userLimit == channel->clients.size())
             throw IrcError(client->getNickname(), channel_name, CLIENT_CHANNELISFULL);

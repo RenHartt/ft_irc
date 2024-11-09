@@ -14,7 +14,6 @@ CommandMap Command::_initCommands()
     commands["PRIVMSG"] = &Command::_executePrivmsg;
     commands["JOIN"]    = &Command::_executeJoin;
     commands["PART"]    = &Command::_executePart;
-    commands["HELP"]    = &Command::_executeHelp;
     commands["TOPIC"]   = &Command::_executeTopic;
 	commands["INVITE"]  = &Command::_executeInvite;
 	commands["PASS"]    = &Command::_executePass;

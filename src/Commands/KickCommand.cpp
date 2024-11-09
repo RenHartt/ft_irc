@@ -4,43 +4,39 @@
 #include <IrcError.hpp>
 #include <Server.hpp>
 #include <sys/socket.h>
-#include <iostream>
 
-Channel *getChannel(Client *client, ChannelMap channels_list, const std::string &channel_name)
+Channel *getChannel(Client *client, ChannelMap channels_list, std::string channel_name)
 {
-	std::string client_nickname = client->getNickname();
-
+    std::string client_nickname = client->getNickname();
     ChannelMap::iterator channel_it = channels_list.find(channel_name);
+    Channel *channel = channel_it->second;
+
     if (channel_it == channels_list.end())
         throw IrcError(client_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
-
-    Channel *channel = channel_it->second;
     if (!channel->isMember(client))
         throw IrcError(client_nickname, channel_name, CLIENT_NOTONCHANNEL);
+    if (!channel->isOperator(client))
+        throw IrcError(client_nickname, channel_name, CLIENT_CHANOPRIVSNEEDED);
 
     return channel;
 }
 
-void kickTargetFromChannel(Client *client, Channel *channel, Client *target, const std::string &comment)
+void kickTargetFromChannel(Client *client, Channel *channel, Client *target, std::string comment)
 {
-	std::string client_nickname = client->getNickname();
-	std::string target_nickname = target->getNickname();
-	std::string channel_name = channel->getChannelName();
-    std::string message;
+    std::string client_nickname = client->getNickname();
+	std::string client_username = client->getUsername();
+    std::string target_nickname = target->getNickname();
+    std::string channel_name = channel->getChannelName();
 
-	if (!target)
-		throw IrcError(client->getNickname(), "KICK", CLIENT_NOSUCHNICK);
     if (!channel->isMember(target))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
+    std::string message = ":" + client_nickname + "!" + client_username + "@localhost KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
+    channel->broadcastMessage(message, NULL);
+
+	channel->delGuest(target);
     channel->delClient(target);
-	channel->delOperator(target);
-
-	message = ":" + client_nickname + " KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
-    channel->broadcastMessage(message, client);
-
-    message = "You have been kicked from " + channel_name + " by " + client_nickname + " : " + comment + "\r\n";
-    send(target->getFd(), message.c_str(), message.size(), 0);
+    channel->delOperator(target);
 }
 
 void Command::_executeKick(Client *client, std::vector<std::string> args)
@@ -48,28 +44,16 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
     if (args.size() < 3)
         throw IrcError(client->getNickname(), "KICK", CLIENT_NEEDMOREPARAMS);
 
-    std::vector<std::string> channels = split(args[1], ',');
-    std::vector<std::string> targets = split(args[2], ',');
+    std::string channel_name = args[1];
+    std::string target_nickname = args[2];
     std::string comment = (args.size() > 3) ? args[3] : "No reason given";
 
-	ChannelMap channels_list = _server->getChannelsList();
-	ClientMap clients_list = _server->getClientsList();
+    ChannelMap channels_list = _server->getChannelsList();
+    Client *target = _server->getClientbyNickname(target_nickname);
+    
+    if (!target)
+        throw IrcError(client->getNickname(), target_nickname, CLIENT_NOSUCHNICK);
 
-	for (std::vector<std::string>::iterator channel_it = channels.begin(); channel_it != channels.end(); channel_it++)
-	{
-		for (std::vector<std::string>::iterator client_it = targets.begin(); client_it != targets.end(); client_it++)
-		{
-			try
-			{
-				Client *target = _server->getClientbyNickname(*client_it); 
-				Channel *channel = getChannel(client, channels_list, *channel_it);
-
-				kickTargetFromChannel(client, channel, target, comment);
-			}
-			catch (const IrcError& e)
-			{
-				e.sendto(*client);
-			}
-		}
-	}
+    Channel *channel = getChannel(client, channels_list, channel_name);
+    kickTargetFromChannel(client, channel, target, comment);
 }
