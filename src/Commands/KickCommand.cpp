@@ -23,24 +23,24 @@ Channel *getChannel(Client *client, ChannelMap channels_list, const std::string 
 
 void kickTargetFromChannel(Client *client, Channel *channel, Client *target, const std::string &comment)
 {
-	if (!target)
-		throw IrcError(client->getNickname(), "KICK", CLIENT_NOSUCHNICK);
-
 	std::string client_nickname = client->getNickname();
 	std::string target_nickname = target->getNickname();
 	std::string channel_name = channel->getChannelName();
+    std::string message;
 
+	if (!target)
+		throw IrcError(client->getNickname(), "KICK", CLIENT_NOSUCHNICK);
     if (!channel->isMember(target))
         throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
     channel->delClient(target);
 	channel->delOperator(target);
 
-    std::string kick_message = ":" + client_nickname + " KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
-    channel->broadcastMessage(kick_message, client);
+	message = ":" + client_nickname + " KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
+    channel->broadcastMessage(message, client);
 
-    std::string notify_message = "You have been kicked from " + channel_name + " by " + client_nickname + " : " + comment + "\r\n";
-    send(target->getFd(), notify_message.c_str(), notify_message.size(), 0);
+    message = "You have been kicked from " + channel_name + " by " + client_nickname + " : " + comment + "\r\n";
+    send(target->getFd(), message.c_str(), message.size(), 0);
 }
 
 void Command::_executeKick(Client *client, std::vector<std::string> args)
@@ -63,7 +63,6 @@ void Command::_executeKick(Client *client, std::vector<std::string> args)
 			{
 				Client *target = _server->getClientbyNickname(*client_it); 
 				Channel *channel = getChannel(client, channels_list, *channel_it);
-				std::cout << target << std::endl;
 
 				kickTargetFromChannel(client, channel, target, comment);
 			}

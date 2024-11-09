@@ -98,7 +98,6 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
 
     if (args.size() < 3)
         throw IrcError(client_nickname, CLIENT_NEEDMOREPARAMS);
-
     if (!isValidChannelName(args[1]))
         throw IrcError(client_nickname, args[1], CLIENT_BADCHANMASK);
 

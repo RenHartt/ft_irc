@@ -29,20 +29,25 @@ class Channel
     void setTopic(const std::string &new_topic);
     void setPassword(const std::string &password);
 
-    bool isMember(Client *client);
-    bool isOperator(Client *client);
-
     void addClient(Client *client);
     void delClient(Client *client);
 
-	void addOperator(Client *client);
-	void delOperator(Client *client);
+    void addOperator(Client *client);
+    void delOperator(Client *client);
+
+	void addGuest(Client *client);
+	void delGuest(Client *client);
+
+    bool isMember(Client *client);
+    bool isOperator(Client *client);
+	bool isGuest(Client *client);
 
     void broadcastMessage(const std::string &message, Client *sender);
 
     ChannelSettings channel_settings;
-	ClientMap		clients;
-    OperatorMap     operators;
+    ClientMap       clients;
+    ClientMap       operators;
+	ClientMap		guests;
 
   private:
     std::string _channel_name;

@@ -12,7 +12,6 @@ typedef std::map<int, Client *>                           ClientMap;
 typedef std::map<std::string, Channel *>                  ChannelMap;
 typedef std::vector<std::pair<std::string, std::string> > ChannelPasswordList;
 typedef std::map<int, ClientRight>                        ClientRightMap;
-typedef std::map<int, bool>                               OperatorMap;
 
 std::string itoa(int value);
 
