@@ -28,13 +28,17 @@ class Server
     void handleCommand(int client_fd);
     void broadcastServer(const std::string &message);
 
-    std::string         getName() const;
     int                 getClientCount() const;
-    int                 getFdByNickname(const std::string &nickname);
-    Client             *getClientbyNickname(const std::string &nickname);
-    ChannelMap          getChannelsList(void) const;
+    int                 getClientFdByNickname(const std::string &nickname);
+    Client             *getClientByNickname(const std::string &nickname);
+    
+	Channel            *getChannelByChannelname(const std::string &channelname);
+    
+	ChannelMap          getChannelsList(void) const;
     ClientMap           getClientsList(void) const;
-    std::vector<pollfd> getPollFds(void) const;
+    
+    std::string         getName() const;
+	std::vector<pollfd> getPollFds(void) const;
     std::string         getPassword();
     std::string         getCreationDate() const;
 
@@ -54,12 +58,12 @@ class Server
     std::vector<pollfd> _poll_fds;
     uint8_t             _hash[32];
 
-    Command    _command;
-    ClientMap  _clients_list;
-    ChannelMap _channels_list;
-	std::string _creationDate;
-    void _initSockAddr(sockaddr_in &address);
-    void _newFdToPoll(void);
+    Command     _command;
+    ClientMap   _clients_list;
+    ChannelMap  _channels_list;
+    std::string _creationDate;
+    void        _initSockAddr(sockaddr_in &address);
+    void        _newFdToPoll(void);
 
     void _createSocket(void);
     void _bindSocket(void);

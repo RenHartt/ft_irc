@@ -5,30 +5,26 @@
 
 void Command::_executePart(Client *client, std::vector<std::string> args)
 {
+    std::string sender_nickname = client->getNickname();
+
     if (args.size() < 2)
-        throw IrcError(client->getNickname(), "PART", CLIENT_NEEDMOREPARAMS);
+        throw IrcError(sender_nickname, "PART", CLIENT_NEEDMOREPARAMS);
 
-    std::string channel = args[1];
-    if (channel[0] != '#')
-        throw IrcError(client->getNickname(), "PART", CLIENT_NOSUCHCHANNEL);
+    std::string channel_name = args[1];
+    Channel    *channel = _server->getChannelsList()[channel_name];
+    if (!channel)
+        throw IrcError(sender_nickname, "PART", CLIENT_NOSUCHCHANNEL);
+    if (!channel->isMember(client))
+        throw IrcError(sender_nickname, "PART", CLIENT_NOTONCHANNEL);
 
-    ChannelMap           channel_list = _server->getChannelsList();
-    ChannelMap::iterator it = channel_list.find(channel);
+    channel->delGuest(client);
+    channel->delClient(client);
+    channel->delOperator(client);
 
-    if (it == channel_list.end())
-        throw IrcError(client->getNickname(), "PART", CLIENT_NOSUCHCHANNEL);
-
-    Channel *channel_ptr = it->second;
-
-    if (!channel_ptr->isMember(client))
-        throw IrcError(client->getNickname(), "PART", CLIENT_NOTONCHANNEL);
-
-    channel_ptr->delClient(client);
-
-    std::string partMessage = ":" + client->getNickname() + " PART " + channel + "\r\n";
-    channel_ptr->broadcastMessage(partMessage, client);
+    std::string partMessage = ":" + sender_nickname + " PART " + channel_name + "\r\n";
+    channel->broadcastMessage(partMessage, client);
 
     send(client->getFd(), partMessage.c_str(), partMessage.size(), 0);
-    if (channel_ptr->isMember(client) == false)
-        send(client->getFd(), "You have left the channel\r\n", 27, 0);
+    if (channel->isMember(client) == false)
+        send(client->getFd(), "You have left the channel_name\r\n", 27, 0);
 }

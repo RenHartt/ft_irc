@@ -43,7 +43,17 @@ int         Server::getClientCount() const { return _clients_list.size(); }
 ChannelMap  Server::getChannelsList(void) const { return (_channels_list); }
 ClientMap   Server::getClientsList(void) const { return (_clients_list); }
 
-Client *Server::getClientbyNickname(const std::string &nickname)
+int Server::getClientFdByNickname(const std::string &nickname)
+{
+    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+    {
+        if (it->second->getNickname() == nickname)
+            return it->first;
+    }
+    return 0;
+}
+
+Client *Server::getClientByNickname(const std::string &nickname)
 {
     for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
@@ -53,14 +63,12 @@ Client *Server::getClientbyNickname(const std::string &nickname)
     return NULL;
 }
 
-int Server::getFdByNickname(const std::string &nickname)
+Channel *Server::getChannelByChannelname(const std::string &channelname)
 {
-    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
-    {
-        if (it->second->getNickname() == nickname)
-            return it->first;
-    }
-    return 0;
+	ChannelMap::const_iterator it = _channels_list.find(channelname);
+	if (it != _channels_list.end())
+		return it->second;
+	return NULL;
 }
 
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }

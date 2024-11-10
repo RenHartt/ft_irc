@@ -4,28 +4,33 @@
 
 void Command::_executeInvite(Client *client, std::vector<std::string> args)
 {
+    std::string sender_nickname = client->getNickname();
+
     if (args.size() < 3)
-        throw IrcError(client->getNickname(), "INVITE", CLIENT_NEEDMOREPARAMS);
+        throw IrcError(sender_nickname, "INVITE", CLIENT_NEEDMOREPARAMS);
 
-    std::string          nickname = args[1], channel_name = args[2];
-    ChannelMap           channel_list = _server->getChannelsList();
-    ChannelMap::iterator channel_it = channel_list.find(channel_name);
-    Client              *target = _server->getClientbyNickname(nickname);
+    std::string target_nickname = args[1];
+    std::string channel_name = args[2];
 
+    Client *target = _server->getClientByNickname(target_nickname);
     if (!target)
-        throw IrcError(client->getNickname(), nickname, CLIENT_NOSUCHNICK);
-    if (channel_it == channel_list.end())
-        throw IrcError(client->getNickname(), channel_name, CLIENT_NOSUCHCHANNEL);
-    if (!channel_it->second->isMember(client))
-        throw IrcError(client->getNickname(), channel_name, CLIENT_NOTONCHANNEL);
-    if (channel_it->second->isMember(target))
-        throw IrcError(client->getNickname(), channel_name, CLIENT_USERONCHANNEL);
+        throw IrcError(sender_nickname, target_nickname, CLIENT_NOSUCHNICK);
 
-    channel_it->second->addGuest(target);
+    Channel *channel = _server->getChannelsList()[channel_name];
+    if (!channel)
+        throw IrcError(sender_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
+    if (!channel->isMember(client))
+        throw IrcError(sender_nickname, channel_name, CLIENT_NOTONCHANNEL);
+    if (!channel->isOperator(client))
+        throw IrcError(sender_nickname, channel_name, CLIENT_CHANOPRIVSNEEDED);
+    if (channel->isMember(target))
+        throw IrcError(sender_nickname, channel_name, CLIENT_USERONCHANNEL);
 
-    std::string invite_message = ":" + client->getNickname() + " INVITE " + target->getNickname() + " :" + channel_name + "\r\n";
+    channel->addGuest(target);
+
+    std::string invite_message = ":" + sender_nickname + " INVITE " + target->getNickname() + " :" + channel_name + "\r\n";
     send(target->getFd(), invite_message.c_str(), invite_message.size(), 0);
 
-    std::string confirm_message = ":localhost 341 " + client->getNickname() + " " + target->getNickname() + " :" + channel_name + "\r\n";
+    std::string confirm_message = ":localhost 341 " + sender_nickname + " " + target->getNickname() + " :" + channel_name + "\r\n";
     send(client->getFd(), confirm_message.c_str(), confirm_message.size(), 0);
 }

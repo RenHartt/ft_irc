@@ -32,8 +32,7 @@ void sendToClient(Client *sender, const std::string &recipient, int recipient_fd
 {
     if (recipient_fd > 0)
     {
-        std::string full_message = ":" + sender->getNickname() + "!" + sender->getUsername() + "@" + "localhost" +
-                                   " PRIVMSG " + recipient + " :" + message + "\r\n";   
+        std::string full_message = ":" + sender->getNickname() + "!" + sender->getUsername() + "@localhost PRIVMSG " + recipient + " :" + message + "\r\n";   
 		std::cout << "Sending message: " << full_message << std::endl;
 
 		send(recipient_fd, full_message.c_str(), full_message.size(), 0);
@@ -57,7 +56,7 @@ void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
     for (std::vector<std::string>::iterator it = recipients.begin(); it != recipients.end(); it++)
     {
         std::string recipient = *it;
-		int recipient_fd = _server->getFdByNickname(recipient);
+		int recipient_fd = _server->getClientFdByNickname(*it);
         try
         {
             if (recipient[0] == '#')

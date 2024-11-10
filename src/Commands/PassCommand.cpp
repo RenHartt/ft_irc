@@ -7,10 +7,12 @@
 
 void Command::_executePass(Client *client, std::vector<std::string> args)
 {
-    if (args.size() < 2 || args[1].empty())
-        throw IrcError(client->getNickname(), "PASS", CLIENT_NEEDMOREPARAMS);
-    else if (!_server->checkPassword(args[1]))
-        throw IrcError(client->getNickname(), CLIENT_PASSWDMISMATCH);
+    std::string sender_nickname = client->getNickname();
+
+    if (args.size() < 2)
+        throw IrcError(sender_nickname, "PASS", CLIENT_NEEDMOREPARAMS);
+    if (!_server->checkPassword(args[1]))
+        throw IrcError(sender_nickname, CLIENT_PASSWDMISMATCH);
 
     client->setIsAuthenticated(true);
 }

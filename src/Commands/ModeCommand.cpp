@@ -48,7 +48,7 @@ void l_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t
 void o_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index, Server *server)
 {
     std::string target_nickname = args[arg_index++];
-    Client     *target_client = server->getClientbyNickname(target_nickname);
+    Client     *target_client = server->getClientByNickname(target_nickname);
 
     if (!target_client || !channel->isMember(target_client))
         throw IrcError("Channel error", target_nickname, CLIENT_USERNOTINCHANNEL);
@@ -66,22 +66,19 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     if (args.size() < 2)
         throw IrcError(client_nickname, CLIENT_NEEDMOREPARAMS);
 
-    ChannelMap channels_map = _server->getChannelsList();
-    Channel   *channel = channels_map[args[1]];
-
+    Channel   *channel = _server->getChannelsList()[args[1]];
     if (!channel)
         throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
     if (!channel->isMember(client))
         throw IrcError(client_nickname, args[1], CLIENT_NOTONCHANNEL);
+    if (!channel->isOperator(client))
+        throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
     if (args.size() == 2)
     {
         std::string message = ":localhost 324 " + channel->getChannelName() + " " + getListOfModes(channel) + "\r\n";
         send(client->getFd(), message.c_str(), message.size(), 0);
         return;
     }
-    if (!channel->isOperator(client))
-        throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
-
 
     bool                     adding = true;
     std::string              modes = args[2];

@@ -6,47 +6,43 @@
 
 void Command::_executeTopic(Client *client, std::vector<std::string> args)
 {
+	std::string sender_nickname = client->getNickname();
+
     if (args.size() < 2)
-        throw IrcError(client->getNickname(), "TOPIC", CLIENT_NEEDMOREPARAMS);
+        throw IrcError(sender_nickname, "TOPIC", CLIENT_NEEDMOREPARAMS);
 
     std::string channel_name = args[1];
-    ChannelMap channel_list = _server->getChannelsList();
-    ChannelMap::iterator it = channel_list.find(channel_name);
-
-    if (it == channel_list.end())
-        throw IrcError(client->getNickname(), channel_name, CLIENT_NOSUCHCHANNEL);
-
-    Channel *channel = it->second;
-
+    Channel *channel = _server->getChannelsList()[channel_name];
+    if (!channel)
+        throw IrcError(sender_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
     if (!channel->isMember(client))
-        throw IrcError(client->getNickname(), channel_name, CLIENT_NOTONCHANNEL);
+        throw IrcError(sender_nickname, channel_name, CLIENT_NOTONCHANNEL);
+    if (!channel->isOperator(client) && channel->channel_settings.t_topicRestriction)
+        throw IrcError(sender_nickname, channel_name, CLIENT_CHANOPRIVSNEEDED);
 
     if (args.size() == 2)
     {
         std::string topic = channel->getTopic();
         if (topic.empty())
         {
-            std::string response = ":" + _server->getName() + " 331 " + client->getNickname() + " " + channel_name + " :No topic is set\r\n";
+            std::string response = ":" + _server->getName() + " 331 " + sender_nickname + " " + channel_name + " :No topic is set\r\n";
             send(client->getFd(), response.c_str(), response.size(), 0);
         }
         else
         {
-            std::string response = ":" + _server->getName() + " 332 " + client->getNickname() + " " + channel_name + " :" + topic + "\r\n";
+            std::string response = ":" + _server->getName() + " 332 " + sender_nickname + " " + channel_name + " :" + topic + "\r\n";
+            response += ":" + _server->getName() + " 333 " + sender_nickname + " " + channel_name + " " + channel->getTopicSetter() + "\r\n";
             send(client->getFd(), response.c_str(), response.size(), 0);
-            std::string topic_info = ":" + _server->getName() + " 333 " + client->getNickname() + " " + channel_name + " " + channel->getTopicSetter() + "\r\n";
-            send(client->getFd(), topic_info.c_str(), topic_info.size(), 0);
         }
         return;
     }
 
-    if (!channel->isOperator(client) && channel->channel_settings.t_topicRestriction)
-        throw IrcError(client->getNickname(), channel_name, CLIENT_CHANOPRIVSNEEDED);
-
     std::string new_topic = args[2];
-    channel->setTopic(new_topic);
-    channel->setTopicSetter(client->getNickname());
 
-    std::string confirmation = ":" + client->getNickname() + "!" + client->getUsername() + "@" + "localhost" + " TOPIC " + channel_name + " :" + new_topic + "\r\n";
+    channel->setTopic(new_topic);
+    channel->setTopicSetter(sender_nickname);
+
+    std::string confirmation = ":" + sender_nickname + "!" + client->getUsername() + "@" + "localhost" + " TOPIC " + channel_name + " :" + new_topic + "\r\n";
     channel->broadcastMessage(confirmation, client);
 }
 
