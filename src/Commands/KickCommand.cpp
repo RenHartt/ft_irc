@@ -12,8 +12,7 @@ void kickTargetFromChannel(Client *client, Channel *channel, Client *target, std
     std::string target_nickname = target->getNickname();
     std::string channel_name = channel->getChannelName();
 
-    std::string message = ":" + sender_nickname + "!" + sender_username + "@localhost KICK " +
-                          channel_name + " " + target_nickname + " :" + comment + "\r\n";
+    std::string message = ":" + sender_nickname + "!" + sender_username + "@localhost KICK " + channel_name + " " + target_nickname + " :" + comment + "\r\n";
     channel->broadcastMessage(message, NULL);
 
     channel->delGuest(target);

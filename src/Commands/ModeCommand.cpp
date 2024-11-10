@@ -10,10 +10,14 @@ std::string getListOfModes(Channel *channel)
 {
     std::string modes_list;
 
-    if (channel->channel_settings.i_inviteOnly) modes_list += "i";
-    if (channel->channel_settings.k_enableKey) modes_list += "k";
-    if (channel->channel_settings.t_topicRestriction) modes_list += "t";
-    if (channel->channel_settings.l_userLimit) modes_list += "l " + itoa(channel->channel_settings.l_userLimit);
+    if (channel->channel_settings.i_inviteOnly)
+        modes_list += "i";
+    if (channel->channel_settings.k_enableKey)
+        modes_list += "k";
+    if (channel->channel_settings.t_topicRestriction)
+        modes_list += "t";
+    if (channel->channel_settings.l_userLimit)
+        modes_list += "l " + itoa(channel->channel_settings.l_userLimit);
 
     return modes_list;
 }
@@ -66,19 +70,20 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     if (args.size() < 2)
         throw IrcError(client_nickname, CLIENT_NEEDMOREPARAMS);
 
-    Channel   *channel = _server->getChannelsList()[args[1]];
-    if (!channel)
-        throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
-    if (!channel->isMember(client))
-        throw IrcError(client_nickname, args[1], CLIENT_NOTONCHANNEL);
-    if (!channel->isOperator(client))
-        throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
+    Channel *channel = _server->getChannelsList()[args[1]];
+    std::string channel_name = channel->getChannelName();
     if (args.size() == 2)
     {
-        std::string message = ":localhost 324 " + channel->getChannelName() + " " + getListOfModes(channel) + "\r\n";
+        std::string message = ":localhost 324 " + channel_name + " " + getListOfModes(channel) + "\r\n";
         send(client->getFd(), message.c_str(), message.size(), 0);
         return;
     }
+    if (!channel)
+        throw IrcError(client_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
+    if (!channel->isMember(client))
+        throw IrcError(client_nickname, channel_name, CLIENT_NOTONCHANNEL);
+    if (!channel->isOperator(client))
+        throw IrcError(client_nickname, channel_name, CLIENT_CHANOPRIVSNEEDED);
 
     bool                     adding = true;
     std::string              modes = args[2];
@@ -127,7 +132,7 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         }
     }
 
-    std::string response = ":" + client->getNickname() + " MODE " + channel->getChannelName() + " " + modes_applied;
+    std::string response = ":" + client_nickname + " MODE " + channel_name + " " + modes_applied;
     for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
         response += " " + *it;
     response += "\r\n";

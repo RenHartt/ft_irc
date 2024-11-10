@@ -28,9 +28,9 @@ void Command::_executeInvite(Client *client, std::vector<std::string> args)
 
     channel->addGuest(target);
 
-    std::string invite_message = ":" + sender_nickname + " INVITE " + target->getNickname() + " :" + channel_name + "\r\n";
+    std::string invite_message = ":" + sender_nickname + " INVITE " + target_nickname + " :" + channel_name + "\r\n";
     send(target->getFd(), invite_message.c_str(), invite_message.size(), 0);
 
-    std::string confirm_message = ":localhost 341 " + sender_nickname + " " + target->getNickname() + " :" + channel_name + "\r\n";
+    std::string confirm_message = ":localhost 341 " + sender_nickname + " " + target_nickname + " :" + channel_name + "\r\n";
     send(client->getFd(), confirm_message.c_str(), confirm_message.size(), 0);
 }

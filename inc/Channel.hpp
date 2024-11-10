@@ -24,36 +24,36 @@ class Channel
     std::string getChannelName(void) const;
     std::string getPassword(void) const;
     std::string getTopic(void) const;
+    std::string getTopicSetter() const;
     int         getNbClient(void) const;
 
-    void setTopic(const std::string &new_topic);
     void setPassword(const std::string &password);
+    void setTopic(const std::string &new_topic);
+    void setTopicSetter(const std::string &topicSetter);
 
+    void addGuest(Client *client);
     void addClient(Client *client);
-    void delClient(Client *client);
-
     void addOperator(Client *client);
-    void delOperator(Client *client);
 
-	void addGuest(Client *client);
-	void delGuest(Client *client);
+    void delGuest(Client *client);
+    void delClient(Client *client);
+    void delOperator(Client *client);
 
     bool isMember(Client *client);
     bool isOperator(Client *client);
-	bool isGuest(Client *client);
+    bool isGuest(Client *client);
 
     void broadcastMessage(const std::string &message, Client *sender);
 
-    std::string getTopicSetter() const;
-	void setTopicSetter(const std::string &topicSetter);
-    ChannelSettings channel_settings;
     ClientMap       clients;
     ClientMap       operators;
-	ClientMap		guests;
+    ClientMap       guests;
+
+    ChannelSettings channel_settings;
 
   private:
     std::string _channel_name;
     std::string _password;
     std::string _topic;
-	std::string _topicSetter;
+    std::string _topicSetter;
 };

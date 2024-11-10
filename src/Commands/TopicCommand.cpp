@@ -2,8 +2,6 @@
 #include <IrcError.hpp>
 #include <Server.hpp>
 
-
-
 void Command::_executeTopic(Client *client, std::vector<std::string> args)
 {
 	std::string sender_nickname = client->getNickname();
@@ -34,16 +32,16 @@ void Command::_executeTopic(Client *client, std::vector<std::string> args)
             response += ":" + _server->getName() + " 333 " + sender_nickname + " " + channel_name + " " + channel->getTopicSetter() + "\r\n";
             send(client->getFd(), response.c_str(), response.size(), 0);
         }
-        return;
-    }
+    } else
+	{
+		std::string new_topic = args[2];
 
-    std::string new_topic = args[2];
+		channel->setTopic(new_topic);
+		channel->setTopicSetter(sender_nickname);
 
-    channel->setTopic(new_topic);
-    channel->setTopicSetter(sender_nickname);
-
-    std::string confirmation = ":" + sender_nickname + "!" + client->getUsername() + "@" + "localhost" + " TOPIC " + channel_name + " :" + new_topic + "\r\n";
-    channel->broadcastMessage(confirmation, client);
+		std::string confirmation = ":" + sender_nickname + "!" + client->getUsername() + "@" + "localhost" + " TOPIC " + channel_name + " :" + new_topic + "\r\n";
+		channel->broadcastMessage(confirmation, NULL);
+	}
 }
 
 

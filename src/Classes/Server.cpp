@@ -42,6 +42,7 @@ std::string Server::getName() const { return _server_name; }
 int         Server::getClientCount() const { return _clients_list.size(); }
 ChannelMap  Server::getChannelsList(void) const { return (_channels_list); }
 ClientMap   Server::getClientsList(void) const { return (_clients_list); }
+std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 int Server::getClientFdByNickname(const std::string &nickname)
 {
@@ -70,8 +71,6 @@ Channel *Server::getChannelByChannelname(const std::string &channelname)
 		return it->second;
 	return NULL;
 }
-
-std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
 /* adder */
 
@@ -132,12 +131,12 @@ void Server::acceptNewClient()
     int opt = 1;
     if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
         throw IrcError("Impossible to set socket options", SERVER_INIT);
+
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
     if (client_fd < 0)
         return;
 
-    Client *new_client = new Client(client_fd);
-    _clients_list[client_fd] = new_client;
+    _clients_list[client_fd] = new Client(client_fd);
 
     pollfd client_pollfd;
     client_pollfd.fd = client_fd;

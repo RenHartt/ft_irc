@@ -22,9 +22,7 @@ void Command::_executePart(Client *client, std::vector<std::string> args)
     channel->delOperator(client);
 
     std::string partMessage = ":" + sender_nickname + " PART " + channel_name + "\r\n";
-    channel->broadcastMessage(partMessage, client);
-
-    send(client->getFd(), partMessage.c_str(), partMessage.size(), 0);
+    channel->broadcastMessage(partMessage, NULL);
     if (channel->isMember(client) == false)
         send(client->getFd(), "You have left the channel_name\r\n", 27, 0);
 }
