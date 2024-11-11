@@ -87,7 +87,7 @@ void joinChannel(Client *client, Channel *channel, const std::string &password)
 
     std::string message;
     message = ":" + sender_nickname + " JOIN " + channel_name + "\r\n";
-    channel->broadcastMessage(message, client);
+    channel->broadcastMessage(message, NULL);
 
     message = ":localhost 353 " + sender_nickname + " = " + channel_name + " :" + getListOfClients(channel) + "\r\n";
     message += ":localhost 366 " + sender_nickname + " " + channel_name + " :End of /NAMES list\r\n";
