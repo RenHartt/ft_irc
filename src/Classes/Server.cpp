@@ -151,7 +151,7 @@ void Server::handleCommand(int client_fd)
         client->clearBufferUpTo(0, pos);
         std::vector<std::string> command = client->splitCommand(commandLine);
 
-        if (command[0].empty())
+        if (command.empty() || command[0].empty())
             continue;
         if (!client->getIsAuthenticated())
         {
