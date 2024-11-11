@@ -10,6 +10,7 @@ class Command;
 
 typedef std::map<int, Client *>          ClientMap;
 typedef std::map<std::string, Channel *> ChannelMap;
+typedef std::vector<std::pair<std::string, std::string> > ChannelPasswordList;
 typedef void (Command::*CmdAddr)(Client *, std::vector<std::string>);
 typedef std::map<std::string, CmdAddr> CommandMap;
 
