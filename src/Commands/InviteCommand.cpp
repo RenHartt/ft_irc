@@ -2,7 +2,7 @@
 #include <IrcError.hpp>
 #include <Server.hpp>
 
-void Command::_executeInvite(Client *client, std::vector<std::string> args)
+void Command::_executeInvite(Client *client, std::vector<std::string> &args)
 {
     std::string sender_nickname = client->getNickname();
 

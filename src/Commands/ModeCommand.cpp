@@ -1,11 +1,6 @@
-#include "Channel.hpp"
-#include <Client.hpp>
-#include <Command.hpp>
+#include <sys/types.h>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
-#include <cstddef>
-#include <sys/types.h>
 
 std::string getListOfModes(Channel *channel)
 {
@@ -81,7 +76,7 @@ void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::stri
     adding ? channel->addOperator(target_client) : channel->delOperator(target_client);
 }
 
-void Command::_executeMode(Client *client, std::vector<std::string> args)
+void Command::_executeMode(Client *client, std::vector<std::string> &args)
 {
     std::string client_nickname(client->getNickname());
 

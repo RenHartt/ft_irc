@@ -1,9 +1,6 @@
 #include <Command.hpp>
-#include <ErrTable.hpp>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
-#include <cstring>
 
 void sendToChannel(Client *sender, const std::string &recipient, const std::string &message, ChannelMap &channels_list)
 {
@@ -35,7 +32,7 @@ void sendToClient(Client *sender, const std::string &recipient, int recipient_fd
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHNICK);
 }
 
-void Command::_executePrivmsg(Client *sender, std::vector<std::string> command)
+void Command::_executePrivmsg(Client *sender, std::vector<std::string> &command)
 {
     if (command.size() < 2 || command[1].empty())
         throw IrcError(sender->getNickname(), CLIENT_NORECIPIENT);

@@ -1,9 +1,6 @@
-#include <Client.hpp>
-#include <Command.hpp>
+#include <sys/socket.h>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
-#include <sys/socket.h>
 
 void kickTargetFromChannel(Client *client, Channel *channel, Client *target, std::string comment)
 {
@@ -20,7 +17,7 @@ void kickTargetFromChannel(Client *client, Channel *channel, Client *target, std
     channel->delOperator(target);
 }
 
-void Command::_executeKick(Client *client, std::vector<std::string> args)
+void Command::_executeKick(Client *client, std::vector<std::string> &args)
 {
     std::string sender_nickname = client->getNickname();
 

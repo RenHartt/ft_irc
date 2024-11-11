@@ -1,11 +1,6 @@
-#include "Channel.hpp"
-#include <Client.hpp>
-#include <Command.hpp>
-#include <ErrTable.hpp>
+#include <sys/socket.h>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
-#include <sys/socket.h>
 
 std::string getListOfClients(Channel *channel)
 {
@@ -95,7 +90,7 @@ void joinChannel(Client *client, Channel *channel, const std::string &password)
     send(client->getFd(), message.c_str(), message.length(), 0);
 }
 
-void Command::_executeJoin(Client *client, std::vector<std::string> args)
+void Command::_executeJoin(Client *client, std::vector<std::string> &args)
 {
     std::string sender_nickname = client->getNickname();
 

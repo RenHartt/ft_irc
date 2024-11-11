@@ -15,10 +15,10 @@ Channel::Channel(const std::string &channel_name, const std::string &password)
     _channel_settings.k_enableKey = true;
 }
 
-std::string     Channel::getChannelName(void) const { return _channel_name; }
-std::string     Channel::getPassword(void) const { return _password; }
-std::string     Channel::getTopic(void) const { return _topic.empty() ? "No topic set" : _topic; }
-std::string     Channel::getTopicSetter() const { return _topicSetter; }
+const std::string     Channel::getChannelName(void) const { return _channel_name; }
+const std::string     Channel::getPassword(void) const { return _password; }
+const std::string     Channel::getTopic(void) const { return _topic.empty() ? "No topic set" : _topic; }
+const std::string     Channel::getTopicSetter() const { return _topicSetter; }
 int             Channel::getNbClient(void) const { return _clients.size(); }
 ClientMap       Channel::getClientsMap(void) const { return _clients; }
 ClientMap       Channel::getOperatorsMap(void) const { return _operators; }
@@ -28,7 +28,7 @@ ChannelSettings Channel::getChannelSettings(void) const { return _channel_settin
 void Channel::setTopic(const std::string &new_topic) { _topic = new_topic; }
 void Channel::setTopicSetter(const std::string &setter) { _topicSetter = setter; }
 void Channel::setPassword(const std::string &password) { _password = password; }
-void Channel::setChannelSettings(ChannelSettings channel_settings) { _channel_settings = channel_settings; }
+void Channel::setChannelSettings(ChannelSettings &channel_settings) { _channel_settings = channel_settings; }
 
 void Channel::addGuest(Client *client) { _guests[client->getFd()] = client; }
 void Channel::addClient(Client *client) { _clients[client->getFd()] = client; }

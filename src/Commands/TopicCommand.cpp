@@ -1,8 +1,8 @@
-#include <Channel.hpp>
+#include <Command.hpp>
 #include <IrcError.hpp>
 #include <Server.hpp>
 
-void Command::_executeTopic(Client *client, std::vector<std::string> args)
+void Command::_executeTopic(Client *client, std::vector<std::string> &args)
 {
     std::string sender_nickname = client->getNickname();
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Utils.hpp>
 #include <string>
+#include <Utils.hpp>
 
 class Client
 {

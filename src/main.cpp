@@ -1,8 +1,7 @@
-#include <Server.hpp>
-#include <IrcError.hpp>
 #include <csignal>
 #include <iostream>
-#include <Utils.hpp>
+#include <Server.hpp>
+#include <IrcError.hpp>
 
 volatile sig_atomic_t server_running = 1;
 

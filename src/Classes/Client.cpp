@@ -11,17 +11,17 @@ Client::Client(int client_fd) :
 }
 
 int                Client::getFd() const { return (this->_client_fd); }
-const std::string &Client::getBuffer() const { return _buffer; }
 const std::string &Client::getNickname() const { return _nickname; }
 const std::string &Client::getUsername() const { return _username; }
-bool               Client::getIsRegistered() const { return _isRegistered; }
+const std::string &Client::getBuffer() const { return _buffer; }
 bool               Client::getIsAuthenticated() const { return _isAuthenticated; }
+bool               Client::getIsRegistered() const { return _isRegistered; }
 
-void Client::setBuffer(const std::string &buffer) { _buffer = buffer; }
 void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
 void Client::setUsername(const std::string &username) { _username = username; }
-void Client::setIsRegistered(bool isRegistered) { _isRegistered = isRegistered; }
+void Client::setBuffer(const std::string &buffer) { _buffer = buffer; }
 void Client::setIsAuthenticated(bool authenticated) { _isAuthenticated = authenticated; }
+void Client::setIsRegistered(bool isRegistered) { _isRegistered = isRegistered; }
 
 void Client::appendToBuffer(const std::string &buffer) { _buffer += buffer; }
 void Client::clearBufferUpTo(std::size_t start, std::size_t end) { _buffer.erase(start, end + 1); }

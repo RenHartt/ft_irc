@@ -1,10 +1,7 @@
-#include "Utils.hpp"
-#include <Client.hpp>
-#include <Command.hpp>
 #include <IrcError.hpp>
 #include <Server.hpp>
 
-void Command::_executePart(Client *client, std::vector<std::string> args)
+void Command::_executePart(Client *client, std::vector<std::string> &args)
 {
     std::string sender_nickname = client->getNickname();
     std::string sender_username = client->getUsername();
