@@ -35,9 +35,9 @@ void Channel::delGuest(Client *client) { guests.erase(client->getFd()); }
 void Channel::delClient(Client *client) { clients.erase(client->getFd()); }
 void Channel::delOperator(Client *client) { operators.erase(client->getFd()); }
 
-bool Channel::isMember(Client *client) { return clients.find(client->getFd()) != clients.end(); }
-bool Channel::isOperator(Client *client) { return operators.find(client->getFd()) != operators.end(); }
-bool Channel::isGuest(Client *client) { return guests.find(client->getFd()) != guests.end(); }
+bool Channel::isMember(Client *client) { return clients[client->getFd()]; }
+bool Channel::isOperator(Client *client) { return operators[client->getFd()]; }
+bool Channel::isGuest(Client *client) { return guests[client->getFd()]; }
 
 void Channel::broadcastMessage(const std::string &message, Client *client)
 {

@@ -4,9 +4,9 @@
 #include <Server.hpp>
 #include <sys/socket.h>
 
-bool Server::NicknameAlreadyUsed(const std::string &nickname)
+bool Server::NicknameAlreadyUsed(const std::string &nickname) const
 {
-    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+    for (ClientMap::const_iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
         if (it->second->getNickname() == nickname)
             return true;

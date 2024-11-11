@@ -80,11 +80,10 @@ void Command::_executeJoin(Client *client, std::vector<std::string> args)
 
     std::string channel_name = args[1];
 	std::string password;
-    args.size() == 3 ? password = args[2] : password = "";
+    args.size() == 3 ? password = args[2]
+					 : password = "";
 
     Channel *channel = _server->getChannelsList()[channel_name];
-    if (!channel)
-        createChannel(client, channel_name, password, _server);
-    else
-        joinChannel(client, channel, password);
+    channel ? joinChannel(client, channel, password) 
+		    : createChannel(client, channel_name, password, _server);
 }

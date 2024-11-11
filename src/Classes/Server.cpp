@@ -36,17 +36,15 @@ Server::~Server(void)
         delete it->second;
 }
 
-/* getter */
-
-std::string Server::getName() const { return _server_name; }
-int         Server::getClientCount() const { return _clients_list.size(); }
-ChannelMap  Server::getChannelsList(void) const { return (_channels_list); }
-ClientMap   Server::getClientsList(void) const { return (_clients_list); }
+std::string         Server::getName() const { return _server_name; }
+int                 Server::getClientCount() const { return _clients_list.size(); }
+ChannelMap          Server::getChannelsList(void) const { return (_channels_list); }
+ClientMap           Server::getClientsList(void) const { return (_clients_list); }
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
 
-int Server::getClientFdByNickname(const std::string &nickname)
+int Server::getClientFdByNickname(const std::string &nickname) const
 {
-    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+    for (ClientMap::const_iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
         if (it->second->getNickname() == nickname)
             return it->first;
@@ -54,9 +52,9 @@ int Server::getClientFdByNickname(const std::string &nickname)
     return 0;
 }
 
-Client *Server::getClientByNickname(const std::string &nickname)
+Client *Server::getClientByNickname(const std::string &nickname) const
 {
-    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+    for (ClientMap::const_iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
     {
         if (it->second->getNickname() == nickname)
             return it->second;
@@ -64,31 +62,18 @@ Client *Server::getClientByNickname(const std::string &nickname)
     return NULL;
 }
 
-Channel *Server::getChannelByChannelname(const std::string &channelname)
-{
-	ChannelMap::const_iterator it = _channels_list.find(channelname);
-	if (it != _channels_list.end())
-		return it->second;
-	return NULL;
-}
-
-/* adder */
+Channel *Server::getChannelByChannelname(const std::string &channelname) { return _channels_list[channelname]; }
 
 void Server::addChannel(const std::string &channel_name, Channel *channel) { _channels_list[channel_name] = channel; }
 void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
-void Server::removeClient(int fd)
+void Server::delClient(int fd)
 {
-    Client *client = _clients_list[fd];
-    if (client)
-    {
-        delete client;
-        _clients_list.erase(fd);
-    }
-
     for (std::vector<pollfd>::iterator poll_it = _poll_fds.begin(); poll_it != _poll_fds.end();)
         poll_it->fd == fd ? poll_it = _poll_fds.erase(poll_it) : poll_it++;
 
+    delete _clients_list[fd];
+    _clients_list.erase(fd);
     close(fd);
 }
 
@@ -100,7 +85,6 @@ void Server::broadcastServer(const std::string &message)
 
 void Server::run()
 {
-
     while (server_running)
     {
         int poll_count = poll(_poll_fds.data(), _poll_fds.size(), -1);
@@ -129,7 +113,8 @@ void Server::acceptNewClient()
     socklen_t   client_len = sizeof(client_address);
 
     int opt = 1;
-    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
+        0)
         throw IrcError("Impossible to set socket options", SERVER_INIT);
 
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
@@ -151,7 +136,7 @@ void Server::handleCommand(int client_fd)
     int  valread = read(client_fd, buffer, sizeof(buffer) - 1);
     if (valread == 0)
     {
-        removeClient(client_fd);
+        delClient(client_fd);
         return;
     } else if (valread < 0)
         return;
@@ -168,26 +153,25 @@ void Server::handleCommand(int client_fd)
 
         if (command[0].empty())
             continue;
-		if (!client->getIsAuthenticated())
-		{
-			if (command[0] != "PASS" && commandLine != "CAP LS 302\r")
-			{
-				IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
-				e.sendto(*client);
-				return;
-			}
-		}
-		else if (!client->getIsRegistered())
-		{
-			if (command[0] != "NICK" && command[0] != "USER")
-			{
-				IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
-				e.sendto(*client);
-				return;
-			}
-		}
-		if (commandLine != "CAP LS 302\r")
-			_command.exec(command[0], client, command);
+        if (!client->getIsAuthenticated())
+        {
+            if (command[0] != "PASS" && commandLine != "CAP LS 302\r")
+            {
+                IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+                e.sendto(*client);
+                return;
+            }
+        } else if (!client->getIsRegistered())
+        {
+            if (command[0] != "NICK" && command[0] != "USER")
+            {
+                IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
+                e.sendto(*client);
+                return;
+            }
+        }
+        if (commandLine != "CAP LS 302\r")
+            _command.exec(command[0], client, command);
     }
 }
 
@@ -232,7 +216,7 @@ void Server::_listenSocket()
         throw IrcError("Impossible to listen on the socket", SERVER_INIT);
 }
 
-__attribute((__annotate__(("fla")))) std::string Server::getPassword() { return _password; }
+__attribute((__annotate__(("fla")))) std::string Server::getPassword() const { return _password; }
 __attribute((__annotate__(("fla")))) bool Server::checkPassword(const std::string &password) const
 {
     if (password.empty())

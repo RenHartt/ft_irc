@@ -6,12 +6,12 @@
 
 class Client;
 class Channel;
-struct ClientRight;
+class Command;
 
-typedef std::map<int, Client *>                           ClientMap;
-typedef std::map<std::string, Channel *>                  ChannelMap;
-typedef std::vector<std::pair<std::string, std::string> > ChannelPasswordList;
-typedef std::map<int, ClientRight>                        ClientRightMap;
+typedef std::map<int, Client *>          ClientMap;
+typedef std::map<std::string, Channel *> ChannelMap;
+typedef void (Command::*CmdAddr)(Client *, std::vector<std::string>);
+typedef std::map<std::string, CmdAddr> CommandMap;
 
 std::string itoa(int value);
 
@@ -21,6 +21,5 @@ int getFdByNickname(const std::string &nickname, ClientMap clients_list);
 
 bool isValidChannelName(const std::string &channel_name);
 bool isValidNickname(const std::string &nickname);
-bool isValidUsername(const std::string &username);
 
 void handleSignal(int signal);

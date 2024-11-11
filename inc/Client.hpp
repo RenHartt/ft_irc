@@ -1,10 +1,7 @@
 #pragma once
 
 #include <Utils.hpp>
-
 #include <string>
-
-class Channel;
 
 class Client
 {
@@ -31,7 +28,6 @@ class Client
     std::vector<std::string> splitCommand(const std::string &buffer);
     void accumulateAndExtractCommand(const std::string &buffer, std::vector<std::string> &command);
 
-	std::string failed_nick;
   private:
     std::string _nickname;
     std::string _username;

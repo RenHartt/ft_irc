@@ -4,16 +4,12 @@
 #include <Utils.hpp>
 #include <stdint.h>
 
-// need to be formatted with the letter that correspond first
-// example : uint8_t f_foo() -> this will set the value of foo when f is send
 struct ChannelSettings {
     uint8_t i_inviteOnly : 1;
     uint8_t t_topicRestriction : 1;
     uint8_t k_enableKey : 1;
     uint8_t l_userLimit;
 };
-
-class Client;
 
 class Channel
 {
@@ -45,9 +41,9 @@ class Channel
 
     void broadcastMessage(const std::string &message, Client *sender);
 
-    ClientMap       clients;
-    ClientMap       operators;
-    ClientMap       guests;
+    ClientMap clients;
+    ClientMap operators;
+    ClientMap guests;
 
     ChannelSettings channel_settings;
 

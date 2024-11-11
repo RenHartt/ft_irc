@@ -4,7 +4,6 @@
 #include <Server.hpp>
 #include <Utils.hpp>
 #include <cstring>
-#include <iostream>
 
 void sendToChannel(Client *sender, const std::string &recipient, const std::string &message, ChannelMap &channels_list)
 {
@@ -20,8 +19,6 @@ void sendToChannel(Client *sender, const std::string &recipient, const std::stri
             throw IrcError(sender->getNickname(), recipient, CLIENT_CANNOTSENDTOCHAN);
         
 		std::string full_message = ":" + sender->getNickname() + "!" + sender->getUsername() + "@localhost PRIVMSG " + recipient + " :" + message + "\r\n";        
-		std::cout << "Sending message: " << full_message << std::endl;
-
 		channel->broadcastMessage(full_message, sender);
 
     } else
@@ -33,8 +30,6 @@ void sendToClient(Client *sender, const std::string &recipient, int recipient_fd
     if (recipient_fd > 0)
     {
         std::string full_message = ":" + sender->getNickname() + "!" + sender->getUsername() + "@localhost PRIVMSG " + recipient + " :" + message + "\r\n";   
-		std::cout << "Sending message: " << full_message << std::endl;
-
 		send(recipient_fd, full_message.c_str(), full_message.size(), 0);
     } else
         throw IrcError(sender->getNickname(), recipient, CLIENT_NOSUCHNICK);

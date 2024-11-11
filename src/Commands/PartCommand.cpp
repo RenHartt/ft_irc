@@ -1,3 +1,4 @@
+#include "Utils.hpp"
 #include <Client.hpp>
 #include <Command.hpp>
 #include <IrcError.hpp>
@@ -6,6 +7,7 @@
 void Command::_executePart(Client *client, std::vector<std::string> args)
 {
     std::string sender_nickname = client->getNickname();
+    std::string sender_username = client->getUsername();
 
     if (args.size() < 2)
         throw IrcError(sender_nickname, "PART", CLIENT_NEEDMOREPARAMS);
@@ -17,12 +19,10 @@ void Command::_executePart(Client *client, std::vector<std::string> args)
     if (!channel->isMember(client))
         throw IrcError(sender_nickname, "PART", CLIENT_NOTONCHANNEL);
 
+    std::string message = ":" + sender_nickname + "!" + sender_username + "@localhost PART " + channel_name + "\r\n";
+    channel->broadcastMessage(message, NULL);
+
     channel->delGuest(client);
     channel->delClient(client);
     channel->delOperator(client);
-
-    std::string partMessage = ":" + sender_nickname + " PART " + channel_name + "\r\n";
-    channel->broadcastMessage(partMessage, NULL);
-    if (channel->isMember(client) == false)
-        send(client->getFd(), "You have left the channel_name\r\n", 27, 0);
 }

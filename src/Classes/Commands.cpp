@@ -39,4 +39,4 @@ void Command::exec(const std::string &cmd, Client *client, std::vector<std::stri
     }
 }
 
-CmdAddr Command::_find(const std::string &cmd) { return _commands.find(cmd) != _commands.end() ? _commands.find(cmd)->second : NULL; }
+CmdAddr Command::_find(const std::string &cmd) { return _commands[cmd]; }

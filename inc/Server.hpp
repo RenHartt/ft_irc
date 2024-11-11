@@ -16,6 +16,10 @@
 
 extern bool running;
 
+class Client;
+class Channel;
+class Command;
+
 class Server
 {
   public:
@@ -28,27 +32,27 @@ class Server
     void handleCommand(int client_fd);
     void broadcastServer(const std::string &message);
 
-    int                 getClientCount() const;
-    int                 getClientFdByNickname(const std::string &nickname);
-    Client             *getClientByNickname(const std::string &nickname);
-    
-	Channel            *getChannelByChannelname(const std::string &channelname);
-    
-	ChannelMap          getChannelsList(void) const;
-    ClientMap           getClientsList(void) const;
-    
+    int     getClientCount() const;
+    int     getClientFdByNickname(const std::string &nickname) const;
+    Client *getClientByNickname(const std::string &nickname) const;
+
+    Channel *getChannelByChannelname(const std::string &channelname);
+
+    ChannelMap getChannelsList(void) const;
+    ClientMap  getClientsList(void) const;
+
     std::string         getName() const;
-	std::vector<pollfd> getPollFds(void) const;
-    std::string         getPassword();
+    std::vector<pollfd> getPollFds(void) const;
+    std::string         getPassword() const;
     std::string         getCreationDate() const;
 
-    void checkAuth(Client *client, std::string command);
+    void checkAuth(Client *client, std::string command) const;
     bool checkPassword(const std::string &password) const;
-    bool NicknameAlreadyUsed(const std::string &nickname);
+    bool NicknameAlreadyUsed(const std::string &nickname) const;
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
-    void removeClient(int fd);
+    void delClient(int fd);
 
   private:
     int                 _server_fd;
@@ -62,8 +66,9 @@ class Server
     ClientMap   _clients_list;
     ChannelMap  _channels_list;
     std::string _creationDate;
-    void        _initSockAddr(sockaddr_in &address);
-    void        _newFdToPoll(void);
+
+    void _initSockAddr(sockaddr_in &address);
+    void _newFdToPoll(void);
 
     void _createSocket(void);
     void _bindSocket(void);
