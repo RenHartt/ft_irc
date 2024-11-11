@@ -108,7 +108,7 @@ void Command::_executeJoin(Client *client, std::vector<std::string> &args)
 
 			Channel *channel = _server->getChannelsList()[channel_name];
 			channel ? joinChannel(client, channel, password)
-				: createChannel(client, channel_name, password, _server);
+				    : createChannel(client, channel_name, password, _server);
 		} catch (const IrcError &e)
 		{
 			e.sendto(*client);
