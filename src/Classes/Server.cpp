@@ -113,8 +113,7 @@ void Server::acceptNewClient()
     socklen_t   client_len = sizeof(client_address);
 
     int opt = 1;
-    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
-        0)
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
         throw IrcError("Impossible to set socket options", SERVER_INIT);
 
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
@@ -159,7 +158,7 @@ void Server::handleCommand(int client_fd)
             {
                 IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
                 e.sendto(*client);
-                return;
+				return;
             }
         } else if (!client->getIsRegistered())
         {
@@ -167,10 +166,10 @@ void Server::handleCommand(int client_fd)
             {
                 IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
                 e.sendto(*client);
-                return;
+				return;
             }
         }
-        if (commandLine != "CAP LS 302\r")
+		if (commandLine != "CAP LS 302\r")
             _command.exec(command[0], client, command);
     }
 }

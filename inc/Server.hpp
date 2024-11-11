@@ -52,6 +52,7 @@ class Server
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
+
     void delClient(int fd);
 
   private:
@@ -61,11 +62,11 @@ class Server
     std::string         _server_name;
     std::vector<pollfd> _poll_fds;
     uint8_t             _hash[32];
+    std::string         _creationDate;
 
-    Command     _command;
-    ClientMap   _clients_list;
-    ChannelMap  _channels_list;
-    std::string _creationDate;
+    Command    _command;
+    ClientMap  _clients_list;
+    ChannelMap _channels_list;
 
     void _initSockAddr(sockaddr_in &address);
     void _newFdToPoll(void);

@@ -17,15 +17,20 @@ class Channel
     Channel(const std::string &channel_name);
     Channel(const std::string &channel_name, const std::string &password);
 
-    std::string getChannelName(void) const;
-    std::string getPassword(void) const;
-    std::string getTopic(void) const;
-    std::string getTopicSetter() const;
-    int         getNbClient(void) const;
+    std::string     getChannelName(void) const;
+    std::string     getPassword(void) const;
+    std::string     getTopic(void) const;
+    std::string     getTopicSetter() const;
+    int             getNbClient(void) const;
+    ClientMap       getClientsMap(void) const;
+    ClientMap       getOperatorsMap(void) const;
+    ClientMap       getGuestsMap(void) const;
+    ChannelSettings getChannelSettings(void) const;
 
     void setPassword(const std::string &password);
     void setTopic(const std::string &new_topic);
     void setTopicSetter(const std::string &topicSetter);
+    void setChannelSettings(ChannelSettings channel_settings);
 
     void addGuest(Client *client);
     void addClient(Client *client);
@@ -41,15 +46,15 @@ class Channel
 
     void broadcastMessage(const std::string &message, Client *sender);
 
-    ClientMap clients;
-    ClientMap operators;
-    ClientMap guests;
-
-    ChannelSettings channel_settings;
-
   private:
     std::string _channel_name;
     std::string _password;
     std::string _topic;
     std::string _topicSetter;
+
+    ChannelSettings _channel_settings;
+
+    ClientMap _clients;
+    ClientMap _operators;
+    ClientMap _guests;
 };

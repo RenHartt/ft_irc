@@ -25,8 +25,7 @@ void Command::_executePart(Client *client, std::vector<std::string> args)
             if (!channel->isMember(client))
                 throw IrcError(sender_nickname, "PART", CLIENT_NOTONCHANNEL);
 
-            std::string message = ":" + sender_nickname + "!" + sender_username +
-                                  "@localhost PART " + channel_name + "\r\n";
+            std::string message = ":" + sender_nickname + "!" + sender_username + "@localhost PART " + channel_name + "\r\n";
             channel->broadcastMessage(message, NULL);
 
             channel->delGuest(client);

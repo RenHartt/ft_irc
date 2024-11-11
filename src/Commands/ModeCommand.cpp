@@ -1,3 +1,4 @@
+#include "Channel.hpp"
 #include <Client.hpp>
 #include <Command.hpp>
 #include <IrcError.hpp>
@@ -10,46 +11,53 @@ std::string getListOfModes(Channel *channel)
 {
     std::string modes_list;
 
-    if (channel->channel_settings.i_inviteOnly)
+    ChannelSettings channel_settings = channel->getChannelSettings();
+
+    if (channel_settings.i_inviteOnly)
         modes_list += "i";
-    if (channel->channel_settings.k_enableKey)
+    if (channel_settings.k_enableKey)
         modes_list += "k";
-    if (channel->channel_settings.t_topicRestriction)
+    if (channel_settings.t_topicRestriction)
         modes_list += "t";
-    if (channel->channel_settings.l_userLimit)
-        modes_list += "l " + itoa(channel->channel_settings.l_userLimit);
+    if (channel_settings.l_userLimit)
+        modes_list += "l " + itoa(channel_settings.l_userLimit);
 
     return modes_list;
 }
 
-void i_mode(bool adding, Channel *channel) { channel->channel_settings.i_inviteOnly = adding; }
+void i_mode(bool adding, Channel *channel)
+{
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.i_inviteOnly = adding;
+    channel->setChannelSettings(channel_settings);
+}
 
-void t_mode(bool adding, Channel *channel) { channel->channel_settings.t_topicRestriction = adding; }
+void t_mode(bool adding, Channel *channel)
+{
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.t_topicRestriction = adding;
+    channel->setChannelSettings(channel_settings);
+}
 
 void k_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index)
 {
-    if (adding)
-    {
-        channel->channel_settings.k_enableKey = true;
-        channel->setPassword(args[arg_index++]);
-    } else
-    {
-        channel->channel_settings.k_enableKey = false;
-        channel->setPassword("");
-    }
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.k_enableKey = adding;
+    adding ? channel->setPassword(args[arg_index++])
+		   : channel->setPassword("");
+    channel->setChannelSettings(channel_settings);
 }
 
 void l_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index)
 {
-    if (adding)
-    {
-        int limit = atoi(args[arg_index++].c_str());
-        channel->channel_settings.l_userLimit = limit;
-    } else
-        channel->channel_settings.l_userLimit = 0;
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    adding ? channel_settings.l_userLimit = atoi(args[arg_index++].c_str())
+           : channel_settings.l_userLimit = 0;
+    channel->setChannelSettings(channel_settings);
 }
 
-void o_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index, Server *server)
+void o_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index,
+            Server *server)
 {
     std::string target_nickname = args[arg_index++];
     Client     *target_client = server->getClientByNickname(target_nickname);
@@ -57,10 +65,8 @@ void o_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t
     if (!target_client || !channel->isMember(target_client))
         throw IrcError("Channel error", target_nickname, CLIENT_USERNOTINCHANNEL);
 
-    if (adding)
-        channel->addOperator(target_client);
-    else
-        channel->delOperator(target_client);
+    adding ? channel->addOperator(target_client) 
+		   : channel->delOperator(target_client);
 }
 
 void Command::_executeMode(Client *client, std::vector<std::string> args)
@@ -70,7 +76,7 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
     if (args.size() < 2)
         throw IrcError(client_nickname, CLIENT_NEEDMOREPARAMS);
 
-    Channel *channel = _server->getChannelsList()[args[1]];
+    Channel    *channel = _server->getChannelsList()[args[1]];
     std::string channel_name = channel->getChannelName();
     if (args.size() == 2)
     {

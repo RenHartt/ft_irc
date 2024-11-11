@@ -1,4 +1,4 @@
-#include <Channel.hpp>
+#include "Channel.hpp"
 #include <Client.hpp>
 #include <Command.hpp>
 #include <ErrTable.hpp>
@@ -10,12 +10,14 @@
 std::string getListOfClients(Channel *channel)
 {
     std::string clients_list;
-    for (ClientMap::iterator it = channel->clients.begin(); it != channel->clients.end(); it++)
+	ClientMap clients = channel->getClientsMap();
+
+    for (ClientMap::iterator it = clients.begin(); it != clients.end(); it++)
     {
         channel->isOperator(it->second) ? clients_list += "@" + it->second->getNickname()
                                         : clients_list += it->second->getNickname();
 
-        if (it != channel->clients.end())
+        if (it != clients.end())
             clients_list += " ";
     }
 
@@ -24,9 +26,9 @@ std::string getListOfClients(Channel *channel)
 
 ChannelPasswordList initRequestList(std::vector<std::string> args)
 {
-    ChannelPasswordList      request_list;
     std::vector<std::string> channels_list;
 	std::vector<std::string> password_list;
+    ChannelPasswordList      request_list;
 
     if (args.size() > 1)
         channels_list = split(args[1], ',');
@@ -71,19 +73,21 @@ void joinChannel(Client *client, Channel *channel, const std::string &password)
 {
     std::string sender_nickname = client->getNickname();
     std::string channel_name = channel->getChannelName();
+	ClientMap clients = channel->getClientsMap();
+	ChannelSettings channel_settings = channel->getChannelSettings();
 
-    if (channel->channel_settings.i_inviteOnly && !channel->isGuest(client))
+    if (channel_settings.i_inviteOnly && !channel->isGuest(client))
         throw IrcError(sender_nickname, channel_name, CLIENT_INVITEONLYCHAN);
-    if (channel->channel_settings.k_enableKey && channel->getPassword() != password && !channel->isGuest(client))
+    if (channel_settings.k_enableKey && channel->getPassword() != password && !channel->isGuest(client))
         throw IrcError(sender_nickname, channel_name, CLIENT_BADCHANNELKEY);
-    if (channel->channel_settings.l_userLimit && channel->clients.size() >= channel->channel_settings.l_userLimit)
+    if (channel_settings.l_userLimit && clients.size() >= channel_settings.l_userLimit)
         throw IrcError(sender_nickname, channel_name, CLIENT_CHANNELISFULL);
 
     channel->addClient(client);
 
     std::string message;
     message = ":" + sender_nickname + " JOIN " + channel_name + "\r\n";
-    channel->broadcastMessage(message, NULL);
+    channel->broadcastMessage(message, client);
 
     message = ":localhost 353 " + sender_nickname + " = " + channel_name + " :" + getListOfClients(channel) + "\r\n";
     message += ":localhost 366 " + sender_nickname + " " + channel_name + " :End of /NAMES list\r\n";
