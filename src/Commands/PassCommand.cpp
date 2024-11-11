@@ -1,11 +1,8 @@
 #include <Command.hpp>
-#include <ErrTable.hpp>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
-#include <cstring>
 
-void Command::_executePass(Client *client, std::vector<std::string> args)
+void Command::_executePass(Client *client, std::vector<std::string> &args)
 {
     std::string sender_nickname = client->getNickname();
 

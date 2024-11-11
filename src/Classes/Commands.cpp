@@ -23,7 +23,7 @@ CommandMap Command::_initCommands()
     return commands;
 }
 
-void Command::exec(const std::string &cmd, Client *client, std::vector<std::string> args)
+void Command::exec(const std::string &cmd, Client *client, std::vector<std::string> &args)
 {
     CmdAddr func = _find(cmd);
     if (!func)

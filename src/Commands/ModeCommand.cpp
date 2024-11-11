@@ -1,69 +1,82 @@
-#include <Client.hpp>
-#include <Command.hpp>
+#include <sys/types.h>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
-#include <cstddef>
-#include <sys/types.h>
 
 std::string getListOfModes(Channel *channel)
 {
     std::string modes_list;
 
-    if (channel->channel_settings.i_inviteOnly)
+    ChannelSettings channel_settings = channel->getChannelSettings();
+
+    if (channel_settings.i_inviteOnly)
         modes_list += "i";
-    if (channel->channel_settings.k_enableKey)
+    if (channel_settings.k_enableKey)
         modes_list += "k";
-    if (channel->channel_settings.t_topicRestriction)
+    if (channel_settings.t_topicRestriction)
         modes_list += "t";
-    if (channel->channel_settings.l_userLimit)
-        modes_list += "l " + itoa(channel->channel_settings.l_userLimit);
+    if (channel_settings.l_userLimit)
+        modes_list += "l " + itoa(channel_settings.l_userLimit);
 
     return modes_list;
 }
 
-void i_mode(bool adding, Channel *channel) { channel->channel_settings.i_inviteOnly = adding; }
-
-void t_mode(bool adding, Channel *channel) { channel->channel_settings.t_topicRestriction = adding; }
-
-void k_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index)
+void i_mode(bool adding, Channel *channel)
 {
-    if (adding)
-    {
-        channel->channel_settings.k_enableKey = true;
-        channel->setPassword(args[arg_index++]);
-    } else
-    {
-        channel->channel_settings.k_enableKey = false;
-        channel->setPassword("");
-    }
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.i_inviteOnly = adding;
+    channel->setChannelSettings(channel_settings);
 }
 
-void l_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index)
+void t_mode(bool adding, Channel *channel)
 {
-    if (adding)
-    {
-        int limit = atoi(args[arg_index++].c_str());
-        channel->channel_settings.l_userLimit = limit;
-    } else
-        channel->channel_settings.l_userLimit = 0;
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.t_topicRestriction = adding;
+    channel->setChannelSettings(channel_settings);
 }
 
-void o_mode(bool adding, Channel *channel, std::vector<std::string> args, size_t &arg_index, Server *server)
+void k_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index)
 {
+    std::string client_nickname = client->getNickname();
+
+    if (adding && arg_index >= args.size())
+        throw IrcError(client_nickname, "k", CLIENT_NEEDMOREPARAMS);
+
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.k_enableKey = adding;
+    adding ? channel->setPassword(args[arg_index++]) : channel->setPassword("");
+    channel->setChannelSettings(channel_settings);
+}
+
+void l_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index)
+{
+    std::string client_nickname = client->getNickname();
+
+    if (adding && arg_index >= args.size())
+        throw IrcError(client_nickname, "l", CLIENT_NEEDMOREPARAMS);
+
+    ChannelSettings channel_settings = channel->getChannelSettings();
+    channel_settings.l_userLimit = adding ? atoi(args[arg_index++].c_str()) : 0;
+    channel->setChannelSettings(channel_settings);
+}
+
+void o_mode(bool adding, Channel *channel, Client *client, std::vector<std::string> args, size_t &arg_index, Server *server)
+{
+    std::string client_nickname = client->getNickname();
+
+    if (arg_index >= args.size())
+        throw IrcError(client_nickname, "o", CLIENT_NEEDMOREPARAMS);
+
     std::string target_nickname = args[arg_index++];
     Client     *target_client = server->getClientByNickname(target_nickname);
+    if (!target_client)
+        throw IrcError(client_nickname, target_nickname, CLIENT_NOSUCHNICK);
+    if (!channel->isMember(target_client))
+        throw IrcError(client_nickname, target_nickname, CLIENT_USERNOTINCHANNEL);
 
-    if (!target_client || !channel->isMember(target_client))
-        throw IrcError("Channel error", target_nickname, CLIENT_USERNOTINCHANNEL);
-
-    if (adding)
-        channel->addOperator(target_client);
-    else
-        channel->delOperator(target_client);
+    adding ? channel->addOperator(target_client) : channel->delOperator(target_client);
 }
 
-void Command::_executeMode(Client *client, std::vector<std::string> args)
+void Command::_executeMode(Client *client, std::vector<std::string> &args)
 {
     std::string client_nickname(client->getNickname());
 
@@ -71,19 +84,18 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         throw IrcError(client_nickname, CLIENT_NEEDMOREPARAMS);
 
     Channel *channel = _server->getChannelsList()[args[1]];
-    std::string channel_name = channel->getChannelName();
+    if (!channel)
+        throw IrcError(client_nickname, args[1], CLIENT_NOSUCHCHANNEL);
+    if (!channel->isMember(client))
+        throw IrcError(client_nickname, args[1], CLIENT_NOTONCHANNEL);
     if (args.size() == 2)
     {
-        std::string message = ":localhost 324 " + channel_name + " " + getListOfModes(channel) + "\r\n";
+        std::string message = ":localhost 324 " + args[1] + " " + getListOfModes(channel) + "\r\n";
         send(client->getFd(), message.c_str(), message.size(), 0);
         return;
     }
-    if (!channel)
-        throw IrcError(client_nickname, channel_name, CLIENT_NOSUCHCHANNEL);
-    if (!channel->isMember(client))
-        throw IrcError(client_nickname, channel_name, CLIENT_NOTONCHANNEL);
     if (!channel->isOperator(client))
-        throw IrcError(client_nickname, channel_name, CLIENT_CHANOPRIVSNEEDED);
+        throw IrcError(client_nickname, args[1], CLIENT_CHANOPRIVSNEEDED);
 
     bool                     adding = true;
     std::string              modes = args[2];
@@ -110,18 +122,18 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
                 modes_applied += (adding ? "+t" : "-t");
                 break;
             case 'k':
-                k_mode(adding, channel, args, arg_index);
+                k_mode(adding, channel, client, args, arg_index);
                 modes_applied += (adding ? "+k" : "-k");
                 if (adding)
                     parameters.push_back(args[arg_index - 1]);
                 break;
             case 'o':
-                o_mode(adding, channel, args, arg_index, _server);
+                o_mode(adding, channel, client, args, arg_index, _server);
                 modes_applied += (adding ? "+o" : "-o");
                 parameters.push_back(args[arg_index - 1]);
                 break;
             case 'l':
-                l_mode(adding, channel, args, arg_index);
+                l_mode(adding, channel, client, args, arg_index);
                 modes_applied += (adding ? "+l" : "-l");
                 if (adding)
                     parameters.push_back(args[arg_index - 1]);
@@ -132,10 +144,10 @@ void Command::_executeMode(Client *client, std::vector<std::string> args)
         }
     }
 
-    std::string response = ":" + client_nickname + " MODE " + channel_name + " " + modes_applied;
+    std::string message = ":" + client_nickname + " MODE " + args[1] + " " + modes_applied;
     for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
-        response += " " + *it;
-    response += "\r\n";
+        message += " " + *it;
+    message += "\r\n";
 
-    channel->broadcastMessage(response, NULL);
+    channel->broadcastMessage(message, NULL);
 }

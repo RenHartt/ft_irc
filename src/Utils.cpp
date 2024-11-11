@@ -1,4 +1,3 @@
-#include <Server.hpp>
 #include <Utils.hpp>
 #include <csignal>
 #include <regex.h>

@@ -6,15 +6,15 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 18:37:09 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/30 17:17:12 by bgoron           ###   ########.fr       */
+/*   Updated: 2024/11/11 21:37:10 by bgoron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
+#include <sys/socket.h>
 #include <Client.hpp>
 #include <ErrTable.hpp>
 #include <IrcError.hpp>
-#include <iostream>
-#include <sys/socket.h>
 
 /* bad because of cpp98 */
 const std::string IrcError::_map_error[] = {

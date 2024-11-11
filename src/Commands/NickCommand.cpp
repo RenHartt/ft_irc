@@ -1,12 +1,9 @@
-#include <Client.hpp>
-#include <Command.hpp>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <sys/socket.h>
 
-bool Server::NicknameAlreadyUsed(const std::string &nickname) const
+bool NicknameAlreadyUsed(const std::string &nickname, ClientMap &clients_list)
 {
-    for (ClientMap::const_iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+    for (ClientMap::const_iterator it = clients_list.begin(); it != clients_list.end(); it++)
     {
         if (it->second->getNickname() == nickname)
             return true;
@@ -14,15 +11,16 @@ bool Server::NicknameAlreadyUsed(const std::string &nickname) const
     return false;
 }
 
-void Command::_executeNick(Client *client, std::vector<std::string> args)
+void Command::_executeNick(Client *client, std::vector<std::string> &args)
 {
     std::string old_nickname = client->getNickname();
+	ClientMap clients_list = _server->getClientsList();
 
     if (args.size() < 2)
         throw IrcError(client->getNickname(), CLIENT_NONICKNAMEGIVEN);
     if (isValidNickname(args[1]) == false)
         throw IrcError(client->getNickname(), CLIENT_ERRONEUSNICKNAME);
-    if (_server->NicknameAlreadyUsed(args[1]))
+    if (NicknameAlreadyUsed(args[1], clients_list) == true)
         throw IrcError(client->getNickname(), args[1], CLIENT_NICKNAMEINUSE);
 
     client->setNickname(args[1]);

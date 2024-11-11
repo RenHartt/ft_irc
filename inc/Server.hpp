@@ -1,18 +1,15 @@
 #pragma once
 
-#include <Channel.hpp>
-#include <Client.hpp>
-#include <Command.hpp>
-#include <Utils.hpp>
-#include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
-#include <netinet/in.h>
 #include <poll.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
-#include <unistd.h>
-#include <vector>
+#include <Client.hpp>
+#include <Channel.hpp>
+#include <Command.hpp>
 
 extern bool running;
 
@@ -26,46 +23,45 @@ class Server
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
-    void run();
-    void handleEvents();
-    void acceptNewClient();
-    void handleCommand(int client_fd);
-    void broadcastServer(const std::string &message);
-
-    int     getClientCount() const;
-    int     getClientFdByNickname(const std::string &nickname) const;
-    Client *getClientByNickname(const std::string &nickname) const;
-
-    Channel *getChannelByChannelname(const std::string &channelname);
-
-    ChannelMap getChannelsList(void) const;
-    ClientMap  getClientsList(void) const;
-
+    int                 getClientCount() const;
+    int                 getClientFdByNickname(const std::string &nickname) const;
+    Client             *getClientByNickname(const std::string &nickname) const;
+    Channel            *getChannelByChannelname(const std::string &channelname);
+    ClientMap           getClientsList(void) const;
+    ChannelMap          getChannelsList(void) const;
+    std::string         getCreationDate() const;
     std::string         getName() const;
     std::vector<pollfd> getPollFds(void) const;
-    std::string         getPassword() const;
-    std::string         getCreationDate() const;
 
-    void checkAuth(Client *client, std::string command) const;
-    bool checkPassword(const std::string &password) const;
+    void checkAuth(Client *client, const std::string &command) const;
     bool NicknameAlreadyUsed(const std::string &nickname) const;
 
     void addChannel(const std::string &channel_name, Channel *channel);
     void addClient(int fd, Client *client);
+
     void delClient(int fd);
+
+    void run();
+    void handleEvents();
+    void handleCommand(int client_fd);
+    void acceptNewClient();
+    void broadcastServer(const std::string &message);
+
+    std::string getPassword() const;
+    bool        checkPassword(const std::string &password) const;
 
   private:
     int                 _server_fd;
     const int           _port;
     std::string         _password;
     std::string         _server_name;
+    std::string         _creationDate;
     std::vector<pollfd> _poll_fds;
     uint8_t             _hash[32];
 
-    Command     _command;
-    ClientMap   _clients_list;
-    ChannelMap  _channels_list;
-    std::string _creationDate;
+    Command    _command;
+    ClientMap  _clients_list;
+    ChannelMap _channels_list;
 
     void _initSockAddr(sockaddr_in &address);
     void _newFdToPoll(void);

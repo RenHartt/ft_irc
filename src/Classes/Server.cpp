@@ -77,12 +77,6 @@ void Server::delClient(int fd)
     close(fd);
 }
 
-void Server::broadcastServer(const std::string &message)
-{
-    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
-        send(it->first, message.c_str(), message.length(), 0);
-}
-
 void Server::run()
 {
     while (server_running)
@@ -95,26 +89,13 @@ void Server::run()
     }
 }
 
-void Server::handleEvents()
-{
-    if (_poll_fds[0].revents & POLLIN)
-        acceptNewClient();
-
-    for (size_t i = 1; i < _poll_fds.size(); i++)
-    {
-        if (_poll_fds[i].revents & POLLIN)
-            handleCommand(_poll_fds[i].fd);
-    }
-}
-
 void Server::acceptNewClient()
 {
     sockaddr_in client_address;
     socklen_t   client_len = sizeof(client_address);
 
     int opt = 1;
-    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
-        0)
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
         throw IrcError("Impossible to set socket options", SERVER_INIT);
 
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
@@ -128,6 +109,18 @@ void Server::acceptNewClient()
     client_pollfd.events = POLLIN;
     client_pollfd.revents = 0;
     _poll_fds.push_back(client_pollfd);
+}
+
+void Server::handleEvents()
+{
+    if (_poll_fds[0].revents & POLLIN)
+        acceptNewClient();
+
+    for (size_t i = 1; i < _poll_fds.size(); i++)
+    {
+        if (_poll_fds[i].revents & POLLIN)
+            handleCommand(_poll_fds[i].fd);
+    }
 }
 
 void Server::handleCommand(int client_fd)
@@ -159,7 +152,7 @@ void Server::handleCommand(int client_fd)
             {
                 IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
                 e.sendto(*client);
-                return;
+				return;
             }
         } else if (!client->getIsRegistered())
         {
@@ -167,15 +160,28 @@ void Server::handleCommand(int client_fd)
             {
                 IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
                 e.sendto(*client);
-                return;
+				return;
             }
         }
-        if (commandLine != "CAP LS 302\r")
+		if (commandLine != "CAP LS 302\r")
             _command.exec(command[0], client, command);
     }
 }
 
+void Server::broadcastServer(const std::string &message)
+{
+    for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+        send(it->first, message.c_str(), message.length(), 0);
+}
+
 /* private function */
+
+void Server::_createSocket(void)
+{
+    this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (this->_server_fd == -1)
+        throw IrcError("Impossible to create the server socket", SERVER_INIT);
+}
 
 void Server::_initSockAddr(sockaddr_in &address)
 {
@@ -183,22 +189,6 @@ void Server::_initSockAddr(sockaddr_in &address)
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(_port);
-}
-
-void Server::_newFdToPoll()
-{
-    pollfd server_pollfd;
-    server_pollfd.fd = this->_server_fd;
-    server_pollfd.events = POLLIN;
-    server_pollfd.revents = 0;
-    this->_poll_fds.push_back(server_pollfd);
-}
-
-void Server::_createSocket(void)
-{
-    this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->_server_fd == -1)
-        throw IrcError("Impossible to create the server socket", SERVER_INIT);
 }
 
 void Server::_bindSocket(void)
@@ -214,6 +204,15 @@ void Server::_listenSocket()
 {
     if (listen(this->_server_fd, 5) > 0)
         throw IrcError("Impossible to listen on the socket", SERVER_INIT);
+}
+
+void Server::_newFdToPoll()
+{
+    pollfd server_pollfd;
+    server_pollfd.fd = this->_server_fd;
+    server_pollfd.events = POLLIN;
+    server_pollfd.revents = 0;
+    this->_poll_fds.push_back(server_pollfd);
 }
 
 __attribute((__annotate__(("fla")))) std::string Server::getPassword() const { return _password; }

@@ -1,10 +1,8 @@
-#include <Client.hpp>
 #include <Command.hpp>
 #include <IrcError.hpp>
 #include <Server.hpp>
-#include <Utils.hpp>
 
-void Command::_executeUser(Client *client, std::vector<std::string> args)
+void Command::_executeUser(Client *client, std::vector<std::string> &args)
 {
 	std::string sender_nickname = client->getNickname();
 
