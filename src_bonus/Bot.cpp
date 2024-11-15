@@ -7,10 +7,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-Bot::Bot(const std::string &server_address, int port, const std::string &password)
+Bot::Bot(const std::string &server_address, int port, const std::string &password,
+         const std::string &invoker, const std::string &bot_name)
     : _server_address(server_address),
       _port(port),
-      _password(password)
+      _password(password),
+      _invoker(invoker),
+      _bot_name(bot_name)
 {
     initHelpMap();
 }
@@ -22,19 +25,20 @@ void    Bot::setMap(const HelpMap &help_map) { _help_map = help_map; }
 
 void Bot::initHelpMap(void)
 {
-    _help_map["!join"]    = "Usage join: /join <password>";
-    _help_map["!mode"]    = "Usage mode: /mode <channel> {[+|-]i|t|k|o|l} [<password>] [<user>] [<limit>] ";
-    _help_map["!mode i"]  = "Usage mode: /mode <channel> [+|-]i";
-    _help_map["!mode t"]  = "Usage mode: /mode <channel> [+|-]t";
-    _help_map["!mode k"]  = "Usage mode: /mode <channel> [+|-]k [<password>]";
-    _help_map["!mode o"]  = "Usage mode: /mode <channel> [+|-]o <user>";
-    _help_map["!mode l"]  = "Usage mode: /mode <channel> [+|-]l [<limit>] ";
-	_help_map["!part"]    = "Usage part: /part <channel>{,<channel>}";
-    _help_map["!kick"]    = "Usage kick: /kick <channel> <user> [<comment>]";
-    _help_map["!topic"]   = "Usage topic: /topic <channel> [<topic>]";
-    _help_map["!invite"]  = "Usage invite: /invite <nickname> <channel>";
-    _help_map["!privmsg"] = "Usage privmsg: /privmsg <receiver>{,<receiver>} <text to be sent>";
-    _help_map["!die"]     = "Usage dir: /die";
+    _help_map["!join"] = "Usage join: /join <password>";
+    _help_map["!mode"] =
+        "Usage mode: /mode <channel> {[+|-]i|t|k|o|l} [<password>] [<user>] [<limit>] ";
+    _help_map["!mode i"] = "Usage mode: /mode <channel> [+|-]i";
+    _help_map["!mode t"] = "Usage mode: /mode <channel> [+|-]t";
+    _help_map["!mode k"] = "Usage mode: /mode <channel> [+|-]k [<password>]";
+    _help_map["!mode o"] = "Usage mode: /mode <channel> [+|-]o <user>";
+    _help_map["!mode l"] = "Usage mode: /mode <channel> [+|-]l [<limit>] ";
+    _help_map["!part"] = "Usage part: /part <channel>{,<channel>}";
+    _help_map["!kick"] = "Usage kick: /kick <channel> <user> [<comment>]";
+    _help_map["!topic"] = "Usage topic: /topic <channel> [<topic>]";
+    _help_map["!invite"] = "Usage invite: /invite <nickname> <channel>";
+    _help_map["!msg"] = "Usage msg: /msg <receiver>{,<receiver>} <text to be sent>";
+    _help_map["!die"] = "Usage dir: /die";
 }
 
 void Bot::connectToServer(void)
@@ -61,8 +65,9 @@ void Bot::authenticate(void)
 {
     std::string command;
     command += "PASS " + _password + "\r\n";
-    command += "NICK bot\r\n";
-    command += "USER bot 0 * :Bot Real Name\r\n";
+    command += "NICK " + _bot_name + "\r\n";
+    command += "USER bot 0 * :" + _bot_name + "\r\n";
+    command += "PRIVMSG " + _invoker + ":I'm " + _bot_name + ", look at me!\r\n";
     if (send(_bot_fd, command.c_str(), command.length(), 0) < 0)
         throw std::runtime_error("Failed to authenticate");
 }
@@ -90,17 +95,43 @@ void Bot::handleMessage(void)
 
     processCommand(std::string(buffer));
 }
+void Bot::_commandHelp(const std::string &command)
+{
+    std::string sender = command.substr(1, command.find('!') - 1);
+    std::string target = command.substr(command.find("PRIVMSG") + 8);
+    target = target.substr(0, target.find(' '));
+	if (target == _bot_name)
+		target = sender;
 
-void Bot::processCommand(const std::string &command)
+    std::string request = command.substr(command.rfind(':') + 1);
+    request.erase(request.find_last_not_of(" \r\n") + 1);
+
+    std::string message = _help_map[request];
+    if (message.empty())
+        message = "!join | !mode [i|t|k|o|l] | !part | !kick | !topic | !invite | !privmsg | !die";
+
+    std::string reply = "PRIVMSG " + target + " :" + message + "\r\n";
+    if (send(_bot_fd, reply.c_str(), reply.length(), 0) < 0)
+        throw std::runtime_error("Failed to send response");
+}
+
+void Bot::_commandInvite(const std::string &command)
 {
     std::string sender = command.substr(1, command.find('!') - 1);
     std::string request = command.substr(command.rfind(':') + 1);
     request.erase(request.find_last_not_of(" \r\n") + 1);
-    std::string message = _help_map[request];
-    if (message.empty() == true)
-        message = "!join | !mode | !part | !kick | !topic | !invite | !privmsg | !die";
+	
+    std::string reply = "JOIN " + request + "\r\n";
+    reply += "PRIVMSG " + request + " :Hello everyone, i'm here to help you!\r\n";
 
-    std::string reply = "PRIVMSG " + sender + " :" + message + "\r\n";
     if (send(_bot_fd, reply.c_str(), reply.length(), 0) < 0)
         throw std::runtime_error("Failed to send response");
+}
+
+void Bot::processCommand(const std::string &command)
+{
+    if (command.find("PRIVMSG") != std::string::npos)
+        _commandHelp(command);
+    else if (command.find("INVITE") != std::string::npos)
+        _commandInvite(command);
 }

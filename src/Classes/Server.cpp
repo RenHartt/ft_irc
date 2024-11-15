@@ -36,8 +36,9 @@ Server::~Server(void)
         delete it->second;
 }
 
-std::string         Server::getName() const { return _server_name; }
+std::string         Server::getServerName() const { return _server_name; }
 int                 Server::getClientCount() const { return _clients_list.size(); }
+int                 Server::getPort() const { return _port; }
 ChannelMap          Server::getChannelsList(void) const { return (_channels_list); }
 ClientMap           Server::getClientsList(void) const { return (_clients_list); }
 std::vector<pollfd> Server::getPollFds(void) const { return (_poll_fds); }
@@ -62,9 +63,15 @@ Client *Server::getClientByNickname(const std::string &nickname) const
     return NULL;
 }
 
-Channel *Server::getChannelByChannelname(const std::string &channelname) { return _channels_list[channelname]; }
+Channel *Server::getChannelByChannelname(const std::string &channelname)
+{
+    return _channels_list[channelname];
+}
 
-void Server::addChannel(const std::string &channel_name, Channel *channel) { _channels_list[channel_name] = channel; }
+void Server::addChannel(const std::string &channel_name, Channel *channel)
+{
+    _channels_list[channel_name] = channel;
+}
 void Server::addClient(int fd, Client *client) { _clients_list[fd] = client; }
 
 void Server::delClient(int fd)
@@ -95,7 +102,8 @@ void Server::acceptNewClient()
     socklen_t   client_len = sizeof(client_address);
 
     int opt = 1;
-    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+    if (setsockopt(this->_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) <
+        0)
         throw IrcError("Impossible to set socket options", SERVER_INIT);
 
     int client_fd = accept(_server_fd, (sockaddr *)&client_address, &client_len);
@@ -125,8 +133,8 @@ void Server::handleEvents()
 
 void Server::handleCommand(int client_fd)
 {
-    char buffer[1024] = {0};
-    int  valread = read(client_fd, buffer, sizeof(buffer) - 1);
+    char        buffer[2] = {0};
+    std::size_t valread = read(client_fd, buffer, sizeof(buffer) - 1);
     if (valread == 0)
     {
         delClient(client_fd);
@@ -152,7 +160,7 @@ void Server::handleCommand(int client_fd)
             {
                 IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
                 e.sendto(*client);
-				return;
+                return;
             }
         } else if (!client->getIsRegistered())
         {
@@ -160,10 +168,10 @@ void Server::handleCommand(int client_fd)
             {
                 IrcError e(client->getNickname(), CLIENT_NOTREGISTERED);
                 e.sendto(*client);
-				return;
+                return;
             }
         }
-		if (commandLine != "CAP LS 302\r")
+        if (commandLine != "CAP LS 302\r")
             _command.exec(command[0], client, command);
     }
 }

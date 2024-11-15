@@ -1,15 +1,15 @@
 #pragma once
 
+#include <Channel.hpp>
+#include <Client.hpp>
+#include <Command.hpp>
+#include <arpa/inet.h>
 #include <cstdlib>
 #include <cstring>
-#include <poll.h>
-#include <arpa/inet.h>
 #include <netinet/in.h>
+#include <poll.h>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
-#include <Client.hpp>
-#include <Channel.hpp>
-#include <Command.hpp>
 
 extern bool running;
 
@@ -23,14 +23,19 @@ class Server
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
-    int                 getClientCount() const;
-    int                 getClientFdByNickname(const std::string &nickname) const;
-    Client             *getClientByNickname(const std::string &nickname) const;
-    Channel            *getChannelByChannelname(const std::string &channelname);
-    ClientMap           getClientsList(void) const;
-    ChannelMap          getChannelsList(void) const;
+    std::string getServerName() const;
+    std::string getPassword() const;
+    int         getPort() const;
+    int         getClientCount() const;
+
+    int      getClientFdByNickname(const std::string &nickname) const;
+    Client  *getClientByNickname(const std::string &nickname) const;
+    Channel *getChannelByChannelname(const std::string &channelname);
+
+    ClientMap  getClientsList(void) const;
+    ChannelMap getChannelsList(void) const;
+
     std::string         getCreationDate() const;
-    std::string         getName() const;
     std::vector<pollfd> getPollFds(void) const;
 
     void checkAuth(Client *client, const std::string &command) const;
@@ -47,8 +52,7 @@ class Server
     void acceptNewClient();
     void broadcastServer(const std::string &message);
 
-    std::string getPassword() const;
-    bool        checkPassword(const std::string &password) const;
+    bool checkPassword(const std::string &password) const;
 
   private:
     int                 _server_fd;

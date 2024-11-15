@@ -4,13 +4,13 @@
 
 int main(int argc, char **argv)
 {
-	if (argc != 4)
+	if (argc != 6)
 	{
-		std::cerr << "Usage : ./Bot <server address> <port> <password>" << std::endl;
+		std::cerr << "Usage : ./Bot <server address> <port> <password> <bot name>" << std::endl;
 		return 1;
 	}
 
-	Bot bot(argv[1], std::atoi(argv[2]), argv[3]);
+	Bot bot(argv[1], std::atoi(argv[2]), argv[3], argv[4], argv[5]);
 
 	try
 	{

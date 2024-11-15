@@ -29,4 +29,6 @@ class Command
     void _executeTopic(Client *client, std::vector<std::string> &args);
     void _executeInvite(Client *client, std::vector<std::string> &args);
     void _executePrivmsg(Client *client, std::vector<std::string> &args);
+
+	void _executeInvoke(Client *client, std::vector<std::string> &args);
 };

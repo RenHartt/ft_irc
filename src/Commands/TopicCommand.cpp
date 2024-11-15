@@ -26,12 +26,12 @@ void Command::_executeTopic(Client *client, std::vector<std::string> &args)
         std::string topic = channel->getTopic();
         if (topic.empty())
         {
-            message = ":" + _server->getName() + " 331 " + sender_nickname + " " + channel_name + " :No topic is set\r\n";
+            message = ":" + _server->getServerName() + " 331 " + sender_nickname + " " + channel_name + " :No topic is set\r\n";
             send(client->getFd(), message.c_str(), message.size(), 0);
         } else
         {
-            message = ":" + _server->getName() + " 332 " + sender_nickname + " " + channel_name + " :" + topic + "\r\n";
-            message += ":" + _server->getName() + " 333 " + sender_nickname + " " + channel_name + " " + channel->getTopicSetter() + "\r\n";
+            message = ":" + _server->getServerName() + " 332 " + sender_nickname + " " + channel_name + " :" + topic + "\r\n";
+            message += ":" + _server->getServerName() + " 333 " + sender_nickname + " " + channel_name + " " + channel->getTopicSetter() + "\r\n";
             send(client->getFd(), message.c_str(), message.size(), 0);
         }
     } else
