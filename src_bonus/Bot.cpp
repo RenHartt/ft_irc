@@ -24,10 +24,7 @@ Bot::Bot(const std::string &server_address, int port, const std::string &passwor
     initHelpMap();
 }
 
-Bot::~Bot(void)
-{
-	close(_bot_fd);
-}
+Bot::~Bot(void) { close(_bot_fd); }
 
 HelpMap Bot::getMap(void) const { return _help_map; }
 void    Bot::setMap(const HelpMap &help_map) { _help_map = help_map; }

@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include <IrcError.hpp>
 #include <csignal>
+#include <cstring>
 #include <netinet/in.h>
 #include <sha256.h>
 
@@ -127,7 +128,8 @@ void Server::handleEvents()
 
 void Server::handleCommand(int client_fd)
 {
-    char buffer[1024] = {0};
+    char buffer[1024];
+	memset(buffer, 0, sizeof(buffer));
     int  valread = read(client_fd, buffer, sizeof(buffer) - 1);
     if (valread == 0)
     {
