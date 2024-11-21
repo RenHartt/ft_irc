@@ -36,6 +36,8 @@ Server::~Server(void)
         delete it->second;
 }
 
+int					Server::getFd() const { return _server_fd; }
+int					Server::getPort() const { return _port; }
 std::string         Server::getName() const { return _server_name; }
 int                 Server::getClientCount() const { return _clients_list.size(); }
 ChannelMap          Server::getChannelsList(void) const { return (_channels_list); }

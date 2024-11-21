@@ -5,20 +5,22 @@ SRCS = $(shell find ./src -name "*.cpp")
 BOT_SRCS = $(shell find ./src_bonus -name "*.cpp")
 
 OBJS_DIR = .objs
-OBJS = $(patsubst %.cpp, $(OBJS_DIR)/%.o, $(SRCS))
-BOT_OBJS = $(patsubst %.cpp, $(OBJS_DIR)/%.o, $(BOT_SRCS))
+OBJS = $(patsubst ./src/%.cpp, $(OBJS_DIR)/src/%.o, $(SRCS))
+BOT_OBJS = $(patsubst ./src_bonus/%.cpp, $(OBJS_DIR)/src_bonus/%.o, $(BOT_SRCS))
 
 CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -I inc -g -MMD -MP
 TOTAL_FILES := $(words $(OBJS))
-COMPILED_FILES = 0
+TOTAL_BOT_FILES := $(words $(BOT_OBJS))
 
 GREEN = \033[0;32m
 YELLOW = \033[0;33m
 BLUE = \033[0;34m
 RESET = \033[0m
 
-all: $(NAME) $(BOT_NAME)
+all: $(NAME)
+
+bonus: all $(BOT_NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
@@ -28,10 +30,21 @@ $(BOT_NAME): $(BOT_OBJS)
 	$(CXX) $(CXXFLAGS) $(BOT_OBJS) -o $(BOT_NAME)
 	@echo "$(GREEN)$(BOT_NAME) has been successfully built!$(RESET)"
 
-$(OBJS_DIR)/%.o: %.cpp | $(OBJS_DIR)
-	@$(eval COMPILED_FILES=$(shell echo $$(($(COMPILED_FILES)+1))))
-	@printf "$(BLUE)Compiling %-40s$(RESET) [$(YELLOW)%2d$(RESET)/$(YELLOW)%d$(RESET)] ($(GREEN)%3d%%$(RESET))\n" "$<" $(COMPILED_FILES) $(TOTAL_FILES) $$(($(COMPILED_FILES) * 100 / $(TOTAL_FILES)))
+FILE_INDEX := 0
+BOT_FILE_INDEX := 0
+
+$(OBJS_DIR)/src/%.o: src/%.cpp | $(OBJS_DIR)
 	@mkdir -p $(dir $@)
+	@$(eval FILE_INDEX=$(shell echo $$(($(FILE_INDEX)+1))))
+	@printf "$(BLUE)Compiling %-40s$(RESET) [$(YELLOW)%2d$(RESET)/$(YELLOW)%d$(RESET)] ($(GREEN)%3d%%$(RESET))\n" \
+	"$<" $(FILE_INDEX) $(TOTAL_FILES) $$(($(FILE_INDEX) * 100 / $(TOTAL_FILES)))
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/src_bonus/%.o: src_bonus/%.cpp | $(OBJS_DIR)
+	@mkdir -p $(dir $@)
+	@$(eval BOT_FILE_INDEX=$(shell echo $$(($(BOT_FILE_INDEX)+1))))
+	@printf "$(BLUE)Compiling %-40s$(RESET) [$(YELLOW)%2d$(RESET)/$(YELLOW)%d$(RESET)] ($(GREEN)%3d%%$(RESET))\n" \
+	"$<" $(BOT_FILE_INDEX) $(TOTAL_BOT_FILES) $$(($(BOT_FILE_INDEX) * 25 / $(TOTAL_BOT_FILES) + 100))
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJS_DIR):
@@ -47,5 +60,7 @@ fclean: clean
 
 re: fclean all
 
+-include $(OBJ:.o=.d)
+
 .SILENT:
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus

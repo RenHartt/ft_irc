@@ -23,6 +23,8 @@ class Server
     Server(const std::string &port, const std::string &password);
     ~Server(void);
 
+	int					getFd() const;
+	int					getPort() const;
     int                 getClientCount() const;
     int                 getClientFdByNickname(const std::string &nickname) const;
     Client             *getClientByNickname(const std::string &nickname) const;

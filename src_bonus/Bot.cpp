@@ -1,162 +1,150 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <csignal>
 #include "Bot.hpp"
+#include "Server.hpp"
+#include <arpa/inet.h>
+#include <cerrno>
+#include <csignal>
+#include <cstdlib>
+#include <cstring>
+#include <netinet/in.h>
+#include <stdexcept>
+#include <sys/poll.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
-#define BUFFER_SIZE 4096
+extern bool running;
 
-void sendCommand(int sock, const std::string& command) {
-    std::string message = command + "\r\n";
-    send(sock, message.c_str(), message.length(), 0);
+Bot::Bot(const std::string &server_address, int port, const std::string &password,
+         const std::string &invoker, const std::string &bot_name)
+    : _server_address(server_address),
+      _port(port),
+      _password(password),
+      _invoker(invoker),
+      _bot_name(bot_name)
+{
+    initHelpMap();
 }
 
-void sighandler(int signum) {
-    if (signum == SIGINT) {
-        std::cout << "Caught SIGINT, exiting..." << std::endl;
-        exit(0);
+Bot::~Bot(void)
+{
+	close(_bot_fd);
+}
+
+HelpMap Bot::getMap(void) const { return _help_map; }
+void    Bot::setMap(const HelpMap &help_map) { _help_map = help_map; }
+
+void Bot::initHelpMap(void)
+{
+    _help_map["!join"] = "Usage join: /join <password>";
+    _help_map["!mode"] =
+        "Usage mode: /mode <channel> {[+|-]i|t|k|o|l} [<password>] [<user>] [<limit>] ";
+    _help_map["!mode i"] = "Usage mode: /mode <channel> [+|-]i";
+    _help_map["!mode t"] = "Usage mode: /mode <channel> [+|-]t";
+    _help_map["!mode k"] = "Usage mode: /mode <channel> [+|-]k [<password>]";
+    _help_map["!mode o"] = "Usage mode: /mode <channel> [+|-]o <user>";
+    _help_map["!mode l"] = "Usage mode: /mode <channel> [+|-]l [<limit>] ";
+    _help_map["!part"] = "Usage part: /part <channel>{,<channel>}";
+    _help_map["!kick"] = "Usage kick: /kick <channel> <user> [<comment>]";
+    _help_map["!topic"] = "Usage topic: /topic <channel> [<topic>]";
+    _help_map["!invite"] = "Usage invite: /invite <nickname> <channel>";
+    _help_map["!msg"] = "Usage msg: /msg <receiver>{,<receiver>} <text to be sent>";
+    _help_map["!die"] = "Usage dir: /die";
+}
+
+void Bot::connectToServer(void)
+{
+    if ((_bot_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        throw std::runtime_error("Failed to create socket");
+
+    sockaddr_in address;
+    std::memset(&address, 0, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_port = htons(_port);
+
+    if (inet_pton(AF_INET, _server_address.c_str(), &address.sin_addr) <= 0)
+        throw std::runtime_error("Invalid server address");
+    if (connect(_bot_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
+        throw std::runtime_error("Failed to connect to server");
+
+    _bot_pollfd.fd = _bot_fd;
+    _bot_pollfd.events = POLLIN;
+    _bot_pollfd.revents = 0;
+}
+
+void Bot::authenticate(void)
+{
+    std::string command;
+    command += "PASS " + _password + "\r\n";
+    command += "NICK " + _bot_name + "\r\n";
+    command += "USER bot 0 * :" + _bot_name + "\r\n";
+    command += "PRIVMSG " + _invoker + ":I'm " + _bot_name + ", look at me!\r\n";
+    if (send(_bot_fd, command.c_str(), command.length(), 0) < 0)
+        throw std::runtime_error("Failed to authenticate");
+}
+
+void Bot::listenForMessages(void)
+{
+    while (running == true)
+    {
+        int poll_count = poll(&_bot_pollfd, 1, -1);
+        if (poll_count == -1)
+            throw std::runtime_error("Poll error");
+
+        if (_bot_pollfd.revents & POLLIN)
+            handleMessage();
     }
 }
 
-void handlePing(const std::string& line, int server_fd) {
-    if (line.find("PING") == 0) {
-        std::string token = line.substr(5);
-        std::string response = "PONG " + token + "\r\n";
-        send(server_fd, response.c_str(), response.length(), 0);
-        std::cout << "Sent: " << response << std::endl;
-    }
+void Bot::handleMessage(void)
+{
+    char buffer[1024];
+    std::memset(buffer, 0, sizeof(buffer));
+
+    ssize_t bytes = read(_bot_fd, buffer, sizeof(buffer) - 1);
+    if (bytes < 0)
+        throw std::runtime_error("Read error from server");
+    else if (bytes == 0)
+        throw std::runtime_error("Deconnection from server");
+
+    processCommand(std::string(buffer));
 }
 
-void handlePrivmsg(const std::string& line, int server_fd) {
-    size_t prefix_end = line.find(' ');
-    if (prefix_end == std::string::npos) return;
-    std::string prefix = line.substr(0, prefix_end);
+void Bot::_commandHelp(const std::string &command)
+{
+    std::string sender = command.substr(1, command.find('!') - 1);
+    std::string target = command.substr(command.find("PRIVMSG") + 8);
+    target = target.substr(0, target.find(' '));
+    if (target == _bot_name)
+        target = sender;
 
-    size_t cmd_start = prefix_end + 1;
-    size_t cmd_end = line.find(' ', cmd_start);
-    if (cmd_end == std::string::npos) return;
+    std::string request = command.substr(command.rfind(':') + 1);
+    request.erase(request.find_last_not_of(" \r\n") + 1);
 
-    size_t params_start = cmd_end + 1;
-    size_t text_start = line.find(":", params_start);
-    if (text_start == std::string::npos) return;
+    std::string message = _help_map[request];
+    if (message.empty())
+        message = "!join | !mode [i|t|k|o|l] | !part | !kick | !topic | !invite | !privmsg | !die";
 
-    std::string recipient = line.substr(params_start, text_start - params_start - 1);
-    std::string text = line.substr(text_start + 1);
-    text.erase(text.find_last_not_of("\r\n") + 1);
-
-    if (text == "PING") {
-        std::string sender_nick;
-        if (prefix[0] == ':') {
-            size_t nick_end = prefix.find('!');
-            if (nick_end != std::string::npos)
-                sender_nick = prefix.substr(1, nick_end - 1);
-            else
-                sender_nick = prefix.substr(1);
-        }
-
-        if (sender_nick != "BotGPT") {
-            std::string response = "PRIVMSG " + recipient + " :PONG\r\n";
-            send(server_fd, response.c_str(), response.length(), 0);
-            std::cout << "Sent: " << response << std::endl;
-        }
-    }
+    std::string reply = "PRIVMSG " + target + " :" + message + "\r\n";
+    if (send(_bot_fd, reply.c_str(), reply.length(), 0) < 0)
+        throw std::runtime_error("Failed to send response");
 }
 
-void handleInvite(const std::string& line, int server_fd) {
-    size_t channel_pos = line.find_last_of(':');
-    if (channel_pos != std::string::npos) {
-        std::string channel = line.substr(channel_pos + 1);
-        channel.erase(channel.find_last_not_of("\r\n") + 1);
-        std::string join_command = "JOIN " + channel + "\r\n";
-        send(server_fd, join_command.c_str(), join_command.length(), 0);
-        std::cout << "Sent: " << join_command << std::endl;
-    }
+void Bot::_commandInvite(const std::string &command)
+{
+    std::string sender = command.substr(1, command.find('!') - 1);
+    std::string request = command.substr(command.rfind(':') + 1);
+    request.erase(request.find_last_not_of(" \r\n") + 1);
+
+    std::string reply = "JOIN " + request + "\r\n";
+    reply += "PRIVMSG " + request + " :Hello everyone, i'm here to help you!\r\n";
+
+    if (send(_bot_fd, reply.c_str(), reply.length(), 0) < 0)
+        throw std::runtime_error("Failed to send response");
 }
 
-void processMessageLine(const std::string& line, int server_fd) {
-    if (line.compare(0, 4, "PING") == 0) {
-        handlePing(line, server_fd);
-    } else if (line.find("PRIVMSG") != std::string::npos) {
-        handlePrivmsg(line, server_fd);
-    } else if (line.find("INVITE") != std::string::npos) {
-        handleInvite(line, server_fd);
-    }
-}
-
-bool handleIncomingMessage(int server_fd) {
-    char buffer[BUFFER_SIZE];
-    memset(buffer, 0, sizeof(buffer));
-    int valread = recv(server_fd, buffer, sizeof(buffer) - 1, 0);
-    if (valread > 0) {
-        std::string message(buffer, valread);
-        std::cout << "Received: " << message << std::endl;
-        size_t line_start = 0;
-        while (line_start < message.length()) {
-            size_t line_end = message.find("\r\n", line_start);
-            if (line_end == std::string::npos) break;
-            std::string line = message.substr(line_start, line_end - line_start);
-            line_start = line_end + 2;
-            processMessageLine(line, server_fd);
-        }
-        return true;
-    } else if (valread == 0) {
-        std::cout << "Server closed connection." << std::endl;
-    } else {
-        std::cerr << "Error reading from server." << std::endl;
-    }
-    return false;
-}
-
-bool connectToServer(int& sock, const char* server_ip, int port, const std::string& pass) {
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) {
-        std::cerr << "Socket creation failed" << std::endl;
-        return false;
-    }
-
-    struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
-    if (inet_pton(AF_INET, server_ip, &server_addr.sin_addr) <= 0) {
-        std::cerr << "Invalid address or address not supported" << std::endl;
-        close(sock);
-        return false;
-    }
-
-    if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        std::cerr << "Connection failed" << std::endl;
-        close(sock);
-        exit(1);
-        return false;
-    }
-
-    sendCommand(sock, "PASS " + pass);
-    sendCommand(sock, "NICK BotGPT");
-    sendCommand(sock, "USER BotGPTUser 0 * :BotGPT");
-
-    return true;
-}
-
-int main(int argc, char* argv[]) {
-    if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <port> <pass>" << std::endl;
-        return 1;
-    }
-
-    const char* server_ip = argv[1];
-    int port = std::atoi(argv[2]);
-    std::string pass = argv[3];
-
-    signal(SIGINT, sighandler);
-    int sock;
-    while (true) {
-        if (connectToServer(sock, server_ip, port, pass)) {
-            while (handleIncomingMessage(sock));
-            close(sock);
-        }
-    }
-    return 0;
+void Bot::processCommand(const std::string &command)
+{
+    if (command.find("PRIVMSG") != std::string::npos)
+        _commandHelp(command);
+    else if (command.find("INVITE") != std::string::npos)
+        _commandInvite(command);
 }

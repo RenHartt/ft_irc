@@ -19,6 +19,8 @@ CommandMap Command::_initCommands()
 	commands["PASS"]    = &Command::_executePass;
 	commands["MODE"]    = &Command::_executeMode;
     commands["DIE"]     = &Command::_executeDie;
+    commands["INVOKE"]  = &Command::_executeInvoke;
+    commands["invoke"]  = &Command::_executeInvoke;
 
     return commands;
 }

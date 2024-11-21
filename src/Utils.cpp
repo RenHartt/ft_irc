@@ -20,12 +20,12 @@ bool regex(const char *expression, const char *pattern)
 
 bool isValidChannelName(const std::string &channel_name)
 {
-    return (regex(channel_name.c_str(), "^#[^ ,:]{1,19}$"));
+    return (regex(channel_name.c_str(), "^#[^ ,:]{1,1024}$"));
 }
 
 bool isValidNickname(const std::string &nickname)
 {
-    return (regex(nickname.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{0,8}$"));
+    return (regex(nickname.c_str(), "^[a-zA-Z][][a-zA-Z0-9\\^{}_-]{0,1023}$"));
 }
 
 std::vector<std::string> split(const std::string &str, char delimiter)
