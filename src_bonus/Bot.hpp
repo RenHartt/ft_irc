@@ -27,8 +27,8 @@ class Bot
     void handleMessage(void);
     void processCommand(const std::string &command);
 
-	void _commandHelp(const std::string &command);
-	void _commandInvite(const std::string &command);
+    void _commandHelp(const std::string &command);
+    void _commandInvite(const std::string &command);
 
   private:
     int           _bot_fd;
@@ -38,5 +38,6 @@ class Bot
     std::string   _invoker;
     std::string   _bot_name;
     struct pollfd _bot_pollfd;
-    HelpMap       _help_map;
+
+    HelpMap _help_map;
 };

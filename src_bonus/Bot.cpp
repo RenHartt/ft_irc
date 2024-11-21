@@ -1,11 +1,17 @@
 #include "Bot.hpp"
+#include "Server.hpp"
 #include <arpa/inet.h>
+#include <cerrno>
+#include <csignal>
+#include <cstdlib>
 #include <cstring>
 #include <netinet/in.h>
 #include <stdexcept>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+extern bool running;
 
 Bot::Bot(const std::string &server_address, int port, const std::string &password,
          const std::string &invoker, const std::string &bot_name)
@@ -74,7 +80,7 @@ void Bot::authenticate(void)
 
 void Bot::listenForMessages(void)
 {
-    while (true)
+    while (running == true)
     {
         int poll_count = poll(&_bot_pollfd, 1, -1);
         if (poll_count == -1)
@@ -89,19 +95,23 @@ void Bot::handleMessage(void)
 {
     char buffer[1024];
     std::memset(buffer, 0, sizeof(buffer));
+
     ssize_t bytes = read(_bot_fd, buffer, sizeof(buffer) - 1);
-    if (bytes <= 0)
-        throw std::runtime_error("Server connection closed");
+    if (bytes < 0)
+        throw std::runtime_error("Read error from server");
+    else if (bytes == 0)
+        throw std::runtime_error("Deconnection from server");
 
     processCommand(std::string(buffer));
 }
+
 void Bot::_commandHelp(const std::string &command)
 {
     std::string sender = command.substr(1, command.find('!') - 1);
     std::string target = command.substr(command.find("PRIVMSG") + 8);
     target = target.substr(0, target.find(' '));
-	if (target == _bot_name)
-		target = sender;
+    if (target == _bot_name)
+        target = sender;
 
     std::string request = command.substr(command.rfind(':') + 1);
     request.erase(request.find_last_not_of(" \r\n") + 1);
@@ -120,7 +130,7 @@ void Bot::_commandInvite(const std::string &command)
     std::string sender = command.substr(1, command.find('!') - 1);
     std::string request = command.substr(command.rfind(':') + 1);
     request.erase(request.find_last_not_of(" \r\n") + 1);
-	
+
     std::string reply = "JOIN " + request + "\r\n";
     reply += "PRIVMSG " + request + " :Hello everyone, i'm here to help you!\r\n";
 

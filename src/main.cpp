@@ -3,7 +3,7 @@
 #include <Server.hpp>
 #include <IrcError.hpp>
 
-volatile sig_atomic_t server_running = 1;
+sig_atomic_t server_running = 1;
 
 int main(int argc, char **argv)
 {

@@ -51,8 +51,5 @@ std::string itoa(int value)
 void handleSignal(int signal)
 {
 	if (signal == SIGINT)
-	{
-		std::cout << "\nServeur interrompu par SIGINT (Ctrl+C). Fermeture en cours...\n";
-		server_running = 0;
-	}
+		server_running = false;
 }
