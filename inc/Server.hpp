@@ -17,6 +17,10 @@ class Client;
 class Channel;
 class Command;
 
+#ifndef SERVER_SIZE
+#    define SERVER_SIZE 3
+#endif
+
 class Server
 {
   public:
@@ -47,6 +51,7 @@ class Server
     void delClient(int fd);
 
     void run();
+    void init();
     void handleEvents();
     void handleCommand(int client_fd);
     void acceptNewClient();

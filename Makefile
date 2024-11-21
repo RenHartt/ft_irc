@@ -60,5 +60,7 @@ fclean: clean
 
 re: fclean all
 
+-include $(OBJ:.o=.d)
+
 .SILENT:
 .PHONY: all clean fclean re bonus
