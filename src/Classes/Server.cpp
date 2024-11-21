@@ -14,10 +14,6 @@ Server::Server(const std::string &port, const std::string &password)
       _command(this)
 {
     sha256(reinterpret_cast<const uint8_t *>(password.c_str()), password.size(), _hash);
-    _createSocket();
-    _bindSocket();
-    _listenSocket();
-    _newFdToPoll();
 }
 
 /* destructor */
@@ -89,6 +85,15 @@ void Server::run()
 
         handleEvents();
     }
+}
+
+
+void Server::init()
+{
+	_createSocket();
+	_bindSocket();
+	_listenSocket();
+	_newFdToPoll();
 }
 
 void Server::acceptNewClient()

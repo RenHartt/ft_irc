@@ -44,6 +44,7 @@ class Server
     void delClient(int fd);
 
     void run();
+    void init();
     void handleEvents();
     void handleCommand(int client_fd);
     void acceptNewClient();

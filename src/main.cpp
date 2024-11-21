@@ -15,9 +15,10 @@ int main(int argc, char **argv)
 
 	signal(SIGINT, handleSignal);
 
+	Server irc_server(argv[1], argv[2]);
     try
     {
-        Server irc_server(argv[1], argv[2]);
+        irc_server.init();
         irc_server.run();
     } catch (const IrcError &e)
     {
