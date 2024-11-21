@@ -4,6 +4,7 @@
 #include <cstring>
 #include <netinet/in.h>
 #include <sha256.h>
+#include <unistd.h>
 
 extern sig_atomic_t server_running;
 
@@ -27,7 +28,10 @@ Server::~Server(void)
         close(it->fd);
 
     for (ClientMap::iterator it = _clients_list.begin(); it != _clients_list.end(); it++)
+	{
+		close(it->first);
         delete it->second;
+	}
 
     for (ChannelMap::iterator it = _channels_list.begin(); it != _channels_list.end(); it++)
         delete it->second;
