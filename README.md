@@ -4,7 +4,7 @@
 
 ft_irc est un projet conçu pour recréer un serveur IRC (Internet Relay Chat) conforme au RFC 1459. Ce serveur permet aux utilisateurs de se connecter, de rejoindre des channels, d'envoyer des messages privés, et de gérer divers événements en temps réel.
 
----
+![screen](img/screen.png)
 
 ## **Introduction**
 
@@ -39,3 +39,8 @@ IRC est un protocole utilisé pour les communications en ligne en temps réel. C
 make
 ./ircserv <port> <passwword>
 ```
+
+<p align="center">
+  <img src="img/settings.png" alt="settings1" width="49%">
+  <img src="img/settings2.png" alt="settings2" width="49%">
+</p>
